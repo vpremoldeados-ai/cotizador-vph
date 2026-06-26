@@ -918,10 +918,23 @@
                 padding: 8px;
             }
 
+            #screen-products {
+                padding: 10px 8px;
+                justify-content: flex-start;
+            }
+
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
                 max-width: 100%;
+                width: 100%;
                 gap: 8px;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* Losetas Green: 1 columna, 3 filas en movil */
+            .products-grid.grid-3-columns {
+                grid-template-columns: 1fr;
             }
 
             .detail-container {
