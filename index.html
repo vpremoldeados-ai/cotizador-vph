@@ -925,6 +925,16 @@
                 font-size: 13px;
             }
         }
+        .trust-strip {
+            display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center;
+            margin-top: 12px; font-size: 12px; color: #555;
+        }
+        .trust-strip span { white-space: nowrap; }
+        .cart-reassurance {
+            background: #eaf7ee; border: 1px solid #bfe3c9; border-radius: 6px;
+            padding: 10px 14px; font-size: 13px; color: #1e5b2e; margin-bottom: 12px;
+            text-align: center; line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -1068,8 +1078,13 @@
 
                     <!-- Buttons -->
                     <div class="button-group">
-                        <button class="btn btn-secondary" onclick="goToCart()">Carrito</button>
-                        <button class="btn btn-primary" onclick="addToCart()">Agregar al carrito</button>
+                        <button class="btn btn-secondary" onclick="if(addToCart(true)) goToProductsCategory()">Agregar y seguir</button>
+                        <button class="btn btn-primary" onclick="addToCart()">Pedir presupuesto</button>
+                    </div>
+                    <div class="trust-strip">
+                        <span>🏭 Fabricantes desde 2010</span>
+                        <span>⭐ 4,8 · 150 opiniones en Google</span>
+                        <span>💬 Te contactamos en menos de 24 hs</span>
                     </div>
                 </div>
             </div>
@@ -1129,6 +1144,14 @@
                 <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
             </div>
 
+            <div class="cart-reassurance">
+                <strong>No pagás nada ahora.</strong> Nos enviás el pedido, confirmamos disponibilidad y flete, y te pasamos el total final. Recién ahí coordinamos el pago.
+            </div>
+            <div class="trust-strip" style="margin-bottom:12px;">
+                <span>🏭 Fabricantes desde 2010</span>
+                <span>⭐ 4,8 · 150 opiniones en Google</span>
+                <span>💬 Te contactamos en menos de 24 hs</span>
+            </div>
             <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button class="btn-whatsapp" onclick="sendToWhatsApp()">Enviar por WhatsApp 💬</button>
                 <button class="btn btn-primary" onclick="sendByEmail()" style="width: auto; padding: 10px 30px;">Enviar por Email</button>
@@ -1859,7 +1882,7 @@
         }
 
         // ========== CARRITO ==========
-        function addToCart() {
+        function addToCart(stay) {
             const product = catalog[currentProduct.category].products[currentProduct.index];
 
             let quantity = 0, quantityLabel = '';
@@ -1884,7 +1907,7 @@
 
             if (quantity <= 0) {
                 alert('Por favor ingresa una cantidad');
-                return;
+                return false;
             }
 
             const destination = document.getElementById('destination').value;
@@ -1965,7 +1988,8 @@
             }
 
             updateCartCount();
-            goToCart();
+            if (!stay) goToCart();
+            return true;
         }
 
         function updateCartCount() {
