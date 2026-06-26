@@ -937,6 +937,39 @@
                 grid-template-columns: 1fr;
             }
 
+            /* === Mejoras tactiles estilo MercadoLibre (movil) === */
+            /* Campos de cantidad e inputs/selects de la compra: mas grandes y sin zoom de iOS */
+            #screen-detail input[type="number"],
+            #screen-detail input[type="tel"],
+            #screen-detail input[type="text"],
+            #screen-detail select,
+            #phoneNumber {
+                font-size: 16px !important;
+                padding: 12px !important;
+            }
+            /* Botones primarios/secundarios: objetivo de toque alto y ancho completo */
+            .button-group {
+                flex-direction: column;
+            }
+            .button-group .btn,
+            .detail-purchase .btn {
+                width: 100%;
+                min-height: 48px;
+                font-size: 15px;
+                padding: 13px;
+            }
+            /* Jerarquia: titulo mas chico, precio manda */
+            .detail-name {
+                font-size: 22px;
+            }
+            .product-name {
+                font-size: 15px;
+                font-weight: 500;
+            }
+            /* Cuotas mas legibles */
+            #installmentTitle { font-size: 14px; }
+            #installmentDetail { font-size: 13px; }
+
             .detail-container {
                 grid-template-columns: 1fr;
                 gap: 10px;
