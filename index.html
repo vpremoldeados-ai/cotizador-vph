@@ -2635,6 +2635,13 @@
                 if (gBox) gBox.style.display = (d0 === 'cercanas' || d0 === 'argentina') ? 'block' : 'none';
                 if (gLoc) gLoc.value = cart[0].localidad || '';
             }
+
+            // Resaltar selectores globales del carrito (ya definidos = verde, editables)
+            setupActionHighlights(['globalDestination', 'globalPaymentMethod']);
+            ['globalDestination', 'globalPaymentMethod'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.dataset.touched = '1'; refreshActionField(el); }
+            });
         }
 
         function updateGlobalCartOptions() {
