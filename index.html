@@ -1939,45 +1939,30 @@
                 }
             }
 
-            // Subtotal (precio real)
-            const subtotalWithoutDiscount = totalUnits * product.price;
+            // Subtotal con el precio unitario efectivo (descuento ya aplicado en LC60)
+            const unitPrice = getPriceWithDiscount(product.price, product.code);
+            const subtotalWithoutDiscount = totalUnits * unitPrice;
 
-            // Flete (no se descuenta). cotizar = a confirmar
-            const isQuote = (destination === 'cotizar');
+            // Flete (no se descuenta)
             const palletsCeilFreight = product.per_pallet ? Math.ceil(totalUnits / product.per_pallet) : 1;
             let freightCost = 0;
-            if (!isQuote && destination !== 'retiro') {
+            if (destination !== 'retiro') {
                 freightCost = destinations[destination].cost * palletsCeilFreight;
             }
 
-            const discount = (promotion.active && PROMO_CODES.includes(product.code)) ? Math.round(subtotalWithoutDiscount * 0.2) : 0;
-
-            const totalWithoutDiscount = subtotalWithoutDiscount + freightCost;
-            const totalWithDiscount = subtotalWithoutDiscount - discount + freightCost;
+            const totalWithDiscount = subtotalWithoutDiscount + freightCost;
 
             document.getElementById('priceProduct').textContent = `$${subtotalWithoutDiscount.toLocaleString()}`;
-            document.getElementById('priceFreight').textContent = isQuote ? 'A confirmar' : `$${freightCost.toLocaleString()}`;
+            document.getElementById('priceFreight').textContent = `$${freightCost.toLocaleString()}`;
 
-            const noDiscRow = document.getElementById('priceTotalWithoutDiscount');
-            if (discount > 0) {
-                noDiscRow.style.display = 'flex';
-                document.getElementById('priceTotalNoDiscount').textContent = `$${totalWithoutDiscount.toLocaleString()}`;
-            } else {
-                noDiscRow.style.display = 'none';
-            }
-
+            // Ya no se muestran "Total sin descuento" ni "Descuento" (el descuento va en el subtotal)
+            document.getElementById('priceTotalWithoutDiscount').style.display = 'none';
             document.getElementById('priceCutRow').style.display = 'none';
-
-            if (discount > 0) {
-                document.getElementById('priceSavingsRow').style.display = 'flex';
-                document.getElementById('priceSavings').textContent = `-$${discount.toLocaleString()}`;
-            } else {
-                document.getElementById('priceSavingsRow').style.display = 'none';
-            }
+            document.getElementById('priceSavingsRow').style.display = 'none';
 
             document.getElementById('priceTotal').textContent = `$${totalWithDiscount.toLocaleString()}`;
             const qn = document.getElementById('quoteNote');
-            if (qn) qn.style.display = isQuote ? 'block' : 'none';
+            if (qn) qn.style.display = 'none';
 
             document.getElementById('deliveryTime').textContent = destinations[destination].label;
 
@@ -2075,22 +2060,19 @@
                 totalUnits = Math.ceil(quantity) + quantityCut;
             }
 
-            // Subtotal SIN descuento (precio original)
-            const subtotal = totalUnits * product.price;
+            // Subtotal con precio unitario efectivo (descuento ya aplicado en LC60)
+            const unitPrice = getPriceWithDiscount(product.price, product.code);
+            const subtotal = totalUnits * unitPrice;
 
-            // Flete (no se descuenta). cotizar = a confirmar
-            const isQuote = (destination === 'cotizar');
+            // Flete (no se descuenta)
             const pallets = product.per_pallet ? Math.ceil(totalUnits / product.per_pallet) : 1;
             let freightCost = 0;
-            if (!isQuote && destination !== 'retiro') {
+            if (destination !== 'retiro') {
                 freightCost = destinations[destination].cost * pallets;
             }
 
-            // Descuento: solo Cribadas, solo sobre subtotal
-            const discount = (promotion.active && PROMO_CODES.includes(product.code)) ? Math.round(subtotal * 0.2) : 0;
-
-            // Total
-            const total = subtotal - discount + freightCost;
+            const discount = 0; // descuento ya incluido en el subtotal
+            const total = subtotal + freightCost;
 
             // Actualizar quantityLabel si hay corte
             if (isCut && product.type === 'm2') {
@@ -2111,7 +2093,7 @@
                 price: product.price,
                 subtotal: subtotal,
                 freight: freightCost,
-                quote: isQuote,
+                quote: false,
                 pallets: pallets,
                 discount: discount,
                 destination: destination,
