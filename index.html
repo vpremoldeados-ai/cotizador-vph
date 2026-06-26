@@ -1058,6 +1058,7 @@
                             <option value="resto-pais">Resto País $175.500 por pallet</option>
                         </select>
                         <div style="font-size: 11px; color: #999; margin-top: 3px;" id="deliveryTime"></div>
+                        <div id="cartLockNote" style="display:none; font-size:12px; color:#2563eb; margin-top:4px;">🔒 Mismo destino y forma de pago que tu carrito</div>
                         <div style="margin-top: 8px;">
                             <a href="https://wa.me/5493517605362?text=Hola,%20quisiera%20consultar%20sobre%20el%20envío%20de%20mi%20pedido" target="_blank" style="color: #3483fa; font-size: 13px; text-decoration: none; cursor: pointer;">
                                 Preguntar sobre el envío
@@ -1084,6 +1085,14 @@
 
                     <!-- Price Breakdown -->
                     <div class="price-breakdown">
+                        <div class="price-row" id="weightRow" style="display: none;">
+                            <span>Peso:</span>
+                            <span id="weightVal" style="color:#1a1a1a; font-weight:600;">0 kg</span>
+                        </div>
+                        <div class="price-row" id="palletsRow" style="display: none;">
+                            <span>Pallets:</span>
+                            <span id="palletsVal" style="color:#1a1a1a; font-weight:600;">0</span>
+                        </div>
                         <div class="price-row">
                             <span>Subtotal:</span>
                             <span id="priceProduct">$0</span>
@@ -1175,6 +1184,10 @@
                     <span>Total estimado:</span>
                     <span id="cartFinalTotal">$0</span>
                 </div>
+                <div class="cart-total-row" id="cartInstallmentRow" style="display:none; color:#2563eb; font-weight:600; margin-top:8px;">
+                    <span id="cartInstallmentTitle"></span>
+                    <span id="cartInstallmentValue"></span>
+                </div>
             </div>
 
             <div style="margin-bottom: 10px;">
@@ -1193,7 +1206,7 @@
             <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap;">
                 <button class="btn-whatsapp" onclick="sendToWhatsApp()">Enviar por WhatsApp 💬</button>
                 <button class="btn btn-primary" onclick="sendByEmail()" style="width: auto; padding: 10px 30px;">Enviar por Email</button>
-                <button class="btn btn-secondary" onclick="goToCategories()" style="width: auto; padding: 10px 30px;">Seguir comprando</button>
+                <button class="btn btn-secondary" onclick="goToCategories()" style="width: auto; padding: 10px 30px;">Agregar más productos</button>
             </div>
         </div>
     </div>
@@ -1707,6 +1720,22 @@
 
             document.getElementById('referencePrices').style.display = 'block';
 
+            // Si ya hay productos en el carrito, forzar y bloquear destino/forma
+            const destSel = document.getElementById('destination');
+            const paySel = document.getElementById('paymentMethod');
+            const lockNote = document.getElementById('cartLockNote');
+            if (cart.length > 0 && editingCartIndex === null) {
+                destSel.value = cart[0].destination;
+                paySel.value = cart[0].paymentMethod;
+                destSel.disabled = true;
+                paySel.disabled = true;
+                if (lockNote) lockNote.style.display = 'block';
+            } else {
+                destSel.disabled = false;
+                paySel.disabled = false;
+                if (lockNote) lockNote.style.display = 'none';
+            }
+
             // Actualizar precio
             updatePrice();
         }
@@ -1856,6 +1885,21 @@
                 totalUnits = Math.ceil(quantity) + quantityCut;
             }
 
+            // Peso y Pallets (Topes, Cordones y Listones)
+            const weightRow = document.getElementById('weightRow');
+            const palletsRow = document.getElementById('palletsRow');
+            if (weightRow && palletsRow) {
+                if ((product.type === 'units' || product.type === 'ml') && quantity > 0 && product.weight && product.per_pallet) {
+                    document.getElementById('weightVal').textContent = Math.round(totalUnits * product.weight).toLocaleString() + ' kg';
+                    document.getElementById('palletsVal').textContent = Math.ceil(totalUnits / product.per_pallet);
+                    weightRow.style.display = 'flex';
+                    palletsRow.style.display = 'flex';
+                } else {
+                    weightRow.style.display = 'none';
+                    palletsRow.style.display = 'none';
+                }
+            }
+
             // Subtotal SIN descuento (precio original)
             const subtotalWithoutDiscount = totalUnits * product.price;
 
@@ -1948,8 +1992,13 @@
                 return false;
             }
 
-            const destination = document.getElementById('destination').value;
-            const paymentMethod = document.getElementById('paymentMethod').value;
+            let destination = document.getElementById('destination').value;
+            let paymentMethod = document.getElementById('paymentMethod').value;
+            // Forzar mismo destino/forma de pago que el carrito existente
+            if (cart.length > 0 && editingCartIndex === null) {
+                destination = cart[0].destination;
+                paymentMethod = cart[0].paymentMethod;
+            }
 
             // Determinar si aplica corte (5% cantidad adicional)
             const isCut = ['Losetas Cribadas', 'Losetas Green', 'Cordones y Listones'].includes(currentProduct.category);
@@ -2100,6 +2149,22 @@
             }
 
             document.getElementById('cartFinalTotal').textContent = `$${totalFinal.toLocaleString()}`;
+
+            // Cuotas en el total (todos los productos comparten forma de pago)
+            const pm = cart[0].paymentMethod;
+            const instRow = document.getElementById('cartInstallmentRow');
+            let nCuotas = 0;
+            if (pm === 'tarjeta-macro') nCuotas = 12;
+            else if (pm === 'otros-3') nCuotas = 3;
+            else if (pm === 'otros-6') nCuotas = 6;
+            if (nCuotas > 0) {
+                const cuota = Math.round(totalFinal / nCuotas);
+                document.getElementById('cartInstallmentTitle').textContent = `${nCuotas} cuotas sin interés:`;
+                document.getElementById('cartInstallmentValue').textContent = `$${cuota.toLocaleString()} c/u`;
+                instRow.style.display = 'flex';
+            } else {
+                instRow.style.display = 'none';
+            }
         }
 
         function removeCartItem(idx) {
