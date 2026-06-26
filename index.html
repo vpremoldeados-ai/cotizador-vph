@@ -322,7 +322,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 5px;
-            font-size: 11px;
+            font-size: 13px;
         }
 
         .ref-price-item:last-child {
@@ -343,9 +343,9 @@
         }
 
         .discounted-price {
-            font-size: 19px;
-            font-weight: 700;
-            color: #3483fa;
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a1a1a;
         }
 
         /* ========== PANTALLA 3: DETALLE ========== */
@@ -473,28 +473,31 @@
 
         /* Center: Info */
         .detail-info {
-            padding: 15px;
+            padding: 12px;
             overflow-y: auto;
         }
 
         .detail-name {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 10px;
+            color: #333;
+            margin-bottom: 8px;
         }
 
         .detail-code {
-            font-size: 14px;
+            font-size: 13px;
             color: #999;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .detail-specs {
             background: #f5f5f5;
             border-radius: 4px;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-size: 14px;
+            color: #333;
+            line-height: 1.5;
         }
 
         .detail-spec {
@@ -520,9 +523,10 @@
         }
 
         .form-label {
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 3px;
+            color: #333;
+            margin-bottom: 4px;
             display: block;
         }
 
@@ -572,16 +576,21 @@
         .price-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
+            color: #333;
         }
+
+        .price-row span:first-child { color: #666; }
 
         .price-row.total {
             border-top: 1px solid #ddd;
-            padding-top: 4px;
-            margin-top: 4px;
+            padding-top: 6px;
+            margin-top: 6px;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 17px;
         }
+
+        .price-row.total span { color: #1a1a1a; }
 
         .price-row.savings-small {
             font-size: 11px;
