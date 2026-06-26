@@ -1057,13 +1057,14 @@
                     <div class="form-group">
                         <label class="form-label">Destino de entrega</label>
                         <select id="destination" class="form-control" onchange="updatePrice()">
-                            <option value="retiro">Retiro en fábrica (Gratis)</option>
-                            <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
-                            <option value="cercanas">Localidades cercanas ≤30km ($39.000 por pallet)</option>
-                            <option value="brio">Interior por Transporte Brío ($140.000 por pallet)</option>
-                            <option value="cotizar">Otro destino (a cotizar)</option>
+                            <option value="retiro">Retiro en fábrica (Córdoba Cap.)</option>
+                            <option value="cercanas">Hasta 30 Km Av. Circunvalación Córdoba Cap. ($39.000 por pallet)</option>
+                            <option value="argentina">A todo Argentina ($140.000 por pallet · posible variación)</option>
                         </select>
-                        <div style="font-size:11px; color:#999; margin-top:3px;">Brío: +500 destinos (Bs.As., CABA, Santa Fe, Entre Ríos, Mendoza, San Juan, San Luis, interior de Córdoba…)</div>
+                        <div id="localidadBox" style="display:none; margin-top:6px;">
+                            <input id="localidad" type="text" placeholder="¿En qué localidad?" oninput="updatePrice()" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:14px;">
+                            <div id="localidadNote" style="font-size:12px; color:#2563eb; margin-top:4px;"></div>
+                        </div>
                         <div style="font-size: 11px; color: #999; margin-top: 3px;" id="deliveryTime"></div>
                         <div id="cartLockNote" style="display:none; font-size:12px; color:#2563eb; margin-top:4px;">🔒 Mismo destino y forma de pago que tu carrito</div>
                         <div style="margin-top: 8px;">
@@ -1154,12 +1155,14 @@
                 <div>
                     <label class="form-label">Destino de entrega (para todos)</label>
                     <select id="globalDestination" class="form-control" onchange="updateGlobalCartOptions()">
-                        <option value="retiro">Retiro en fábrica (Gratis)</option>
-                        <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
-                        <option value="cercanas">Localidades cercanas ≤30km ($39.000 por pallet)</option>
-                        <option value="brio">Interior por Transporte Brío ($140.000 por pallet)</option>
-                        <option value="cotizar">Otro destino (a cotizar)</option>
+                        <option value="retiro">Retiro en fábrica (Córdoba Cap.)</option>
+                        <option value="cercanas">Hasta 30 Km Av. Circunvalación Córdoba Cap. ($39.000 por pallet)</option>
+                        <option value="argentina">A todo Argentina ($140.000 por pallet · posible variación)</option>
                     </select>
+                    <div id="globalLocalidadBox" style="display:none; margin-top:6px;">
+                        <input id="globalLocalidad" type="text" placeholder="¿En qué localidad?" oninput="updateGlobalCartOptions()" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:14px;">
+                        <div style="font-size:12px; color:#2563eb; margin-top:4px;">Sujeto a verificar la entrega en esa localidad — te lo confirmamos por WhatsApp.</div>
+                    </div>
                 </div>
                 <div>
                     <label class="form-label">Forma de pago (para todos)</label>
@@ -1462,18 +1465,14 @@
 
         // ========== ENVÍOS ==========
         const destinations = {
-            retiro:   { cost: 0,      label: "Coordinás el retiro en fábrica" },
-            capital:  { cost: 28000,  label: "Entrega en 5-10 días hábiles" },
-            cercanas: { cost: 39000,  label: "Entrega en 5-10 días hábiles" },
-            brio:     { cost: 140000, label: "Entrega 10-15 días hábiles (Transporte Brío)" },
-            cotizar:  { cost: null,   label: "Flete a cotizar — te lo confirmamos por WhatsApp" }
+            retiro:    { cost: 0,      label: "Coordinás el retiro en fábrica (Córdoba Cap.)" },
+            cercanas:  { cost: 39000,  label: "Entrega en 5-10 días hábiles" },
+            argentina: { cost: 140000, label: "Entrega 10-15 días hábiles (posible variación)" }
         };
         const destLabels = {
-            retiro: "Retiro en fábrica",
-            capital: "Córdoba Capital",
-            cercanas: "Localidades cercanas (≤30km)",
-            brio: "Interior (Transporte Brío)",
-            cotizar: "Otro destino (a cotizar)"
+            retiro: "Retiro en fábrica (Córdoba Cap.)",
+            cercanas: "Hasta 30 Km Circunvalación (Córdoba Cap.)",
+            argentina: "A todo Argentina"
         };
         const MAS_VENDIDA_CODE = "LC60";
         const PROMO_CODES = ["LC60"]; // descuento 20% solo en estos productos
@@ -1769,15 +1768,18 @@
             const destSel = document.getElementById('destination');
             const paySel = document.getElementById('paymentMethod');
             const lockNote = document.getElementById('cartLockNote');
+            const locInput = document.getElementById('localidad');
             if (cart.length > 0 && editingCartIndex === null) {
                 destSel.value = cart[0].destination;
                 paySel.value = cart[0].paymentMethod;
                 destSel.disabled = true;
                 paySel.disabled = true;
+                if (locInput) { locInput.value = cart[0].localidad || ''; locInput.disabled = true; }
                 if (lockNote) lockNote.style.display = 'block';
             } else {
                 destSel.disabled = false;
                 paySel.disabled = false;
+                if (locInput) locInput.disabled = false;
                 if (lockNote) lockNote.style.display = 'none';
             }
 
@@ -1987,6 +1989,19 @@
 
             document.getElementById('deliveryTime').textContent = destinations[destination].label;
 
+            // Caja de localidad + nota de verificación
+            const localidadBox = document.getElementById('localidadBox');
+            if (localidadBox) {
+                if (destination === 'cercanas' || destination === 'argentina') {
+                    localidadBox.style.display = 'block';
+                    document.getElementById('localidadNote').textContent = (destination === 'argentina')
+                        ? 'Sujeto a verificar la entrega en esa localidad. El flete puede variar según el destino — te lo confirmamos por WhatsApp.'
+                        : 'Sujeto a verificar que podemos entregar en esa localidad — te lo confirmamos por WhatsApp.';
+                } else {
+                    localidadBox.style.display = 'none';
+                }
+            }
+
             // Cuotas
             if (paymentMethod === 'tarjeta-macro') {
                 const cuota = Math.round(totalWithDiscount / 12);
@@ -2039,10 +2054,12 @@
 
             let destination = document.getElementById('destination').value;
             let paymentMethod = document.getElementById('paymentMethod').value;
-            // Forzar mismo destino/forma de pago que el carrito existente
+            let localidad = ((document.getElementById('localidad') && document.getElementById('localidad').value) || '').trim();
+            // Forzar mismo destino/forma/localidad que el carrito existente
             if (cart.length > 0 && editingCartIndex === null) {
                 destination = cart[0].destination;
                 paymentMethod = cart[0].paymentMethod;
+                localidad = cart[0].localidad || '';
             }
 
             // Determinar si aplica corte (5% cantidad adicional)
@@ -2106,6 +2123,7 @@
                 pallets: pallets,
                 discount: discount,
                 destination: destination,
+                localidad: localidad,
                 isCut: isCut,
                 total: total,
                 paymentMethod: paymentMethod
@@ -2152,7 +2170,7 @@
 
                 // Calcular información de cuotas
                 if (item.quote) anyQuote = true;
-                let paymentInfo = `Destino: ${destLabels[item.destination] || item.destination}${item.quote ? ' (flete a cotizar)' : ''} | Forma de pago: ${item.paymentMethod}`;
+                let paymentInfo = `Destino: ${destLabels[item.destination] || item.destination}${item.localidad ? ' - ' + item.localidad : ''} | Forma de pago: ${item.paymentMethod}`;
                 let cuotasInfo = '';
 
                 if (item.paymentMethod === 'tarjeta-macro') {
@@ -2249,9 +2267,10 @@
                             document.getElementById('qty-ml').value = mlValue;
                         }
 
-                        // Restaurar destino y forma de pago
-                        document.getElementById('deliveryDest').value = item.destination;
+                        // Restaurar destino, forma de pago y localidad
+                        document.getElementById('destination').value = item.destination;
                         document.getElementById('paymentMethod').value = item.paymentMethod;
+                        if (document.getElementById('localidad')) document.getElementById('localidad').value = item.localidad || '';
 
                         // Actualizar precio
                         updatePrice();
@@ -2275,7 +2294,7 @@
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. *${item.name}*\n`;
                 message += `   Cantidad: ${item.quantityLabel}\n`;
-                message += `   Destino: ${destLabels[item.destination] || item.destination}\n`;
+                message += `   Destino: ${destLabels[item.destination] || item.destination}${item.localidad ? ' - ' + item.localidad : ''}\n`;
                 message += `   Subtotal: $${item.subtotal.toLocaleString()}\n`;
                 if (item.quote) message += `   Flete: a cotizar\n`;
                 else if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
@@ -2340,7 +2359,7 @@
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. ${item.name}\n`;
                 message += `   Cantidad: ${item.quantityLabel}\n`;
-                message += `   Destino: ${destLabels[item.destination] || item.destination}\n`;
+                message += `   Destino: ${destLabels[item.destination] || item.destination}${item.localidad ? ' - ' + item.localidad : ''}\n`;
                 message += `   Subtotal: $${item.subtotal.toLocaleString()}\n`;
                 if (item.quote) message += `   Flete: a cotizar\n`;
                 else if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
@@ -2480,6 +2499,11 @@
             if (cart.length > 0) {
                 document.getElementById('globalDestination').value = cart[0].destination;
                 document.getElementById('globalPaymentMethod').value = cart[0].paymentMethod;
+                const d0 = cart[0].destination;
+                const gBox = document.getElementById('globalLocalidadBox');
+                const gLoc = document.getElementById('globalLocalidad');
+                if (gBox) gBox.style.display = (d0 === 'cercanas' || d0 === 'argentina') ? 'block' : 'none';
+                if (gLoc) gLoc.value = cart[0].localidad || '';
             }
         }
 
@@ -2487,12 +2511,14 @@
             const destination = document.getElementById('globalDestination').value;
             const paymentMethod = document.getElementById('globalPaymentMethod').value;
 
-            const isQuote = (destination === 'cotizar');
+            const localidad = ((document.getElementById('globalLocalidad') && document.getElementById('globalLocalidad').value) || '').trim();
+            const gBox = document.getElementById('globalLocalidadBox');
+            if (gBox) gBox.style.display = (destination === 'cercanas' || destination === 'argentina') ? 'block' : 'none';
             cart.forEach(item => {
                 item.destination = destination;
                 item.paymentMethod = paymentMethod;
-                item.quote = isQuote;
-                item.freight = (isQuote || destination === 'retiro') ? 0 : destinations[destination].cost * (item.pallets || 1);
+                item.localidad = localidad;
+                item.freight = (destination === 'retiro') ? 0 : destinations[destination].cost * (item.pallets || 1);
                 item.total = item.subtotal - (item.discount || 0) + item.freight;
             });
 
