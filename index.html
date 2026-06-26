@@ -952,6 +952,25 @@
                 padding: 10px 16px;
                 font-size: 13px;
             }
+
+            /* Miniaturas de categoria: que entren a lo ancho sin scroll horizontal */
+            .carousel-preview {
+                flex-wrap: wrap;
+                overflow-x: hidden;
+                gap: 6px;
+            }
+            .carousel-item {
+                width: auto;
+                height: auto;
+                aspect-ratio: 1 / 1;
+            }
+            .carousel-preview.count-2 .carousel-item,
+            .carousel-preview.count-4 .carousel-item {
+                flex: 0 0 calc(50% - 3px);
+            }
+            .carousel-preview.count-3 .carousel-item {
+                flex: 0 0 calc(33.333% - 4px);
+            }
         }
         .trust-strip {
             display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center;
@@ -1490,7 +1509,7 @@
 
                 card.innerHTML = `
                     <div class="category-name">${categoryName}</div>
-                    <div class="carousel-preview">${productsImages}</div>
+                    <div class="carousel-preview count-${data.products.length}">${productsImages}</div>
                     <div class="category-desc">${data.description}</div>
                 `;
 
