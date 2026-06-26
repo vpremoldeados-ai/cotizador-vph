@@ -972,6 +972,10 @@
         }
         .screen-header { display: none !important; }
         .detail-name { display: none !important; }
+        .badge-bestseller {
+            display:inline-block; background:#fff3cd; color:#8a6d00; border:1px solid #ffe08a;
+            font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; margin-bottom:6px;
+        }
     </style>
 </head>
 <body>
@@ -1018,13 +1022,14 @@
                 <div class="detail-info">
                     <div class="detail-name" id="detailName"></div>
                     <div class="detail-code" id="detailCode"></div>
+                    <div id="detailBadge" class="badge-bestseller" style="display:none;">⭐ Más vendida</div>
 
                     <!-- Reference Prices -->
                     <div id="referencePrices" class="reference-prices" style="display: none; margin-top: 8px;">
                         <div class="ref-price-item">
                             <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
-                                <div style="font-size: 13px; font-weight: 700; color: #999;">Precio Normal</div>
-                                <div style="font-size: 13px; font-weight: 700; color: #2563eb;">Precio con 20% de descuento</div>
+                                <div id="refNormalLabel" style="font-size: 13px; font-weight: 700; color: #999;">Precio Normal</div>
+                                <div id="refDiscLabel" style="font-size: 13px; font-weight: 700; color: #2563eb;">Precio con 20% de descuento</div>
                             </div>
                             <div style="text-align: right;">
                                 <div class="original-price" id="refPriceOriginal"></div>
@@ -1033,8 +1038,8 @@
                         </div>
                         <div class="ref-price-item" id="refPricePerM2Container" style="display: none;">
                             <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
-                                <div style="font-size: 13px; font-weight: 700; color: #999;">Precio Normal</div>
-                                <div style="font-size: 13px; font-weight: 700; color: #2563eb;">Precio con 20% de descuento</div>
+                                <div id="refNormalLabelM2" style="font-size: 13px; font-weight: 700; color: #999;">Precio Normal</div>
+                                <div id="refDiscLabelM2" style="font-size: 13px; font-weight: 700; color: #2563eb;">Precio con 20% de descuento</div>
                             </div>
                             <div style="text-align: right;">
                                 <div class="original-price" id="refPriceM2Original"></div>
@@ -1053,10 +1058,12 @@
                         <label class="form-label">Destino de entrega</label>
                         <select id="destination" class="form-control" onchange="updatePrice()">
                             <option value="retiro">Retiro en fábrica (Gratis)</option>
-                            <option value="cordoba">Ciudad de Córdoba $35.000 por pallet</option>
-                            <option value="gran-cordoba">Gran Córdoba $49.000 por pallet</option>
-                            <option value="resto-pais">Resto País $175.500 por pallet</option>
+                            <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
+                            <option value="cercanas">Localidades cercanas ≤30km ($39.000 por pallet)</option>
+                            <option value="brio">Interior por Transporte Brío ($140.000 por pallet)</option>
+                            <option value="cotizar">Otro destino (a cotizar)</option>
                         </select>
+                        <div style="font-size:11px; color:#999; margin-top:3px;">Brío: +500 destinos (Bs.As., CABA, Santa Fe, Entre Ríos, Mendoza, San Juan, San Luis, interior de Córdoba…)</div>
                         <div style="font-size: 11px; color: #999; margin-top: 3px;" id="deliveryTime"></div>
                         <div id="cartLockNote" style="display:none; font-size:12px; color:#2563eb; margin-top:4px;">🔒 Mismo destino y forma de pago que tu carrito</div>
                         <div style="margin-top: 8px;">
@@ -1117,6 +1124,7 @@
                             <span>Total estimado:</span>
                             <span id="priceTotal">$0</span>
                         </div>
+                        <div id="quoteNote" style="display:none; font-size:12px; color:#2563eb; margin-top:6px;">+ Flete a cotizar — te lo confirmamos por WhatsApp</div>
                         <div style="background: #f0f8ff; border-left: 3px solid #2563eb; padding: 10px; margin-top: 12px; border-radius: 4px; display: none;" id="installmentContainer">
                             <div style="font-size: 13px; font-weight: 600; color: #2563eb; margin-bottom: 8px;" id="installmentTitle"></div>
                             <div style="font-size: 12px; color: #333;" id="installmentDetail"></div>
@@ -1147,9 +1155,10 @@
                     <label class="form-label">Destino de entrega (para todos)</label>
                     <select id="globalDestination" class="form-control" onchange="updateGlobalCartOptions()">
                         <option value="retiro">Retiro en fábrica (Gratis)</option>
-                        <option value="cordoba">Ciudad de Córdoba $35.000 por pallet</option>
-                        <option value="gran-cordoba">Gran Córdoba $49.000 por pallet</option>
-                        <option value="resto-pais">Resto País $175.500 por pallet</option>
+                        <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
+                        <option value="cercanas">Localidades cercanas ≤30km ($39.000 por pallet)</option>
+                        <option value="brio">Interior por Transporte Brío ($140.000 por pallet)</option>
+                        <option value="cotizar">Otro destino (a cotizar)</option>
                     </select>
                 </div>
                 <div>
@@ -1392,8 +1401,8 @@
             description: "20% de descuento hasta fin de año"
         };
 
-        function getPriceWithDiscount(originalPrice) {
-            if (!promotion.active) return originalPrice;
+        function getPriceWithDiscount(originalPrice, category) {
+            if (!promotion.active || category !== 'Losetas Cribadas') return originalPrice;
             return Math.round(originalPrice * (1 - promotion.discount));
         }
 
@@ -1453,11 +1462,20 @@
 
         // ========== ENVÍOS ==========
         const destinations = {
-            retiro: { cost: 0, days: "Coordinar" },
-            cordoba: { cost: 35000, days: "5-10 días" },
-            "gran-cordoba": { cost: 49000, days: "5-10 días" },
-            "resto-pais": { cost: 175500, days: "10-15 días" }
+            retiro:   { cost: 0,      label: "Coordinás el retiro en fábrica" },
+            capital:  { cost: 28000,  label: "Entrega en 5-10 días hábiles" },
+            cercanas: { cost: 39000,  label: "Entrega en 5-10 días hábiles" },
+            brio:     { cost: 140000, label: "Entrega 10-15 días hábiles (Transporte Brío)" },
+            cotizar:  { cost: null,   label: "Flete a cotizar — te lo confirmamos por WhatsApp" }
         };
+        const destLabels = {
+            retiro: "Retiro en fábrica",
+            capital: "Córdoba Capital",
+            cercanas: "Localidades cercanas (≤30km)",
+            brio: "Interior (Transporte Brío)",
+            cotizar: "Otro destino (a cotizar)"
+        };
+        const MAS_VENDIDA_CODE = "LC60";
 
         // ========== INICIALIZAR PANTALLA 1 ==========
         function initCategories() {
@@ -1574,7 +1592,7 @@
                 card.className = 'product-card';
                 card.onclick = () => selectProduct(currentCategory, idx);
 
-                const priceWithDiscount = getPriceWithDiscount(product.price);
+                const priceWithDiscount = getPriceWithDiscount(product.price, currentCategory);
                 const pricePerM2Discounted = product.per_m2 ? (priceWithDiscount * product.per_m2) : null;
 
                 // Especificaciones
@@ -1582,12 +1600,13 @@
                 const specsHtml = specsWithPallet.map(s => `<div style="font-size: 14px; color: #666; margin: 3px 0;">• ${s}</div>`).join('');
 
                 let priceHtml = `<div class="product-price">$${priceWithDiscount.toLocaleString()}</div>`;
-                if (promotion.active) {
+                if (promotion.active && currentCategory === 'Losetas Cribadas') {
                     priceHtml = `
                         <div style="font-size: 13px; color: #999; text-decoration: line-through; margin: 3px 0;">$${product.price.toLocaleString()}</div>
                         <div class="product-price" style="margin: 3px 0;">$${priceWithDiscount.toLocaleString()} <span style="font-size: 12px; color: #00a650; font-weight: 700;">20% OFF</span></div>
                     `;
                 }
+                const badgeHtml = (product.code === MAS_VENDIDA_CODE) ? '<div class="badge-bestseller">⭐ Más vendida</div>' : '';
 
 
                 card.innerHTML = `
@@ -1595,6 +1614,7 @@
                         <img src="${product.image}" alt="${product.name}">
                     </div>
                     <div class="product-info">
+                        ${badgeHtml}
                         <div class="product-name">${product.name}</div>
                         <div>
                             ${priceHtml}
@@ -1702,23 +1722,47 @@
             // Inputs de cantidad
             renderQuantityInputs(product);
 
-            // Mostrar precios de referencia
-            const priceWithDiscount = getPriceWithDiscount(product.price);
-            document.getElementById('refPriceOriginal').textContent = `$${product.price.toLocaleString()}`;
-            document.getElementById('refPriceDiscounted').textContent = `$${priceWithDiscount.toLocaleString()}`;
+            // Precios de referencia (descuento solo en Cribadas)
+            const isDisc = promotion.active && currentProduct.category === 'Losetas Cribadas';
+            const priceWithDiscount = getPriceWithDiscount(product.price, currentProduct.category);
+            const refPriceOriginalEl = document.getElementById('refPriceOriginal');
+            if (isDisc) {
+                document.getElementById('refNormalLabel').style.display = 'block';
+                document.getElementById('refDiscLabel').textContent = 'Precio con 20% de descuento';
+                refPriceOriginalEl.style.display = 'block';
+                refPriceOriginalEl.textContent = `$${product.price.toLocaleString()}`;
+                document.getElementById('refPriceDiscounted').textContent = `$${priceWithDiscount.toLocaleString()}`;
+            } else {
+                document.getElementById('refNormalLabel').style.display = 'none';
+                document.getElementById('refDiscLabel').textContent = 'Precio';
+                refPriceOriginalEl.style.display = 'none';
+                document.getElementById('refPriceDiscounted').textContent = `$${product.price.toLocaleString()}`;
+            }
 
             const refPriceM2Container = document.getElementById('refPricePerM2Container');
             if (product.per_m2) {
                 refPriceM2Container.style.display = 'flex';
                 const priceM2Original = product.price * product.per_m2;
                 const priceM2Discounted = priceWithDiscount * product.per_m2;
-                document.getElementById('refPriceM2Original').textContent = `$${priceM2Original.toLocaleString()}`;
-                document.getElementById('refPriceM2Discounted').textContent = `$${priceM2Discounted.toLocaleString()}`;
+                const refPriceM2OriginalEl = document.getElementById('refPriceM2Original');
+                if (isDisc) {
+                    document.getElementById('refNormalLabelM2').style.display = 'block';
+                    document.getElementById('refDiscLabelM2').textContent = 'Precio con 20% de descuento';
+                    refPriceM2OriginalEl.style.display = 'block';
+                    refPriceM2OriginalEl.textContent = `$${priceM2Original.toLocaleString()}`;
+                    document.getElementById('refPriceM2Discounted').textContent = `$${priceM2Discounted.toLocaleString()}`;
+                } else {
+                    document.getElementById('refNormalLabelM2').style.display = 'none';
+                    document.getElementById('refDiscLabelM2').textContent = 'Precio por m²';
+                    refPriceM2OriginalEl.style.display = 'none';
+                    document.getElementById('refPriceM2Discounted').textContent = `$${priceM2Original.toLocaleString()}`;
+                }
             } else {
                 refPriceM2Container.style.display = 'none';
             }
 
             document.getElementById('referencePrices').style.display = 'block';
+            document.getElementById('detailBadge').style.display = (product.code === MAS_VENDIDA_CODE) ? 'inline-block' : 'none';
 
             // Si ya hay productos en el carrito, forzar y bloquear destino/forma
             const destSel = document.getElementById('destination');
@@ -1900,37 +1944,36 @@
                 }
             }
 
-            // Subtotal SIN descuento (precio original)
+            // Subtotal (precio real)
             const subtotalWithoutDiscount = totalUnits * product.price;
 
-            // Flete (sin descuento)
+            // Flete (no se descuenta). cotizar = a confirmar
+            const isQuote = (destination === 'cotizar');
+            const palletsCeilFreight = product.per_pallet ? Math.ceil(totalUnits / product.per_pallet) : 1;
             let freightCost = 0;
-            if (destination !== 'retiro' && product.per_pallet) {
-                const palletsCeil = Math.ceil(totalUnits / product.per_pallet);
-                freightCost = destinations[destination].cost * palletsCeil;
-            } else {
-                freightCost = destinations[destination].cost;
+            if (!isQuote && destination !== 'retiro') {
+                freightCost = destinations[destination].cost * palletsCeilFreight;
             }
 
-            // Total sin descuento
+            const discount = (promotion.active && currentProduct.category === 'Losetas Cribadas') ? Math.round(subtotalWithoutDiscount * 0.2) : 0;
+
             const totalWithoutDiscount = subtotalWithoutDiscount + freightCost;
+            const totalWithDiscount = subtotalWithoutDiscount - discount + freightCost;
 
-            // Calcular descuento (20% del total sin descuento, incluyendo flete)
-            const discount = promotion.active ? Math.round(totalWithoutDiscount * 0.2) : 0;
-
-            // Total con descuento
-            const totalWithDiscount = totalWithoutDiscount - discount;
-
-            // Mostrar componentes
             document.getElementById('priceProduct').textContent = `$${subtotalWithoutDiscount.toLocaleString()}`;
-            document.getElementById('priceFreight').textContent = `$${freightCost.toLocaleString()}`;
-            document.getElementById('priceTotalNoDiscount').textContent = `$${totalWithoutDiscount.toLocaleString()}`;
+            document.getElementById('priceFreight').textContent = isQuote ? 'A confirmar' : `$${freightCost.toLocaleString()}`;
 
-            // Línea de corte siempre oculta en desglose de precios
+            const noDiscRow = document.getElementById('priceTotalWithoutDiscount');
+            if (discount > 0) {
+                noDiscRow.style.display = 'flex';
+                document.getElementById('priceTotalNoDiscount').textContent = `$${totalWithoutDiscount.toLocaleString()}`;
+            } else {
+                noDiscRow.style.display = 'none';
+            }
+
             document.getElementById('priceCutRow').style.display = 'none';
 
-            // Mostrar descuento si hay promoción activa
-            if (promotion.active && discount > 0) {
+            if (discount > 0) {
                 document.getElementById('priceSavingsRow').style.display = 'flex';
                 document.getElementById('priceSavings').textContent = `-$${discount.toLocaleString()}`;
             } else {
@@ -1938,9 +1981,10 @@
             }
 
             document.getElementById('priceTotal').textContent = `$${totalWithDiscount.toLocaleString()}`;
+            const qn = document.getElementById('quoteNote');
+            if (qn) qn.style.display = isQuote ? 'block' : 'none';
 
-            // Tiempo de entrega
-            document.getElementById('deliveryTime').textContent = destinations[destination].days + ' días hábiles';
+            document.getElementById('deliveryTime').textContent = destinations[destination].label;
 
             // Cuotas
             if (paymentMethod === 'tarjeta-macro') {
@@ -2024,21 +2068,19 @@
             // Subtotal SIN descuento (precio original)
             const subtotal = totalUnits * product.price;
 
-            // Flete (costo unitario por pallet × cantidad de pallets)
+            // Flete (no se descuenta). cotizar = a confirmar
+            const isQuote = (destination === 'cotizar');
+            const pallets = product.per_pallet ? Math.ceil(totalUnits / product.per_pallet) : 1;
             let freightCost = 0;
-            if (destination !== 'retiro' && product.per_pallet) {
-                const palletsCeil = Math.ceil(totalUnits / product.per_pallet);
-                freightCost = destinations[destination].cost * palletsCeil;
-            } else {
-                freightCost = destinations[destination].cost;
+            if (!isQuote && destination !== 'retiro') {
+                freightCost = destinations[destination].cost * pallets;
             }
 
-            // Descuento (20% del total, incluyendo flete)
-            const totalBeforeDiscount = subtotal + freightCost;
-            const discount = promotion.active ? Math.round(totalBeforeDiscount * 0.2) : 0;
+            // Descuento: solo Cribadas, solo sobre subtotal
+            const discount = (promotion.active && currentProduct.category === 'Losetas Cribadas') ? Math.round(subtotal * 0.2) : 0;
 
-            // Total con descuento
-            const total = totalBeforeDiscount - discount;
+            // Total
+            const total = subtotal - discount + freightCost;
 
             // Actualizar quantityLabel si hay corte
             if (isCut && product.type === 'm2') {
@@ -2059,6 +2101,8 @@
                 price: product.price,
                 subtotal: subtotal,
                 freight: freightCost,
+                quote: isQuote,
+                pallets: pallets,
                 discount: discount,
                 destination: destination,
                 isCut: isCut,
@@ -2097,7 +2141,7 @@
             }
 
             let html = '';
-            let totalSubtotal = 0, totalFreight = 0, totalDiscount = 0, totalFinal = 0;
+            let totalSubtotal = 0, totalFreight = 0, totalDiscount = 0, totalFinal = 0, anyQuote = false;
 
             cart.forEach((item, idx) => {
                 totalSubtotal += item.subtotal;
@@ -2106,7 +2150,8 @@
                 totalFinal += item.total;
 
                 // Calcular información de cuotas
-                let paymentInfo = `Destino: ${item.destination} | Forma de pago: ${item.paymentMethod}`;
+                if (item.quote) anyQuote = true;
+                let paymentInfo = `Destino: ${destLabels[item.destination] || item.destination}${item.quote ? ' (flete a cotizar)' : ''} | Forma de pago: ${item.paymentMethod}`;
                 let cuotasInfo = '';
 
                 if (item.paymentMethod === 'tarjeta-macro') {
@@ -2139,7 +2184,7 @@
 
             container.innerHTML = html;
             document.getElementById('cartSubtotal').textContent = `$${totalSubtotal.toLocaleString()}`;
-            document.getElementById('cartFreight').textContent = `$${totalFreight.toLocaleString()}`;
+            document.getElementById('cartFreight').textContent = anyQuote ? 'A confirmar' : `$${totalFreight.toLocaleString()}`;
 
             if (promotion.active && totalDiscount > 0) {
                 document.getElementById('cartDiscountRow').style.display = 'flex';
@@ -2229,8 +2274,10 @@
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. *${item.name}*\n`;
                 message += `   Cantidad: ${item.quantityLabel}\n`;
+                message += `   Destino: ${destLabels[item.destination] || item.destination}\n`;
                 message += `   Subtotal: $${item.subtotal.toLocaleString()}\n`;
-                if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
+                if (item.quote) message += `   Flete: a cotizar\n`;
+                else if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
                 if (item.discount > 0) message += `   Descuento (20%): -$${item.discount.toLocaleString()}\n`;
                 if (item.cut > 0) message += `   Corte (5%): $${item.cut.toLocaleString()}\n`;
                 message += `   *Total: $${item.total.toLocaleString()}*\n\n`;
@@ -2292,8 +2339,10 @@
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. ${item.name}\n`;
                 message += `   Cantidad: ${item.quantityLabel}\n`;
+                message += `   Destino: ${destLabels[item.destination] || item.destination}\n`;
                 message += `   Subtotal: $${item.subtotal.toLocaleString()}\n`;
-                if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
+                if (item.quote) message += `   Flete: a cotizar\n`;
+                else if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
                 if (item.discount > 0) message += `   Descuento (20%): -$${item.discount.toLocaleString()}\n`;
                 if (item.cut > 0) message += `   Corte (5%): $${item.cut.toLocaleString()}\n`;
                 message += `   Total: $${item.total.toLocaleString()}\n\n`;
@@ -2437,22 +2486,13 @@
             const destination = document.getElementById('globalDestination').value;
             const paymentMethod = document.getElementById('globalPaymentMethod').value;
 
-            // Actualizar todos los productos del carrito
+            const isQuote = (destination === 'cotizar');
             cart.forEach(item => {
                 item.destination = destination;
                 item.paymentMethod = paymentMethod;
-
-                // Recalcular flete basado en destino
-                const freightMap = {
-                    'retiro': 0,
-                    'cordoba': 35000,
-                    'gran-cordoba': 49000,
-                    'resto-pais': 175500
-                };
-                item.freight = freightMap[destination];
-
-                // Recalcular total
-                item.total = item.subtotal + item.freight - (item.discount || 0);
+                item.quote = isQuote;
+                item.freight = (isQuote || destination === 'retiro') ? 0 : destinations[destination].cost * (item.pallets || 1);
+                item.total = item.subtotal - (item.discount || 0) + item.freight;
             });
 
             // Re-renderizar el carrito
