@@ -1741,7 +1741,7 @@
                         <div class="product-name">${product.name}</div>
                         <div>
                             ${priceHtml}
-                            ${pricePerM2Discounted ? `<div class="product-per-m2">📐 $${pricePerM2Discounted.toLocaleString()} /m² <span style="font-weight:600; font-size:11px;">· para comparar</span></div>` : ''}
+                            ${pricePerM2Discounted ? `<div class="product-per-m2">📐 $${Math.round(pricePerM2Discounted).toLocaleString()} /m² <span style="font-weight:600; font-size:11px;">· para comparar</span></div>` : ''}
                         </div>
                         <div style="font-size: 14px; color: #666; margin-top: 8px;">
                             ${specsHtml}
@@ -1875,13 +1875,13 @@
                     document.getElementById('refNormalLabelM2').style.display = 'block';
                     document.getElementById('refDiscLabelM2').textContent = 'Precio con 20% de descuento';
                     refPriceM2OriginalEl.style.display = 'block';
-                    refPriceM2OriginalEl.textContent = `$${priceM2Original.toLocaleString()}`;
-                    document.getElementById('refPriceM2Discounted').textContent = `$${priceM2Discounted.toLocaleString()}`;
+                    refPriceM2OriginalEl.textContent = `$${Math.round(priceM2Original).toLocaleString()}`;
+                    document.getElementById('refPriceM2Discounted').textContent = `$${Math.round(priceM2Discounted).toLocaleString()}`;
                 } else {
                     document.getElementById('refNormalLabelM2').style.display = 'none';
                     document.getElementById('refDiscLabelM2').textContent = 'Precio por m²';
                     refPriceM2OriginalEl.style.display = 'none';
-                    document.getElementById('refPriceM2Discounted').textContent = `$${priceM2Original.toLocaleString()}`;
+                    document.getElementById('refPriceM2Discounted').textContent = `$${Math.round(priceM2Original).toLocaleString()}`;
                 }
             } else {
                 refPriceM2Container.style.display = 'none';
