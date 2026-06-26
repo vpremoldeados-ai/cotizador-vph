@@ -82,11 +82,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 6px 12px;
         }
 
         .promotion-text {
             font-size: 18px;
             font-weight: 700;
+        }
+        @media (max-width: 600px) {
+            .promotion-banner { padding: 8px 12px; }
+            .promotion-content { justify-content: center; text-align: center; }
+            .promotion-text { font-size: 15px; }
+            .promotion-countdown { font-size: 14px; }
         }
 
         .promotion-countdown {
@@ -1084,6 +1092,12 @@
     <div class="container">
         <!-- PANTALLA 1: CATEGORÍAS -->
         <div id="screen-categories">
+            <div class="promotion-banner" id="promotionBanner">
+                <div class="promotion-content">
+                    <div class="promotion-text">🔥 20% OFF en Loseta Cribada Rectangular</div>
+                    <div class="promotion-countdown">⏳ Termina en <span id="countdownDisplay">--</span></div>
+                </div>
+            </div>
             <div class="screen-header">Selecciona una categoría</div>
             <div class="categories-grid" id="categoriesGrid"></div>
         </div>
