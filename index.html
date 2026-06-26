@@ -310,9 +310,15 @@
         }
 
         .product-per-m2 {
+            display: inline-block;
             font-size: 15px;
-            color: #999;
-            margin-top: 3px;
+            font-weight: 700;
+            color: #1d4ed8;
+            background: #eaf1ff;
+            border: 1px solid #bcd4ff;
+            border-radius: 6px;
+            padding: 4px 9px;
+            margin-top: 6px;
         }
 
         .product-price-original {
@@ -1735,7 +1741,7 @@
                         <div class="product-name">${product.name}</div>
                         <div>
                             ${priceHtml}
-                            ${pricePerM2Discounted ? `<div class="product-per-m2">$${pricePerM2Discounted.toLocaleString()}/m²</div>` : ''}
+                            ${pricePerM2Discounted ? `<div class="product-per-m2">📐 $${pricePerM2Discounted.toLocaleString()} /m² <span style="font-weight:600; font-size:11px;">· para comparar</span></div>` : ''}
                         </div>
                         <div style="font-size: 14px; color: #666; margin-top: 8px;">
                             ${specsHtml}
