@@ -1051,6 +1051,23 @@
             min-height: 0 !important;
             justify-content: flex-start;
         }
+    
+        /* ===== Resaltado de campos que el visitante debe completar ===== */
+        @keyframes vphPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(52,131,250,.45); }
+            70%  { box-shadow: 0 0 0 7px rgba(52,131,250,0); }
+            100% { box-shadow: 0 0 0 0 rgba(52,131,250,0); }
+        }
+        .needs-action {
+            border: 2px solid #3483fa !important;
+            background: #eef5ff !important;
+            animation: vphPulse 1.8s ease-out infinite;
+        }
+        .field-done {
+            border: 2px solid #00a650 !important;
+            background: #f3fff8 !important;
+            animation: none !important;
+        }
     </style>
 </head>
 <body>
@@ -1808,6 +1825,9 @@
             // Inputs de cantidad
             renderQuantityInputs(product);
 
+            // Resaltar campos que el visitante debe completar
+            setupActionHighlights(['qty-m2', 'qty-units', 'qty-ml', 'qty-units-ml', 'destination', 'paymentMethod']);
+
             // Precios de referencia (descuento solo en Cribadas)
             const isDisc = promotion.active && PROMO_CODES.includes(product.code);
             const priceWithDiscount = getPriceWithDiscount(product.price, product.code);
@@ -1912,6 +1932,37 @@
                     </div>
                 `;
             }
+        }
+
+        // ===== Resaltado de campos a completar (cantidad, destino, forma de pago) =====
+        function refreshActionField(el) {
+            if (!el) return;
+            let filled;
+            if (el.tagName === 'SELECT') {
+                filled = el.dataset.touched === '1';
+            } else {
+                filled = parseFloat(el.value) > 0;
+            }
+            el.classList.toggle('needs-action', !filled);
+            el.classList.toggle('field-done', filled);
+        }
+        function bindActionField(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (!el.dataset.actBound) {
+                el.dataset.actBound = '1';
+                const ev = el.tagName === 'SELECT' ? 'change' : 'input';
+                el.addEventListener(ev, () => {
+                    if (el.tagName === 'SELECT') el.dataset.touched = '1';
+                    refreshActionField(el);
+                    if (id === 'qty-ml') refreshActionField(document.getElementById('qty-units-ml'));
+                    if (id === 'qty-units-ml') refreshActionField(document.getElementById('qty-ml'));
+                });
+            }
+            refreshActionField(el);
+        }
+        function setupActionHighlights(ids) {
+            ids.forEach(bindActionField);
         }
 
         function calculateMLUnits() {
@@ -2658,12 +2709,4 @@
             try {
                 const cat = new URLSearchParams(location.search).get('cat');
                 if (cat && catalog[cat] && !(EMBEDDED && window.innerWidth < 768)) {
-                    currentCategory = cat;
-                    showScreen('products');
-                    renderProducts();
-                }
-            } catch (e) {}
-        });
-    </script>
-</body>
-</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                    currentCategory
