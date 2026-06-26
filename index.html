@@ -1340,7 +1340,7 @@
                     {
                         code: "LC40",
                         name: "Loseta Cribada Cuadrada",
-                        price: 6110,
+                        price: 4888,
                         weight: 12,
                         per_m2: 7,
                         per_pallet: 99,
@@ -1359,7 +1359,7 @@
                     {
                         code: "GB35",
                         name: "Green Block 35×35×6",
-                        price: 4754,
+                        price: 3803,
                         weight: 10,
                         per_m2: 8,
                         per_pallet: 126,
@@ -1372,7 +1372,7 @@
                     {
                         code: "GR35",
                         name: "Green Rombo 35×35×6",
-                        price: 5707,
+                        price: 4566,
                         weight: 12,
                         per_m2: 8,
                         per_pallet: 126,
@@ -1385,7 +1385,7 @@
                     {
                         code: "GC35",
                         name: "Green Círculo 35×35×6",
-                        price: 5707,
+                        price: 4566,
                         weight: 12,
                         per_m2: 8,
                         per_pallet: 126,
@@ -1404,7 +1404,7 @@
                     {
                         code: "TET50",
                         name: "Tope Trapecio 15×12×50",
-                        price: 10464,
+                        price: 8371,
                         weight: 15,
                         per_pallet: 98,
                         type: "units",
@@ -1416,7 +1416,7 @@
                     {
                         code: "TEC50",
                         name: "Tope Circular 18×12×50",
-                        price: 13918,
+                        price: 11134,
                         weight: 20,
                         per_pallet: 70,
                         type: "units",
@@ -1428,7 +1428,7 @@
                     {
                         code: "TET100",
                         name: "Tope Trapecio 15×12×100",
-                        price: 26845,
+                        price: 21476,
                         weight: 30,
                         per_pallet: 48,
                         type: "units",
@@ -1440,7 +1440,7 @@
                     {
                         code: "TEC100",
                         name: "Tope Cuadrado 15×15×100",
-                        price: 32210,
+                        price: 25768,
                         weight: 50,
                         per_pallet: 30,
                         type: "units",
@@ -1458,7 +1458,7 @@
                     {
                         code: "L60",
                         name: "Listón 60×8×6",
-                        price: 2177,
+                        price: 1742,
                         weight: 8,
                         per_ml: 1.66,
                         per_pallet: 170,
@@ -1471,7 +1471,7 @@
                     {
                         code: "CC10",
                         name: "Cordón Confinamiento 40×9×10",
-                        price: 2004,
+                        price: 1603,
                         weight: 8,
                         per_ml: 2.5,
                         per_pallet: 189,
@@ -2667,53 +2667,4 @@
         const EMBEDDED = (window.self !== window.top);
 
         function applyEmbedMode() {
-            // En movil embebido: que la altura siga al contenido (evita scroll interno)
-            if (EMBEDDED && window.innerWidth < 768) {
-                document.body.classList.add('embed-fluid');
-            } else {
-                document.body.classList.remove('embed-fluid');
-            }
-        }
-
-        let _lastH = 0;
-        function postHeight() {
-            if (!EMBEDDED) return;
-            applyEmbedMode();
-            const h = Math.max(
-                document.body.scrollHeight,
-                document.documentElement.scrollHeight
-            );
-            if (Math.abs(h - _lastH) < 4) return; // evita bucles
-            _lastH = h;
-            try {
-                window.parent.postMessage({
-                    type: 'vphCotizadorHeight',
-                    height: h,
-                    mobile: window.innerWidth < 768
-                }, '*');
-            } catch (e) {}
-        }
-
-        if (EMBEDDED) {
-            window.addEventListener('resize', postHeight);
-            // Observa cambios de contenido (cambios de pantalla, mostrar precio, etc.)
-            if (window.ResizeObserver) {
-                const ro = new ResizeObserver(() => postHeight());
-                ro.observe(document.body);
-            }
-            // Reintentos por si hay imagenes/fuentes que cargan tarde
-            [200, 600, 1200, 2500].forEach(t => setTimeout(postHeight, t));
-        }
-
-        // ========== INICIALIZAR ==========
-        document.addEventListener('DOMContentLoaded', () => {
-            initCategories();
-            showScreen('categories');
-            applyEmbedMode();
-            postHeight();
-
-            // Si se abrio a pantalla completa con ?cat=, ir directo a esa categoria
-            try {
-                const cat = new URLSearchParams(location.search).get('cat');
-                if (cat && catalog[cat] && !(EMBEDDED && window.innerWidth < 768)) {
-                    currentCategory
+            // En movil embebido: que la altura siga al co
