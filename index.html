@@ -509,6 +509,10 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
+            position: sticky;
+            top: 12px;
+            align-self: start;
+            max-height: calc(100vh - 24px);
         }
 
         .form-group {
@@ -865,6 +869,11 @@
                 gap: 12px;
             }
 
+            .detail-purchase {
+                position: static;
+                max-height: none;
+            }
+
             .screen-header {
                 font-size: 20px;
                 padding: 10px 12px;
@@ -1067,7 +1076,7 @@
                             <span id="priceSavings" style="color: #2563eb; font-weight: 600;">-$0</span>
                         </div>
                         <div class="price-row total">
-                            <span>Total a pagar:</span>
+                            <span>Total estimado:</span>
                             <span id="priceTotal">$0</span>
                         </div>
                         <div style="background: #f0f8ff; border-left: 3px solid #2563eb; padding: 10px; margin-top: 12px; border-radius: 4px; display: none;" id="installmentContainer">
@@ -1134,7 +1143,7 @@
                     <span id="cartDiscount">-$0</span>
                 </div>
                 <div class="cart-total-final">
-                    <span>Total a pagar:</span>
+                    <span>Total estimado:</span>
                     <span id="cartFinalTotal">$0</span>
                 </div>
             </div>
