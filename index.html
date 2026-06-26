@@ -26,7 +26,7 @@
 
         .container {
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
             display: flex;
             background: #f0f0f0;
         }
@@ -36,8 +36,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
             padding: 12px;
         }
 
@@ -202,8 +203,10 @@
         #screen-products {
             display: none;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
             padding: 20px;
         }
 
@@ -354,13 +357,14 @@
         #screen-detail {
             display: none;
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
         }
 
         .detail-container {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            min-height: 100vh;
+            align-content: center;
+            min-height: calc(100vh - 40px);
             gap: 20px;
             padding: 20px;
             overflow-y: auto;
@@ -643,13 +647,13 @@
             display: none;
             flex-direction: column;
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
             padding: 20px;
         }
 
         #screen-cart {
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
         }
 
         .summary-product {
@@ -745,7 +749,7 @@
             display: none;
             flex-direction: column;
             width: 100%;
-            min-height: 100vh;
+            min-height: calc(100vh - 40px);
             padding: 20px;
         }
 
@@ -804,8 +808,8 @@
         }
 
         .breadcrumb-global {
-            padding: 8px 15px;
-            font-size: 20px;
+            padding: 6px 15px;
+            font-size: 15px;
             color: #666;
             border-bottom: 1px solid #f0f0f0;
             background: #f0f0f0;
