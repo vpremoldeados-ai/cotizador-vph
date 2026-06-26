@@ -1140,7 +1140,10 @@
 
         <!-- PANTALLA 4: RESUMEN DEL CARRITO -->
         <div id="screen-cart">
-            <div class="screen-header" style="padding: 12px 20px; margin: 0;">Mi carrito</div>
+            <div class="screen-header" style="padding: 12px 20px; margin: 0; display:flex; justify-content:space-between; align-items:center;">
+                <span>Mi carrito</span>
+                <button class="btn btn-secondary" onclick="goToCategories()" style="width:auto; padding:8px 18px; font-size:14px;">+ Agregar más productos</button>
+            </div>
 
             <!-- Opciones globales para todo el carrito -->
             <div style="padding: 15px 20px; background: #f0f8ff; border-bottom: 1px solid #e0e0e0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -1195,10 +1198,6 @@
                 </div>
             </div>
 
-            <div style="margin-bottom: 10px;">
-                <label class="form-label">Teléfono (para envío por email)</label>
-                <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
-            </div>
 
             <div class="cart-reassurance">
                 <strong>No pagás nada ahora.</strong> Nos enviás el pedido, confirmamos disponibilidad y flete, y te pasamos el total final. Recién ahí coordinamos el pago.
@@ -1208,10 +1207,15 @@
                 <span>⭐ 4,8 · 150 opiniones en Google</span>
                 <span>💬 Te contactamos en menos de 24 hs</span>
             </div>
-            <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
                 <button class="btn-whatsapp" onclick="sendToWhatsApp()">Enviar por WhatsApp 💬</button>
-                <button class="btn btn-primary" onclick="sendByEmail()" style="width: auto; padding: 10px 30px;">Enviar por Email</button>
-                <button class="btn btn-secondary" onclick="goToCategories()" style="width: auto; padding: 10px 30px;">Agregar más productos</button>
+            </div>
+
+            <div style="max-width: 420px; margin: 0 auto; padding: 14px 16px; background: #f0f8ff; border: 1px solid #d6e6ff; border-radius: 8px;">
+                <label class="form-label" style="display:block; margin-bottom:4px;">Teléfono <span style="color:#dc2626;">*</span> (obligatorio para enviar por email)</label>
+                <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" oninput="updateEmailButtonState()" style="width: 100%; padding: 9px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 10px;">
+                <button class="btn btn-primary" id="emailBtn" onclick="sendByEmail()" disabled style="width: 100%; padding: 11px; opacity: 0.5; cursor: not-allowed;">Enviar por Email</button>
+                <div id="emailHint" style="font-size:12px; color:#dc2626; margin-top:6px; text-align:center;">Ingresá tu teléfono para habilitar el envío por email</div>
             </div>
         </div>
     </div>
@@ -2120,8 +2124,22 @@
             document.getElementById('cartCount').textContent = cart.length;
         }
 
+        function updateEmailButtonState() {
+            const btn = document.getElementById('emailBtn');
+            const hint = document.getElementById('emailHint');
+            const phone = (document.getElementById('phoneNumber').value || '').replace(/\D/g, '');
+            const ok = phone.length >= 10;
+            if (btn) {
+                btn.disabled = !ok;
+                btn.style.opacity = ok ? '1' : '0.5';
+                btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+            }
+            if (hint) hint.style.display = ok ? 'none' : 'block';
+        }
+
         function renderCart() {
             const container = document.getElementById('cartItems');
+            updateEmailButtonState();
 
             if (cart.length === 0) {
                 container.innerHTML = '<div class="empty-state">El carrito está vacío</div>';
