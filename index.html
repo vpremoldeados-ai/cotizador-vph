@@ -1057,8 +1057,9 @@
                     <div class="form-group">
                         <label class="form-label">Destino de entrega</label>
                         <select id="destination" class="form-control" onchange="updatePrice()">
-                            <option value="retiro">Retiro en fábrica (Córdoba Cap.)</option>
-                            <option value="cercanas">Hasta 30 Km Av. Circunvalación Córdoba Cap. ($39.000 por pallet)</option>
+                            <option value="retiro">Retirar en fábrica (Gratis)</option>
+                            <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
+                            <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($39.000 por pallet)</option>
                             <option value="argentina">A todo Argentina ($140.000 por pallet · posible variación)</option>
                         </select>
                         <div id="localidadBox" style="display:none; margin-top:6px;">
@@ -1067,11 +1068,6 @@
                         </div>
                         <div style="font-size: 11px; color: #999; margin-top: 3px;" id="deliveryTime"></div>
                         <div id="cartLockNote" style="display:none; font-size:12px; color:#2563eb; margin-top:4px;">🔒 Mismo destino y forma de pago que tu carrito</div>
-                        <div style="margin-top: 8px;">
-                            <a href="https://wa.me/5493517605362?text=Hola,%20quisiera%20consultar%20sobre%20el%20envío%20de%20mi%20pedido" target="_blank" style="color: #3483fa; font-size: 13px; text-decoration: none; cursor: pointer;">
-                                Preguntar sobre el envío
-                            </a>
-                        </div>
                     </div>
 
                     <!-- Quantity -->
@@ -1155,8 +1151,9 @@
                 <div>
                     <label class="form-label">Destino de entrega (para todos)</label>
                     <select id="globalDestination" class="form-control" onchange="updateGlobalCartOptions()">
-                        <option value="retiro">Retiro en fábrica (Córdoba Cap.)</option>
-                        <option value="cercanas">Hasta 30 Km Av. Circunvalación Córdoba Cap. ($39.000 por pallet)</option>
+                        <option value="retiro">Retirar en fábrica (Gratis)</option>
+                        <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
+                        <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($39.000 por pallet)</option>
                         <option value="argentina">A todo Argentina ($140.000 por pallet · posible variación)</option>
                     </select>
                     <div id="globalLocalidadBox" style="display:none; margin-top:6px;">
@@ -1465,12 +1462,14 @@
 
         // ========== ENVÍOS ==========
         const destinations = {
-            retiro:    { cost: 0,      label: "Coordinás el retiro en fábrica (Córdoba Cap.)" },
+            retiro:    { cost: 0,      label: "Retirás en fábrica · Localidad de Toledo (16 Km de Córdoba Cap.)" },
+            capital:   { cost: 28000,  label: "Entrega en Córdoba Capital · 5-10 días hábiles" },
             cercanas:  { cost: 39000,  label: "Entrega en 5-10 días hábiles" },
             argentina: { cost: 140000, label: "Entrega 10-15 días hábiles (posible variación)" }
         };
         const destLabels = {
-            retiro: "Retiro en fábrica (Córdoba Cap.)",
+            retiro: "Retiro en fábrica (Toledo)",
+            capital: "Córdoba Capital",
             cercanas: "Hasta 30 Km Circunvalación (Córdoba Cap.)",
             argentina: "A todo Argentina"
         };
