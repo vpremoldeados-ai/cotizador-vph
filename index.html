@@ -26,7 +26,7 @@
 
         .container {
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
             display: flex;
             background: #f0f0f0;
         }
@@ -38,7 +38,7 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
             padding: 12px;
         }
 
@@ -206,7 +206,7 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
             padding: 20px;
         }
 
@@ -357,14 +357,14 @@
         #screen-detail {
             display: none;
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
         }
 
         .detail-container {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             align-content: center;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
             gap: 20px;
             padding: 20px;
             overflow-y: auto;
@@ -647,13 +647,13 @@
             display: none;
             flex-direction: column;
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
             padding: 20px;
         }
 
         #screen-cart {
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
         }
 
         .summary-product {
@@ -749,7 +749,7 @@
             display: none;
             flex-direction: column;
             width: 100%;
-            min-height: calc(100vh - 40px);
+            min-height: calc(100vh - 90px);
             padding: 20px;
         }
 
@@ -963,10 +963,20 @@
             padding: 10px 14px; font-size: 13px; color: #1e5b2e; margin-bottom: 12px;
             text-align: center; line-height: 1.4;
         }
+        .global-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            color: #000;
+            padding: 10px 15px 2px;
+        }
+        .screen-header { display: none !important; }
+        .detail-name { display: none !important; }
     </style>
 </head>
 <body>
     <!-- Breadcrumb Global -->
+    <div class="global-title" id="globalTitle">Selecciona una categoría</div>
     <div class="breadcrumb-global" id="globalBreadcrumb">
         <span id="breadcrumb-home" onclick="goToCategories()" style="cursor: pointer;">Inicio</span>
         <span id="separator-0" style="display: none;">›</span>
@@ -2260,6 +2270,14 @@
                 const separator1 = document.getElementById('separator-1');
 
                 if (!breadcrumbHome || !breadcrumbCategory || !breadcrumbProduct || !separator0 || !separator1) return;
+
+                const gt = document.getElementById('globalTitle');
+                if (gt) {
+                    if (screen === 'categories') gt.textContent = 'Selecciona una categoría';
+                    else if (screen === 'products') gt.textContent = currentCategory || '';
+                    else if (screen === 'detail' && currentProduct) gt.textContent = catalog[currentProduct.category].products[currentProduct.index].name;
+                    else if (screen === 'cart') gt.textContent = 'Mi carrito';
+                }
 
                 if (screen === 'categories') {
                     breadcrumbHome.className = 'inactive';
