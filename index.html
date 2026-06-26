@@ -1074,6 +1074,10 @@
                     <div class="form-group">
                         <label class="form-label">Cantidad</label>
                         <div id="quantityInputs" class="quantity-inputs"></div>
+                        <div id="weightPalletsBox" style="display:none; background:white; border:1px solid #eee; border-radius:4px; padding:6px 8px; margin-top:6px; font-size:14px;">
+                            <div class="price-row"><span>Peso:</span><span id="weightVal" style="color:#1a1a1a; font-weight:600;">0 kg</span></div>
+                            <div class="price-row"><span>Pallets:</span><span id="palletsVal" style="color:#1a1a1a; font-weight:600;">0</span></div>
+                        </div>
                     </div>
 
                     <!-- Payment Method -->
@@ -1089,14 +1093,6 @@
 
                     <!-- Price Breakdown -->
                     <div class="price-breakdown">
-                        <div class="price-row" id="weightRow" style="display: none;">
-                            <span>Peso:</span>
-                            <span id="weightVal" style="color:#1a1a1a; font-weight:600;">0 kg</span>
-                        </div>
-                        <div class="price-row" id="palletsRow" style="display: none;">
-                            <span>Pallets:</span>
-                            <span id="palletsVal" style="color:#1a1a1a; font-weight:600;">0</span>
-                        </div>
                         <div class="price-row">
                             <span>Subtotal:</span>
                             <span id="priceProduct">$0</span>
@@ -1931,18 +1927,15 @@
                 totalUnits = Math.ceil(quantity) + quantityCut;
             }
 
-            // Peso y Pallets (Topes, Cordones y Listones)
-            const weightRow = document.getElementById('weightRow');
-            const palletsRow = document.getElementById('palletsRow');
-            if (weightRow && palletsRow) {
+            // Peso y Pallets (Topes, Cordones y Listones) — debajo de Cantidad
+            const wpBox = document.getElementById('weightPalletsBox');
+            if (wpBox) {
                 if ((product.type === 'units' || product.type === 'ml') && quantity > 0 && product.weight && product.per_pallet) {
                     document.getElementById('weightVal').textContent = Math.round(totalUnits * product.weight).toLocaleString() + ' kg';
                     document.getElementById('palletsVal').textContent = Math.ceil(totalUnits / product.per_pallet);
-                    weightRow.style.display = 'flex';
-                    palletsRow.style.display = 'flex';
+                    wpBox.style.display = 'block';
                 } else {
-                    weightRow.style.display = 'none';
-                    palletsRow.style.display = 'none';
+                    wpBox.style.display = 'none';
                 }
             }
 
