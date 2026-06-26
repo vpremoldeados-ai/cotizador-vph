@@ -1318,7 +1318,7 @@
                 <button class="btn-whatsapp" onclick="sendToWhatsApp()">Enviar por WhatsApp 💬</button>
             </div>
 
-            <div style="max-width: 420px; margin: 0 auto; padding: 14px 16px; background: #f0f8ff; border: 1px solid #d6e6ff; border-radius: 8px;">
+            <div id="emailBox" style="max-width: 420px; margin: 0 auto; padding: 14px 16px; background: #f0f8ff; border: 1px solid #d6e6ff; border-radius: 8px;">
                 <label class="form-label" style="display:block; margin-bottom:4px;">Teléfono <span style="color:#dc2626;">*</span> (obligatorio para enviar por email)</label>
                 <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" oninput="updateEmailButtonState()" style="width: 100%; padding: 9px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 10px;">
                 <button class="btn btn-primary" id="emailBtn" onclick="sendByEmail()" disabled style="width: 100%; padding: 11px; opacity: 0.5; cursor: not-allowed;">Enviar por Email</button>
@@ -2534,7 +2534,52 @@
                 message += `Valor de cada cuota: $${cuota.toLocaleString()}\n\n`;
             }
 
-            // Enviar por email usando mailto (el cliente verá la opción de enviar desde su cliente de email)
+            // Enviar el presupuesto en segundo plano con Web3Forms (sin que el visitante salga del sitio)
+            const WEB3FORMS_KEY = 'b6b4a86b-2844-44b4-a9eb-9ffea9a78f89';
+            const btn = document.getElementById('emailBtn');
+            const hint = document.getElementById('emailHint');
+            if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; btn.style.opacity = '0.7'; btn.style.cursor = 'wait'; }
+            if (hint) hint.style.display = 'none';
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_KEY,
+                    subject: `Nuevo presupuesto web - Tel: ${phoneNumber} - Total $${totalFinal.toLocaleString()}`,
+                    from_name: 'Cotizador VPH Premoldeados',
+                    telefono: phoneNumber,
+                    total_estimado: `$${totalFinal.toLocaleString()}`,
+                    message: message
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.success) {
+                    showEmailSuccess(phoneNumber);
+                } else {
+                    emailFallback(phoneNumber, message, btn, hint);
+                }
+            })
+            .catch(() => emailFallback(phoneNumber, message, btn, hint));
+        }
+
+        function showEmailSuccess(phoneNumber) {
+            const box = document.getElementById('emailBox');
+            if (box) {
+                box.innerHTML = `
+                    <div style="text-align:center; padding:6px;">
+                        <div style="font-size:34px;">✅</div>
+                        <div style="font-weight:700; color:#1e5b2e; font-size:16px; margin-top:4px;">¡Listo! Recibimos tu pedido</div>
+                        <div style="font-size:13px; color:#333; margin-top:6px;">Te contactamos a la brevedad al ${phoneNumber} para confirmar disponibilidad, flete y el total final.</div>
+                    </div>`;
+            }
+        }
+
+        function emailFallback(phoneNumber, message, btn, hint) {
+            // Si el envio automatico falla, abrimos el correo como respaldo para no perder el pedido
+            if (btn) { btn.disabled = false; btn.textContent = 'Enviar por Email'; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+            if (hint) { hint.style.display = 'block'; hint.style.color = '#dc2626'; hint.textContent = 'No se pudo enviar automáticamente; abrimos tu correo como respaldo.'; }
             const mailtoLink = `mailto:vpremoldeados@gmail.com?subject=Cotización - Tel: ${phoneNumber}&body=${encodeURIComponent(message)}`;
             window.location.href = mailtoLink;
         }
