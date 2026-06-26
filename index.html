@@ -2667,4 +2667,59 @@
         const EMBEDDED = (window.self !== window.top);
 
         function applyEmbedMode() {
-            // En movil embebido: que la altura siga al co
+            // En movil embebido: que la altura siga al contenido (evita scroll interno)
+            if (EMBEDDED && window.innerWidth < 768) {
+                document.body.classList.add('embed-fluid');
+            } else {
+                document.body.classList.remove('embed-fluid');
+            }
+        }
+
+        let _lastH = 0;
+        function postHeight() {
+            if (!EMBEDDED) return;
+            applyEmbedMode();
+            const h = Math.max(
+                document.body.scrollHeight,
+                document.documentElement.scrollHeight
+            );
+            if (Math.abs(h - _lastH) < 4) return; // evita bucles
+            _lastH = h;
+            try {
+                window.parent.postMessage({
+                    type: 'vphCotizadorHeight',
+                    height: h,
+                    mobile: window.innerWidth < 768
+                }, '*');
+            } catch (e) {}
+        }
+
+        if (EMBEDDED) {
+            window.addEventListener('resize', postHeight);
+            if (window.ResizeObserver) {
+                const ro = new ResizeObserver(() => postHeight());
+                ro.observe(document.body);
+            }
+            [200, 600, 1200, 2500].forEach(t => setTimeout(postHeight, t));
+        }
+
+        // ========== INICIALIZAR ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initCategories();
+            showScreen('categories');
+            applyEmbedMode();
+            postHeight();
+
+            // Si se abrio a pantalla completa con ?cat=, ir directo a esa categoria
+            try {
+                const cat = new URLSearchParams(location.search).get('cat');
+                if (cat && catalog[cat] && !(EMBEDDED && window.innerWidth < 768)) {
+                    currentCategory = cat;
+                    showScreen('products');
+                    renderProducts();
+                }
+            } catch (e) {}
+        });
+    </script>
+</body>
+</html>
