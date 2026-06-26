@@ -1557,8 +1557,8 @@
                 let priceHtml = `<div class="product-price">$${priceWithDiscount.toLocaleString()}</div>`;
                 if (promotion.active) {
                     priceHtml = `
-                        <div style="font-size: 13px; color: #999; text-decoration: line-through; margin: 3px 0;">Precio Normal: $${product.price.toLocaleString()}</div>
-                        <div class="product-price" style="color: #2563eb; font-size: 18px; margin: 3px 0;">20% desc: $${priceWithDiscount.toLocaleString()}</div>
+                        <div style="font-size: 13px; color: #999; text-decoration: line-through; margin: 3px 0;">$${product.price.toLocaleString()}</div>
+                        <div class="product-price" style="margin: 3px 0;">$${priceWithDiscount.toLocaleString()} <span style="font-size: 12px; color: #00a650; font-weight: 700;">20% OFF</span></div>
                     `;
                 }
 
