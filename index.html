@@ -1401,8 +1401,8 @@
             description: "20% de descuento hasta fin de año"
         };
 
-        function getPriceWithDiscount(originalPrice, category) {
-            if (!promotion.active || category !== 'Losetas Cribadas') return originalPrice;
+        function getPriceWithDiscount(originalPrice, code) {
+            if (!promotion.active || !PROMO_CODES.includes(code)) return originalPrice;
             return Math.round(originalPrice * (1 - promotion.discount));
         }
 
@@ -1476,6 +1476,7 @@
             cotizar: "Otro destino (a cotizar)"
         };
         const MAS_VENDIDA_CODE = "LC60";
+        const PROMO_CODES = ["LC60"]; // descuento 20% solo en estos productos
 
         // ========== INICIALIZAR PANTALLA 1 ==========
         function initCategories() {
@@ -1592,7 +1593,7 @@
                 card.className = 'product-card';
                 card.onclick = () => selectProduct(currentCategory, idx);
 
-                const priceWithDiscount = getPriceWithDiscount(product.price, currentCategory);
+                const priceWithDiscount = getPriceWithDiscount(product.price, product.code);
                 const pricePerM2Discounted = product.per_m2 ? (priceWithDiscount * product.per_m2) : null;
 
                 // Especificaciones
@@ -1600,7 +1601,7 @@
                 const specsHtml = specsWithPallet.map(s => `<div style="font-size: 14px; color: #666; margin: 3px 0;">• ${s}</div>`).join('');
 
                 let priceHtml = `<div class="product-price">$${priceWithDiscount.toLocaleString()}</div>`;
-                if (promotion.active && currentCategory === 'Losetas Cribadas') {
+                if (promotion.active && PROMO_CODES.includes(product.code)) {
                     priceHtml = `
                         <div style="font-size: 13px; color: #999; text-decoration: line-through; margin: 3px 0;">$${product.price.toLocaleString()}</div>
                         <div class="product-price" style="margin: 3px 0;">$${priceWithDiscount.toLocaleString()} <span style="font-size: 12px; color: #00a650; font-weight: 700;">20% OFF</span></div>
@@ -1723,8 +1724,8 @@
             renderQuantityInputs(product);
 
             // Precios de referencia (descuento solo en Cribadas)
-            const isDisc = promotion.active && currentProduct.category === 'Losetas Cribadas';
-            const priceWithDiscount = getPriceWithDiscount(product.price, currentProduct.category);
+            const isDisc = promotion.active && PROMO_CODES.includes(product.code);
+            const priceWithDiscount = getPriceWithDiscount(product.price, product.code);
             const refPriceOriginalEl = document.getElementById('refPriceOriginal');
             if (isDisc) {
                 document.getElementById('refNormalLabel').style.display = 'block';
@@ -1955,7 +1956,7 @@
                 freightCost = destinations[destination].cost * palletsCeilFreight;
             }
 
-            const discount = (promotion.active && currentProduct.category === 'Losetas Cribadas') ? Math.round(subtotalWithoutDiscount * 0.2) : 0;
+            const discount = (promotion.active && PROMO_CODES.includes(product.code)) ? Math.round(subtotalWithoutDiscount * 0.2) : 0;
 
             const totalWithoutDiscount = subtotalWithoutDiscount + freightCost;
             const totalWithDiscount = subtotalWithoutDiscount - discount + freightCost;
@@ -2077,7 +2078,7 @@
             }
 
             // Descuento: solo Cribadas, solo sobre subtotal
-            const discount = (promotion.active && currentProduct.category === 'Losetas Cribadas') ? Math.round(subtotal * 0.2) : 0;
+            const discount = (promotion.active && PROMO_CODES.includes(product.code)) ? Math.round(subtotal * 0.2) : 0;
 
             // Total
             const total = subtotal - discount + freightCost;
