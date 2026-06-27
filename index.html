@@ -12,14 +12,27 @@
         gtag('js', new Date());
         gtag('config', 'G-18CMTRFK14', { send_page_view: false });
         // Dispara la conversión generate_lead (evento clave definido en GA4)
+        // y avisa al sitio Wix padre por postMessage para que GTM dispare la conversión
+        // de Google Ads y el evento de Meta (el iframe no tiene esos tags).
         function trackLead(method, value) {
+            var v = Number(value) || 0;
             try {
                 if (typeof gtag === 'function') {
                     gtag('event', 'generate_lead', {
                         method: method,
                         currency: 'ARS',
-                        value: Number(value) || 0
+                        value: v
                     });
+                }
+            } catch (e) {}
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'vph_cotizador_lead',
+                        method: method,
+                        value: v,
+                        currency: 'ARS'
+                    }, '*');
                 }
             } catch (e) {}
         }
