@@ -248,6 +248,24 @@ El tag **`FB_CONVERSIONS_API-…-GA4_Event`** (tipo *evento de GA4*, ID `G-18CMT
 - Nota menor: una de las dos llamadas redundantes de Ads (`viewthroughconversion`) devolvió `503` puntual en la prueba; la equivalente `1p-conversion` sí se registró — no afecta la medición real (Google reintenta/usa la otra ruta).
 - **Conclusión: el hueco de medición del cotizador está cerrado y operativo.** No queda pendiente de esta sección.
 
+### 🔧 Fixes de UI móvil (02/07/2026)
+
+**1. Franja de reseñas de Google tapaba el header verde de Wix (custom code, arreglado vía API):**
+- Causa: el embed de Wix "CRO - Social proof band v4 (inline)" (`db4f507a-cbf3-4988-80f4-045cd49b2335`, Cuerpo del sitio - Inicio) calculaba la posición `top` de la franja de reseñas solo en base a la altura de la barra de countdown, con un fallback fijo de 45px — nunca medía el header real de Wix.
+- Fix (aplicado con la Custom Embeds API de Wix, revisión 6): ahora mide `header`/`#SITE_HEADER` real y suma esa altura al offset. Confirmado por el usuario que ya se ve bien.
+- Nota para el futuro: para tocar código personalizado de Wix, usar la **Custom Embeds API** (`GET/PATCH https://www.wixapis.com/embeds/v1/custom-embeds`) vía `CallWixSiteAPI`, no la UI del editor (es frágil, se desactivan toggles por error de auto-scroll).
+
+**2. Pantalla inicial del cotizador (categorías) muy desordenada en móvil — rediseño compacto (`index.html`, pendiente de publicar):**
+- Antes: título grande de 2 líneas + "Inicio" suelto sin sentido + tarjetas con miniaturas chicas desalineadas + descripción larga que estiraba las tarjetas.
+- Cambios aplicados en `index.html` (local, no publicado aún — falta commit+push con GitHub Desktop):
+  - Cada tarjeta de categoría ahora muestra **una sola imagen destacada grande** (`.category-img-wrap` / `.category-img`, la primera foto del primer producto) en vez de la fila de miniaturas chicas.
+  - Se quitó el texto redundante "Tocá para ver y cotizar ↗" (la tarjeta entera ya es clickeable).
+  - La descripción se recorta a 2 líneas con `-webkit-line-clamp` para que no estire la tarjeta.
+  - El título global "Selecciona una categoría" se achica en móvil (20px en vez de 30px).
+  - El breadcrumb "Inicio" se oculta por completo en la pantalla de categorías (no aporta nada ahí).
+  - Resultado: las 4 categorías entran en pantalla sin scroll, con menos ruido visual. Validado con un mockup en el navegador (Claude in Chrome) antes de aplicar.
+- **Pendiente:** el usuario debe hacer commit + push con GitHub Desktop para publicar este cambio (igual que el fix de la grilla de categorías del 02/07 anterior).
+
 ---
 
 ## 10. Preferencias de trabajo del usuario
