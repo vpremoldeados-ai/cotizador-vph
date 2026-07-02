@@ -1027,16 +1027,16 @@
                 padding: 10px 8px;
             }
 
-            /* Pantalla 1 en móvil: grilla 2x2. Cada fila ocupa casi una pantalla de alto,
-               así se ven las 2 primeras categorías a pantalla completa y con scroll aparecen las otras 2 (alto total ~2 pantallas). */
+            /* Pantalla 1 en móvil: grilla 2x2 compacta. Cada tarjeta mide lo que necesita
+               su contenido (sin forzar casi-pantalla-completa), para que no queden huecos vacíos
+               y se puedan ver las 4 categorías con menos scroll. */
             .categories-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 10px;
             }
             #screen-categories .category-card {
-                min-height: calc(100vh - 150px);
-                min-height: calc(100svh - 150px);
-                justify-content: center;
+                min-height: 0;
+                justify-content: flex-start;
                 padding: 12px;
             }
 
