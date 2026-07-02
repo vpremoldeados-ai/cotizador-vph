@@ -257,14 +257,20 @@ El tag **`FB_CONVERSIONS_API-…-GA4_Event`** (tipo *evento de GA4*, ID `G-18CMT
 
 **2. Pantalla inicial del cotizador (categorías) muy desordenada en móvil — rediseño compacto (`index.html`, pendiente de publicar):**
 - Antes: título grande de 2 líneas + "Inicio" suelto sin sentido + tarjetas con miniaturas chicas desalineadas + descripción larga que estiraba las tarjetas.
-- Cambios aplicados en `index.html` (local, no publicado aún — falta commit+push con GitHub Desktop):
+- Cambios aplicados en `index.html` y **PUBLICADOS Y CONFIRMADOS en producción (02/07/2026)**:
   - Cada tarjeta de categoría ahora muestra **una sola imagen destacada grande** (`.category-img-wrap` / `.category-img`, la primera foto del primer producto) en vez de la fila de miniaturas chicas.
   - Se quitó el texto redundante "Tocá para ver y cotizar ↗" (la tarjeta entera ya es clickeable).
   - La descripción se recorta a 2 líneas con `-webkit-line-clamp` para que no estire la tarjeta.
-  - El título global "Selecciona una categoría" se achica en móvil (20px en vez de 30px).
+  - El título global "Selecciona una categoría" se achica en móvil y queda en una sola línea (16px, `white-space:nowrap`).
   - El breadcrumb "Inicio" se oculta por completo en la pantalla de categorías (no aporta nada ahí).
-  - Resultado: las 4 categorías entran en pantalla sin scroll, con menos ruido visual. Validado con un mockup en el navegador (Claude in Chrome) antes de aplicar.
-- **Pendiente:** el usuario debe hacer commit + push con GitHub Desktop para publicar este cambio (igual que el fix de la grilla de categorías del 02/07 anterior).
+  - Resultado: las 4 categorías entran en pantalla sin scroll, con menos ruido visual. Validado con un mockup en el navegador antes de aplicar, y confirmado en vivo por el usuario tras publicar.
+
+### 🔧 Fix: "Inicio" no volvía a vpremoldeados.com en móvil — PUBLICADO Y CONFIRMADO (02/07/2026)
+- **Problema:** en móvil, tocar una categoría abre el cotizador en pantalla completa en una pestaña nueva apuntando a `vpremoldeados-ai.github.io` (escape hatch para evitar scroll anidado dentro del iframe embebido de Wix — ver `selectCategory()`). Una vez ahí, tocar "Inicio" solo reseteaba la vista interna del cotizador, dejando al usuario navegando en el dominio de GitHub Pages sin volver nunca a la web real.
+- **Investigación:** se revisó si el cotizador ya tenía una forma de evitar ese escape (auto-ajuste de altura vía `postMessage('vphCotizadorHeight', ...)` a Wix, ya implementado en el cotizador). Se confirmó leyendo el HTML fuente de `www.vpremoldeados.com` que **ese listener NO existe del lado de Wix** — el mecanismo de auto-altura está huérfano, nadie lo escucha. Por eso NO se quitó el escape hatch (sacarlo sin el auto-resize conectado podría reintroducir el scroll cortado que ese hatch evita).
+- **Fix aplicado (opción segura, sin tocar el escape hatch):** nueva función `goHomeOrCategories()`. Si el cotizador corre standalone (`!EMBEDDED`, es decir la pestaña de pantalla completa), tocar "Inicio" hace `window.location.href = 'https://www.vpremoldeados.com/'`. Si está embebido normalmente (desktop), sigue comportándose igual que antes (solo resetea la vista interna). El botón "+ Agregar más productos" NO se tocó — sigue dejando elegir otra categoría sin salir del cotizador, para no interrumpir una compra en curso.
+- Verificado en vivo: se abrió el cotizador standalone con `?cat=Losetas Cribadas`, se tocó "Inicio" y navegó correctamente a `www.vpremoldeados.com`.
+- **Pendiente futuro (mejora prolija, no urgente):** conectar el auto-resize real — agregar en Wix un custom code que escuche `postMessage` tipo `vphCotizadorHeight` y ajuste la altura del iframe del cotizador, para poder eliminar el escape hatch a pestaña nueva por completo y que todo quede embebido en la web sin salir nunca del dominio. Requiere identificar el iframe exacto del cotizador en el editor de Wix.
 
 ---
 
