@@ -1085,8 +1085,9 @@
             }
 
             .global-title {
-                font-size: 20px;
-                padding: 10px 10px 4px;
+                font-size: 16px;
+                padding: 8px 10px 4px;
+                white-space: nowrap;
             }
         }
         .trust-strip {
@@ -1145,7 +1146,7 @@
     <!-- Breadcrumb Global -->
     <div class="global-title" id="globalTitle">Selecciona una categoría</div>
     <div class="breadcrumb-global" id="globalBreadcrumb">
-        <span id="breadcrumb-home" onclick="goToCategories()" style="cursor: pointer;">Inicio</span>
+        <span id="breadcrumb-home" onclick="goHomeOrCategories()" style="cursor: pointer;">Inicio</span>
         <span id="separator-0" style="display: none;">›</span>
         <span id="breadcrumb-category" class="inactive" style="cursor: default;"></span>
         <span id="separator-1" style="display: none;">›</span>
@@ -2682,7 +2683,7 @@
                 } else if (screen === 'products' && currentCategory) {
                     breadcrumbHome.className = '';
                     breadcrumbHome.style.cursor = 'pointer';
-                    breadcrumbHome.onclick = () => goToCategories();
+                    breadcrumbHome.onclick = () => goHomeOrCategories();
                     separator0.style.display = 'inline';
                     breadcrumbCategory.textContent = currentCategory;
                     breadcrumbCategory.className = 'inactive';
@@ -2694,7 +2695,7 @@
                     const product = catalog[currentProduct.category].products[currentProduct.index];
                     breadcrumbHome.className = '';
                     breadcrumbHome.style.cursor = 'pointer';
-                    breadcrumbHome.onclick = () => goToCategories();
+                    breadcrumbHome.onclick = () => goHomeOrCategories();
                     separator0.style.display = 'inline';
                     breadcrumbCategory.textContent = currentProduct.category;
                     breadcrumbCategory.className = '';
@@ -2707,7 +2708,7 @@
                 } else if (screen === 'cart') {
                     breadcrumbHome.className = '';
                     breadcrumbHome.style.cursor = 'pointer';
-                    breadcrumbHome.onclick = () => goToCategories();
+                    breadcrumbHome.onclick = () => goHomeOrCategories();
                     separator0.style.display = 'inline';
                     breadcrumbCategory.textContent = 'Carrito';
                     breadcrumbCategory.className = 'inactive';
@@ -2736,6 +2737,17 @@
         function goToCategories() {
             editingCartIndex = null; // Limpiar índice de edición
             showScreen('categories');
+        }
+
+        // "Inicio" del breadcrumb: si el cotizador se abrió en pantalla completa
+        // (pestaña separada de github.io, fuera del embed de Wix), volver a la web
+        // real de VPH en vez de quedarse navegando dentro del cotizador solo.
+        function goHomeOrCategories() {
+            if (!EMBEDDED) {
+                window.location.href = 'https://www.vpremoldeados.com/';
+                return;
+            }
+            goToCategories();
         }
 
         function goToProducts() {
