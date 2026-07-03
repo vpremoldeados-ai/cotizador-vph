@@ -219,6 +219,51 @@
             display: block;
         }
 
+        /* Collage de miniaturas dentro del mismo cuadro de la categoría (sin cambiar su tamaño) */
+        .category-img-collage {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            gap: 2px;
+        }
+        .category-img-collage img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .category-img-collage.count-1 {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+        .category-img-collage.count-2 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
+        }
+        .category-img-collage.count-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr;
+        }
+        .category-img-collage.count-4 {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+        .category-img-collage .collage-more {
+            position: relative;
+        }
+        .category-img-collage .collage-more::after {
+            content: attr(data-more);
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
         .category-name {
             font-size: 18px;
             font-weight: 600;
@@ -1652,11 +1697,27 @@
                 card.className = 'category-card';
                 card.onclick = () => selectCategory(categoryName);
 
-                const heroImage = (data.products && data.products[0] && data.products[0].image) || '';
+                const allProducts = (data.products || []).filter(p => p.image);
+                const MAX_COLLAGE = 4;
+                const shown = allProducts.slice(0, MAX_COLLAGE);
+                const extraCount = allProducts.length - shown.length;
+                const collageCount = Math.max(shown.length, 1);
+
+                let collageHtml;
+                if (shown.length === 0) {
+                    collageHtml = `<div class="category-img-collage count-1"></div>`;
+                } else {
+                    const tiles = shown.map((p, i) => {
+                        const isLast = i === shown.length - 1;
+                        const moreAttr = (isLast && extraCount > 0) ? ` class="collage-more" data-more="+${extraCount}"` : '';
+                        return `<div${moreAttr}><img src="${p.image}" alt="${categoryName}" loading="lazy"></div>`;
+                    }).join('');
+                    collageHtml = `<div class="category-img-collage count-${collageCount}">${tiles}</div>`;
+                }
 
                 card.innerHTML = `
                     <div class="category-img-wrap">
-                        <img class="category-img" src="${heroImage}" alt="${categoryName}" loading="lazy">
+                        ${collageHtml}
                     </div>
                     <div class="category-name">${categoryName}</div>
                     <div class="category-desc">${data.description}</div>
