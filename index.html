@@ -35,6 +35,8 @@
                     }, '*');
                 }
             } catch (e) {}
+            // Crea el lead en el CRM propio (Firestore) — en segundo plano, no bloquea nada
+            try { if (typeof sendLeadToCRM === 'function') sendLeadToCRM(method, v); } catch (e) {}
         }
     </script>
     <style>
@@ -2372,6 +2374,7 @@
                 name: product.name,
                 image: product.image,
                 quantity: quantity,
+                totalUnits: totalUnits,
                 quantityLabel: quantityLabel,
                 price: product.price,
                 subtotal: subtotal,
@@ -2549,6 +2552,79 @@
                     }
                 }
             }
+        }
+
+        // ========== LEAD AL CRM PROPIO (Firestore, via REST — sin librerías) ==========
+        // Crea el lead en la colección vph_leads del sistema de gestión VPH.
+        // Reglas de Firestore: el público SOLO puede crear leads validados (no leer/editar).
+        const CRM_PROJECT = 'finanzas-vassallo';
+        // Código del cotizador → nombre del producto en el catálogo del CRM (para autocompletar precios en →Venta)
+        const CRM_PRODUCT_MAP = {
+            'LC60': 'Loseta Cribada 60x40',
+            'LC40': 'Loseta Cribada 40x40',
+            'GB35': 'Green Block 35x35',
+            'GR35': 'Green Rombo 35x35',
+            'GC35': 'Green Círculo 35x35',
+            'TET50': 'Tope Estacionamiento Trapecio',
+            'TEC50': 'Tope Estacionamiento Circular',
+            'L60': 'Listón',
+            'CC10': 'Cordón Confinamiento'
+        };
+        const CRM_PAGO_MAP = {
+            'contado': 'Transferencia',
+            'tarjeta-macro': 'Tarjeta 12 cuotas (Macro)',
+            'otros-3': 'Tarjeta 3 cuotas',
+            'otros-6': 'Tarjeta 6 cuotas'
+        };
+        let _lastLeadHash = '';
+        function _fsVal(v) {
+            if (typeof v === 'number') return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+            if (typeof v === 'boolean') return { booleanValue: v };
+            if (Array.isArray(v)) return { arrayValue: { values: v.map(_fsVal) } };
+            if (v && typeof v === 'object') { const f = {}; Object.keys(v).forEach(k => { f[k] = _fsVal(v[k]); }); return { mapValue: { fields: f } }; }
+            return { stringValue: String(v == null ? '' : v) };
+        }
+        function sendLeadToCRM(method, totalValue) {
+            try {
+                if (!cart || cart.length === 0) return;
+                const phone = ((document.getElementById('phoneNumber') || {}).value || '').trim();
+                // No duplicar: mismo carrito+teléfono ya enviado (WhatsApp y Email del mismo pedido = 1 lead)
+                const hash = JSON.stringify(cart.map(i => [i.code, i.totalUnits || i.quantity])) + '|' + (Number(totalValue) || 0) + '|' + phone;
+                if (hash === _lastLeadHash) return;
+                _lastLeadHash = hash;
+
+                const first = cart[0] || {};
+                const lugar = (destLabels[first.destination] || first.destination || '') + (first.localidad ? ' - ' + first.localidad : '');
+                const pago = CRM_PAGO_MAP[first.paymentMethod] || 'A confirmar';
+                const items = cart.map(function (it) {
+                    return {
+                        producto: CRM_PRODUCT_MAP[it.code] || it.name,
+                        cantidad: Math.round(it.totalUnits || it.quantity || 0),
+                        detalle: (it.quantityLabel || '') + (it.quote ? ' · flete a cotizar' : (it.freight > 0 ? ' · flete $' + it.freight.toLocaleString() : ''))
+                    };
+                });
+                let nota = 'Pedido del cotizador web (' + method + ').';
+                if (first.paymentMethod === 'tarjeta-macro') nota += ' 12 cuotas de $' + Math.round((Number(totalValue) || 0) / 12).toLocaleString() + '.';
+                else if (first.paymentMethod === 'otros-3') nota += ' 3 cuotas de $' + Math.round((Number(totalValue) || 0) / 3).toLocaleString() + '.';
+                else if (first.paymentMethod === 'otros-6') nota += ' 6 cuotas de $' + Math.round((Number(totalValue) || 0) / 6).toLocaleString() + '.';
+
+                const hoy = new Date();
+                const p2 = function (n) { return String(n).padStart(2, '0'); };
+                const lead = {
+                    fecha: hoy.getFullYear() + '-' + p2(hoy.getMonth() + 1) + '-' + p2(hoy.getDate()),
+                    cliente: '', telefono: phone, email: '', cuit: '', condIva: 'A',
+                    categoria: 'MINORISTA', listaPrecios: '0 Minorista Responsable Inscripto',
+                    origen: 'Web cotizador', pago: pago, lugar: lugar, estado: 'nuevo',
+                    monto: Math.round(Number(totalValue) || 0), items: items, seguimiento: [], nota: nota.slice(0, 1900)
+                };
+                const fields = {}; Object.keys(lead).forEach(function (k) { fields[k] = _fsVal(lead[k]); });
+                fetch('https://firestore.googleapis.com/v1/projects/' + CRM_PROJECT + '/databases/(default)/documents/vph_leads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    keepalive: true,
+                    body: JSON.stringify({ fields: fields })
+                }).catch(function () { _lastLeadHash = ''; });  // si falló, permitir reintento
+            } catch (e) { /* nunca romper el flujo de venta por el CRM */ }
         }
 
         // ========== ENVIAR A WHATSAPP ==========
