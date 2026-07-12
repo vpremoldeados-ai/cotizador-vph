@@ -2567,8 +2567,15 @@
             'GC35': 'Green Círculo 35x35',
             'TET50': 'Tope Estacionamiento Trapecio',
             'TEC50': 'Tope Estacionamiento Circular',
+            'TET100': 'Tope Trapecio 15x12x100',
+            'TEC100': 'Tope Cuadrado 15x15x100',
             'L60': 'Listón',
             'CC10': 'Cordón Confinamiento'
+        };
+        // Código del cotizador → código del catálogo del CRM (para matchear por código, más robusto que por nombre)
+        const CRM_CODE_MAP = {
+            'LC60':'ULC60','LC40':'ULC40','GB35':'UGB35','GR35':'UGR35','GC35':'UGC35',
+            'TET50':'TET50','TEC50':'TEC50','TET100':'TET100','TEC100':'TEC100','L60':'ULL50','CC10':'UCC10'
         };
         const CRM_PAGO_MAP = {
             'contado': 'Transferencia',
@@ -2599,6 +2606,7 @@
                 const items = cart.map(function (it) {
                     return {
                         producto: CRM_PRODUCT_MAP[it.code] || it.name,
+                        codigo: CRM_CODE_MAP[it.code] || '',
                         cantidad: Math.round(it.totalUnits || it.quantity || 0),
                         detalle: (it.quantityLabel || '') + (it.quote ? ' · flete a cotizar' : (it.freight > 0 ? ' · flete $' + it.freight.toLocaleString() : ''))
                     };
