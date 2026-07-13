@@ -1303,21 +1303,25 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .product-card img { width:100%; height:100%; object-fit:contain; }
   body.fit .category-desc, body.fit .product-desc { font-size:12.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   /* ===== Layout 3 columnas estilo MercadoLibre: galería | info | tarjeta de compra ===== */
-  body.fit .detail-container { display:grid; grid-template-columns:minmax(0,1fr) 372px; grid-template-rows:auto; gap:24px; align-content:start; align-items:start; overflow:visible; }
-  body.fit #screen-detail .detail-top { grid-column:1 !important; grid-row:1 !important; grid-template-columns:300px minmax(0,1fr); gap:22px; align-items:start; }
+  body.fit .detail-container { display:grid; grid-template-columns:minmax(0,1fr) 342px; grid-template-rows:auto; gap:22px; align-content:start; align-items:start; overflow:visible; }
+  body.fit #screen-detail .detail-top { grid-column:1 !important; grid-row:1 !important; grid-template-columns:360px minmax(0,1fr); gap:18px; align-items:start; }
+  /* centro angosto: precios apilados y specs en 1 columna */
+  body.fit #screen-detail #referencePrices { flex-direction:column; gap:6px; }
+  body.fit #screen-detail #detailSpecs { grid-template-columns:1fr; }
   body.fit #screen-detail .detail-purchase { grid-column:2 !important; grid-row:1 !important; }
   /* características (bajo los precios, en la columna central, estilo "Lo que tenés que saber") */
   body.fit #screen-detail #detailSpecs { display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; margin-top:12px; padding-top:10px; border-top:1px solid #ececec; grid-column:auto !important; grid-row:auto !important; }
   /* galería más grande */
-  body.fit #mainImageContainer { height:300px !important; min-height:0; width:100%; }
-  body.fit #mainImage { height:300px !important; width:100%; object-fit:contain; }
-  body.fit #thumbnails { height:40px; }
-  body.fit #thumbnails .thumbnail { width:52px !important; height:34px !important; }
+  body.fit #mainImageContainer { height:340px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:340px !important; width:100%; object-fit:contain; }
+  body.fit #thumbnails { height:38px; flex-wrap:nowrap; justify-content:flex-start; gap:3px; }
+  body.fit #thumbnails .thumbnail { width:48px !important; height:32px !important; flex:0 0 auto; }
   /* info: título y precios grandes */
   body.fit .detail-name { font-size:24px; line-height:1.15; margin-bottom:3px; }
   body.fit #detailCode { font-size:12.5px; }
   body.fit #detailBadge { font-size:11px; padding:3px 10px; }
-  body.fit #referencePrices { display:flex; gap:10px; margin-top:10px; max-width:none; }
+  body.fit #referencePrices { display:grid !important; grid-template-columns:1fr !important; gap:7px; margin-top:10px; max-width:none; }
+  body.fit #referencePrices .ref-vals { align-items:baseline; }
   body.fit #referencePrices .ref-price-item { padding:9px 13px; }
   body.fit #referencePrices .ref-lbl { font-size:11.5px; }
   body.fit #referencePrices .original-price { font-size:13px; }
