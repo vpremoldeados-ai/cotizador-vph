@@ -1226,8 +1226,9 @@ body.fit #quantityInputs, body.fit #quantityInputs * { margin-top:0 !important; 
 body.fit #quantityInputs > div:first-child { display:grid; grid-template-columns:repeat(3,1fr); gap:1px 6px; align-items:end; }
 body.fit #quantityInputs > div:first-child > div { font-size:9.5px; line-height:1.2; }
 body.fit #quantityInputs input { padding:5px 6px; font-size:12.5px; }
-body.fit #m2-info { display:flex; flex-wrap:wrap; gap:2px 10px; font-size:10px; line-height:1.25; margin:1px 0 0; max-height:24px; overflow:hidden; }
-body.fit #m2-info > div { margin:0; font-size:10px; }
+body.fit #m2-info { font-size:10.5px; line-height:1.3; margin:3px 0 0; padding-top:3px; border-top:1px solid #eee; }
+body.fit #m2-info > div { margin:0; font-size:10.5px; }
+body.fit #quantityInputs .qh { font-size:11px; font-weight:600; color:#333; text-align:center; border-bottom:1px solid #ddd; padding-bottom:3px; }
 body.fit #weightPalletsBox { display:flex; gap:10px; margin:2px 0 0; padding:2px 6px; }
 body.fit #weightPalletsBox .price-row { margin:0; font-size:10px; display:flex; gap:4px; }
 body.fit .price-breakdown { padding:2px 8px; margin:0; font-size:10.5px; line-height:1.35; }
@@ -2198,23 +2199,21 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
 
             if (product.type === 'm2') {
                 container.innerHTML = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 4px;">
-                        <div style="font-size: 12px; font-weight: 600; color: #333; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px;">m²</div>
-                        <div style="font-size: 12px; font-weight: 600; color: #333; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px;">Ancho m</div>
-                        <div style="font-size: 12px; font-weight: 600; color: #333; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px;">Largo m</div>
+                    <div style="display: grid; grid-template-columns: 1.15fr 1fr 1fr 1fr; gap: 7px; margin-bottom: 3px;">
+                        <div class="qh">Unidades</div>
+                        <div class="qh">m²</div>
+                        <div class="qh">Ancho m</div>
+                        <div class="qh">Largo m</div>
 
+                        <input type="number" id="qty-units-m2" placeholder="0" min="1" step="1" oninput="clearM2()" onchange="updatePrice()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
                         <input type="number" id="qty-m2" placeholder="0" min="1" step="1" oninput="clearUnitsM2()" onchange="updatePrice()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
                         <input type="number" id="qty-ancho" placeholder="0" min="1" step="1" oninput="clearUnitsM2()" onchange="calculateM2()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
                         <input type="number" id="qty-largo" placeholder="0" min="1" step="1" oninput="clearUnitsM2()" onchange="calculateM2()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
                     </div>
-                    <div style="text-align:center; font-size:10.5px; color:#94a3b8; margin:4px 0 3px;">— o ingresá la cantidad exacta de unidades —</div>
-                    <input type="number" id="qty-units-m2" placeholder="Cantidad de unidades" min="1" step="1" oninput="clearM2()" onchange="updatePrice()" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:13px;">
-                    <div id="m2-info" style="font-size: 11px; color: #666; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee;">
-                        <div>Cantidad: <span id="m2-units" style="font-weight: 600; color: #333;">0</span> unidades</div>
-                        <div style="margin-top: 2px;">Cortes (5%): <span id="m2-units-cut" style="font-weight: 600; color: #333;">0</span> unidades</div>
-                        <div style="margin-top: 2px; padding-top: 4px; border-top: 1px solid #ddd;">Total: <span id="m2-units-total" style="font-weight: 700; color: #333;">0</span></div>
-                        <div style="margin-top: 2px;">Peso: <span id="m2-weight" style="font-weight: 600; color: #333;">0 kg</span></div>
-                        <div style="margin-top: 2px;">Pallets: <span id="m2-pallets" style="font-weight: 600; color: #333;">0</span></div>
+                    <div style="font-size:10px; color:#94a3b8; margin:0 0 2px; line-height:1.25;">Ingresá la cantidad exacta de <b>unidades</b>, o los <b>m²</b> (o ancho × largo) y los convertimos.</div>
+                    <div id="m2-info" style="font-size: 11px; color: #555;">
+                        <div id="m2-info-line1">&nbsp;</div>
+                        <div id="m2-info-line2" style="margin-top:1px;">Peso: <span id="m2-weight" style="font-weight:600; color:#333;">0 kg</span> · Pallets: <span id="m2-pallets" style="font-weight:600; color:#333;">0</span></div>
                     </div>
                 `;
             } else if (product.type === 'units') {
@@ -2294,25 +2293,9 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             const m2 = ancho * largo;
 
             if (ancho > 0 && largo > 0) {
+                clearUnitsM2();
                 document.getElementById('qty-m2').value = m2.toFixed(2);
-
-                // Actualizar cantidad de unidades y peso
-                const product = catalog[currentProduct.category].products[currentProduct.index];
-                if (product.per_m2) {
-                    const units = m2 * product.per_m2;
-                    const unitsCut = Math.ceil(units * 0.05); // Redondear al entero superior
-                    const unitsTotal = Math.ceil(units) + unitsCut;
-                    const weight = unitsTotal * product.weight;
-                    const pallets = (unitsTotal / product.per_pallet).toFixed(2);
-
-                    document.getElementById('m2-units').textContent = Math.ceil(units).toLocaleString();
-                    document.getElementById('m2-units-cut').textContent = unitsCut.toLocaleString();
-                    document.getElementById('m2-units-total').textContent = unitsTotal.toLocaleString();
-                    document.getElementById('m2-weight').textContent = Math.round(weight) + ' kg';
-                    document.getElementById('m2-pallets').textContent = pallets;
-                }
-
-                updatePrice();
+                updatePrice(); // updatePrice arma el desglose (Cantidad · Cortes · Total · Peso · Pallets)
             }
         }
 
@@ -2322,24 +2305,21 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             const destination = document.getElementById('destination').value;
             const paymentMethod = document.getElementById('paymentMethod').value;
 
-            // Actualizar información de unidades y peso si es m2
+            // Actualizar el desglose (Cantidad · Cortes · Total · Peso · Pallets) cuando se ingresan m²
             if (product.type === 'm2') {
                 const m2 = parseFloat(document.getElementById('qty-m2')?.value || 0);
                 if (m2 > 0 && product.per_m2) {
-                    const units = m2 * product.per_m2;
-                    const unitsCut = Math.ceil(units * 0.05); // Redondear al entero superior
-                    const unitsTotal = Math.ceil(units) + unitsCut;
+                    const aplicaCorte = ['Losetas Cribadas', 'Losetas Green', 'Cordones y Listones'].includes(currentProduct.category);
+                    const unitsBase = Math.ceil(m2 * product.per_m2);
+                    const unitsCut = aplicaCorte ? Math.ceil(unitsBase * 0.05) : 0;
+                    const unitsTotal = unitsBase + unitsCut;
                     const weight = unitsTotal * product.weight;
-                    const pallets = (unitsTotal / product.per_pallet).toFixed(2);
-                    const m2InfoContainer = document.getElementById('m2-info');
-                    if (m2InfoContainer) {
-                        m2InfoContainer.style.display = 'block';
-                        document.getElementById('m2-units').textContent = Math.ceil(units).toLocaleString();
-                        document.getElementById('m2-units-cut').textContent = unitsCut.toLocaleString();
-                        document.getElementById('m2-units-total').textContent = unitsTotal.toLocaleString();
-                            document.getElementById('m2-weight').textContent = Math.round(weight) + ' kg';
-                        document.getElementById('m2-pallets').textContent = Math.ceil(pallets);
-                    }
+                    const l1 = document.getElementById('m2-info-line1');
+                    if (l1) l1.innerHTML = aplicaCorte
+                        ? `Necesitás <b style="color:#0f172a;">${unitsTotal.toLocaleString()} unidades</b> = ${unitsBase.toLocaleString()} + <b style="color:#0a7d3f;">${unitsCut.toLocaleString()}</b> adicionales por corte (5%)`
+                        : `Necesitás <b style="color:#0f172a;">${unitsTotal.toLocaleString()} unidades</b>`;
+                    const w = document.getElementById('m2-weight'); if (w) w.textContent = Math.round(weight).toLocaleString() + ' kg';
+                    const p = document.getElementById('m2-pallets'); if (p && product.per_pallet) p.textContent = Math.ceil(unitsTotal / product.per_pallet);
                 }
             }
 
