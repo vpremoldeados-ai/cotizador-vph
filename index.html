@@ -1275,16 +1275,22 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   /* miniaturas cuadradas fijas, apiladas en 2 columnas dentro de la columna izquierda */
   body.fit .category-img-collage { display:flex; flex-wrap:wrap; gap:3px; width:88px; justify-content:center; align-content:center; height:auto; }
   body.fit .category-img-collage > div { width:41px; height:41px; aspect-ratio:auto; }
-  body.fit .detail-top { grid-template-columns:110px minmax(0,1fr); }
-  body.fit #mainImageContainer { height:110px !important; min-height:0; }
-  body.fit #mainImage { height:110px !important; width:100%; object-fit:contain; }
-  body.fit #thumbnails { height:22px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-  body.fit #thumbnails::-webkit-scrollbar { display:none; }
-  body.fit #thumbnails .thumbnail { width:28px !important; height:18px !important; min-width:28px; flex:0 0 auto; }
-  body.fit #referencePrices { grid-template-columns:1fr; }
-  body.fit #detailSpecs { grid-template-columns:1fr 1fr; }
-  body.fit .detail-spec { font-size:9.5px; }
-  body.fit .detail-purchase { grid-template-columns:1fr 1fr; }
+  /* móvil: imagen grande a la izquierda | info a la derecha; miniaturas envueltas (se ven las 7) */
+  body.fit #screen-detail .detail-top { display:grid !important; grid-template-columns:180px minmax(0,1fr); gap:10px; align-items:start; flex:0 0 auto; }
+  body.fit #screen-detail .detail-gallery, body.fit #screen-detail .detail-info { overflow:visible !important; height:auto !important; min-height:0; }
+  body.fit #mainImageContainer { height:135px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:135px !important; width:100%; object-fit:contain; }
+  body.fit #thumbnails { height:auto; display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-start; overflow:visible; margin-top:4px !important; }
+  body.fit #thumbnails .thumbnail { width:40px !important; height:27px !important; min-width:0; flex:0 0 auto; }
+  body.fit #screen-detail #referencePrices { display:grid !important; grid-template-columns:1fr !important; gap:4px; }
+  body.fit #detailSpecs { grid-template-columns:1fr 1fr; gap:0 8px; }
+  body.fit .detail-spec { font-size:9.5px; line-height:1.25; padding:0 !important; height:auto !important; }
+  body.fit #screen-detail #m2-info, body.fit #screen-detail #m2-info > div { font-size:9.5px; line-height:1.2; }
+  /* campos más compactos */
+  body.fit .detail-purchase .form-label { font-size:10.5px; margin-bottom:2px; }
+  body.fit .detail-purchase .form-control { padding:5px 8px; font-size:12px; }
+  body.fit #quantityInputs input { padding:5px 6px; font-size:12px; }
+  body.fit .detail-purchase { grid-template-columns:1fr 1fr; gap:5px 10px; }
   body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-row:1; grid-column:1; }
   body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-row:1; grid-column:2; }
   body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-row:2; grid-column:1 / -1; }
