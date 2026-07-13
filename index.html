@@ -1206,11 +1206,16 @@ body.fit .detail-name { font-size:16px; margin:0; }
 body.fit #detailCode { font-size:11px; margin:0; height:auto; }
 body.fit #detailBadge { font-size:10px; padding:2px 8px; margin:1px 0; display:inline-block; }
 body.fit #referencePrices { display:grid !important; grid-template-columns:1fr 1fr; gap:4px; margin:3px 0 0; padding:0; }
-body.fit #referencePrices .ref-price-item { margin:0; height:auto; min-height:0; padding:3px 5px; font-size:10px; }
-body.fit #referencePrices .ref-price-item > div { height:auto !important; min-height:0; font-size:10px !important; line-height:1.25 !important; }
+body.fit #referencePrices { display:flex; gap:6px; margin:4px 0 0; }
+body.fit #referencePrices .ref-price-item { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; margin:0; padding:5px 8px; height:auto; min-height:0; border:1px solid #e5e7eb; border-radius:7px; background:#f8fafc; }
+body.fit #referencePrices .ref-lbl { font-size:10px; font-weight:600; color:#64748b; line-height:1.2; }
+body.fit #referencePrices .ref-vals { display:flex; align-items:baseline; gap:5px; flex-wrap:wrap; }
+body.fit #referencePrices .original-price { font-size:10.5px; color:#94a3b8; text-decoration:line-through; }
+body.fit #referencePrices .discounted-price { font-size:16px; font-weight:800; color:#0f172a; line-height:1.1; }
+body.fit #referencePrices .ref-off { font-size:9px; font-weight:800; color:#0a7d3f; background:#e7f8ee; border-radius:4px; padding:0 4px; }
 body.fit #detailSpecs { display:grid; gap:1px 8px; margin:0; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; }
 body.fit .detail-spec { height:auto !important; padding:2px 0; line-height:1.3; }
-body.fit .detail-purchase { margin:0; display:grid; gap:3px 8px; align-items:start; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; }
+body.fit .detail-purchase { margin:0; display:grid; gap:3px 8px; align-items:start; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; overflow:visible; flex-shrink:0; }
 body.fit .detail-purchase .form-label { font-size:11px; margin:0 0 2px; height:auto; }
 body.fit .detail-purchase .form-control { padding:6px; font-size:12.5px; height:auto; }
 body.fit .detail-purchase .form-group { margin:0; height:auto; }
@@ -1296,22 +1301,28 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .category-img-collage > div { height:100%; max-height:100%; }
   body.fit .product-card img { width:100%; height:100%; object-fit:contain; }
   body.fit .category-desc, body.fit .product-desc { font-size:12.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-  body.fit .detail-top { grid-template-columns:300px minmax(0,1fr); }
-  body.fit #mainImageContainer { height:210px !important; min-height:0; width:100%; }
-  body.fit #mainImage { height:210px !important; width:100%; object-fit:contain; }
-  body.fit #thumbnails { height:30px; }
-  body.fit #thumbnails .thumbnail { width:40px !important; height:28px !important; }
-  body.fit .detail-name { font-size:19px; }
-  body.fit #detailSpecs { grid-template-columns:repeat(3,1fr); }
-  body.fit .detail-spec { font-size:11px; }
-  body.fit .detail-purchase { grid-template-columns:1fr 1fr 1fr; }
-  body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-row:1; grid-column:1; }
-  body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-row:1; grid-column:2; }
-  body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-row:1; grid-column:3; }
-  body.fit .detail-purchase > .price-breakdown { grid-row:2; grid-column:1 / 3; }
-  body.fit .detail-purchase > .button-group { grid-row:2; grid-column:3; align-self:end; }
-  body.fit .detail-purchase > .trust-strip { grid-row:3; grid-column:1 / -1; }
-  body.fit #referencePrices { max-width:420px; }
+  body.fit .detail-container { gap:6px; }
+  body.fit .detail-top { grid-template-columns:270px minmax(0,1fr); gap:16px; }
+  body.fit #mainImageContainer { height:165px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:165px !important; width:100%; object-fit:contain; }
+  body.fit #thumbnails { height:28px; }
+  body.fit #thumbnails .thumbnail { width:40px !important; height:26px !important; }
+  body.fit .detail-purchase { overflow:visible !important; flex-shrink:0; }
+  body.fit .detail-name { font-size:20px; }
+  body.fit #detailSpecs { grid-template-columns:repeat(3,1fr); gap:3px 18px; }
+  body.fit .detail-spec { font-size:12px; }
+  /* Zona de compra: Destino+Pago arriba, Cantidad ancha, y Resumen+Botones abajo */
+  body.fit .detail-purchase { display:grid; grid-template-columns:1fr 1fr; grid-template-areas:"dest pago" "cant cant" "resumen botones" "trust trust"; gap:8px 18px; align-content:start; }
+  body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-area:dest; }
+  body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-area:cant; }
+  body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-area:pago; }
+  body.fit .detail-purchase > .price-breakdown { grid-area:resumen; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:10px 14px; align-self:center; }
+  body.fit .detail-purchase > .button-group { grid-area:botones; align-self:center; }
+  body.fit .detail-purchase > .trust-strip { grid-area:trust; }
+  body.fit .detail-purchase .form-label { font-size:13px; margin-bottom:4px; }
+  body.fit .detail-purchase .form-control { padding:8px; font-size:14px; }
+  body.fit .detail-purchase .price-breakdown .price-row { font-size:14px; }
+  body.fit #referencePrices { max-width:460px; }
 }
 /* ===== Pantalla 1: miniaturas CUADRADAS y SIN RECORTE (contain), reducidas para entrar en la caja =====
    PC: una fila de cuadrados centrada. Móvil: cuadrados a la izquierda, título a la derecha, descripción abajo. */
@@ -1376,25 +1387,21 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                     <div id="detailBadge" class="badge-bestseller" style="display:none;">⭐ Más vendida</div>
 
                     <!-- Reference Prices -->
-                    <div id="referencePrices" class="reference-prices" style="display: none; margin-top: 8px;">
+                    <div id="referencePrices" class="reference-prices" style="display: none;">
                         <div class="ref-price-item">
-                            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
-                                <div id="refNormalLabel" style="font-size: 13px; font-weight: 700; color: #999;">Precio Normal</div>
-                                <div id="refDiscLabel" style="font-size: 13px; font-weight: 700; color: #2563eb;">Precio con 20% de descuento</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="original-price" id="refPriceOriginal"></div>
-                                <div class="discounted-price" id="refPriceDiscounted"></div>
+                            <div class="ref-lbl">Precio por unidad</div>
+                            <div class="ref-vals">
+                                <span class="original-price" id="refPriceOriginal"></span>
+                                <span class="discounted-price" id="refPriceDiscounted"></span>
+                                <span class="ref-off" id="refOffUnit" style="display:none;">20% OFF</span>
                             </div>
                         </div>
                         <div class="ref-price-item" id="refPricePerM2Container" style="display: none;">
-                            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1;">
-                                <div id="refNormalLabelM2" style="font-size: 13px; font-weight: 700; color: #999;">Precio Normal</div>
-                                <div id="refDiscLabelM2" style="font-size: 13px; font-weight: 700; color: #2563eb;">Precio con 20% de descuento</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="original-price" id="refPriceM2Original"></div>
-                                <div class="discounted-price" id="refPriceM2Discounted"></div>
+                            <div class="ref-lbl">Precio por m²</div>
+                            <div class="ref-vals">
+                                <span class="original-price" id="refPriceM2Original"></span>
+                                <span class="discounted-price" id="refPriceM2Discounted"></span>
+                                <span class="ref-off" id="refOffM2" style="display:none;">20% OFF</span>
                             </div>
                         </div>
                     </div>
@@ -2137,38 +2144,24 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             // Precios de referencia (descuento solo en Cribadas)
             const isDisc = promotion.active && PROMO_CODES.includes(product.code);
             const priceWithDiscount = getPriceWithDiscount(product.price, product.code);
+            // Precio POR UNIDAD: normal tachado (si hay descuento) + precio efectivo grande + badge OFF
             const refPriceOriginalEl = document.getElementById('refPriceOriginal');
-            if (isDisc) {
-                document.getElementById('refNormalLabel').style.display = 'block';
-                document.getElementById('refDiscLabel').textContent = 'Precio con 20% de descuento';
-                refPriceOriginalEl.style.display = 'block';
-                refPriceOriginalEl.textContent = `$${product.price.toLocaleString()}`;
-                document.getElementById('refPriceDiscounted').textContent = `$${priceWithDiscount.toLocaleString()}`;
-            } else {
-                document.getElementById('refNormalLabel').style.display = 'none';
-                document.getElementById('refDiscLabel').textContent = 'Precio';
-                refPriceOriginalEl.style.display = 'none';
-                document.getElementById('refPriceDiscounted').textContent = `$${product.price.toLocaleString()}`;
-            }
+            refPriceOriginalEl.style.display = isDisc ? 'inline' : 'none';
+            refPriceOriginalEl.textContent = `$${product.price.toLocaleString()}`;
+            document.getElementById('refPriceDiscounted').textContent = `$${priceWithDiscount.toLocaleString()}`;
+            document.getElementById('refOffUnit').style.display = isDisc ? 'inline' : 'none';
 
+            // Precio POR M² (solo losetas): idem
             const refPriceM2Container = document.getElementById('refPricePerM2Container');
             if (product.per_m2) {
                 refPriceM2Container.style.display = 'flex';
                 const priceM2Original = product.price * product.per_m2;
                 const priceM2Discounted = priceWithDiscount * product.per_m2;
                 const refPriceM2OriginalEl = document.getElementById('refPriceM2Original');
-                if (isDisc) {
-                    document.getElementById('refNormalLabelM2').style.display = 'block';
-                    document.getElementById('refDiscLabelM2').textContent = 'Precio con 20% de descuento';
-                    refPriceM2OriginalEl.style.display = 'block';
-                    refPriceM2OriginalEl.textContent = `$${Math.round(priceM2Original).toLocaleString()}`;
-                    document.getElementById('refPriceM2Discounted').textContent = `$${Math.round(priceM2Discounted).toLocaleString()}`;
-                } else {
-                    document.getElementById('refNormalLabelM2').style.display = 'none';
-                    document.getElementById('refDiscLabelM2').textContent = 'Precio por m²';
-                    refPriceM2OriginalEl.style.display = 'none';
-                    document.getElementById('refPriceM2Discounted').textContent = `$${Math.round(priceM2Original).toLocaleString()}`;
-                }
+                refPriceM2OriginalEl.style.display = isDisc ? 'inline' : 'none';
+                refPriceM2OriginalEl.textContent = `$${Math.round(priceM2Original).toLocaleString()}`;
+                document.getElementById('refPriceM2Discounted').textContent = `$${Math.round(priceM2Discounted).toLocaleString()}`;
+                document.getElementById('refOffM2').style.display = isDisc ? 'inline' : 'none';
             } else {
                 refPriceM2Container.style.display = 'none';
             }
@@ -2205,15 +2198,17 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
 
             if (product.type === 'm2') {
                 container.innerHTML = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 4px;">
                         <div style="font-size: 12px; font-weight: 600; color: #333; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px;">m²</div>
                         <div style="font-size: 12px; font-weight: 600; color: #333; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px;">Ancho m</div>
                         <div style="font-size: 12px; font-weight: 600; color: #333; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 4px;">Largo m</div>
 
-                        <input type="number" id="qty-m2" placeholder="0" min="1" step="1" onchange="updatePrice()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
-                        <input type="number" id="qty-ancho" placeholder="0" min="1" step="1" onchange="calculateM2()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
-                        <input type="number" id="qty-largo" placeholder="0" min="1" step="1" onchange="calculateM2()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        <input type="number" id="qty-m2" placeholder="0" min="1" step="1" oninput="clearUnitsM2()" onchange="updatePrice()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        <input type="number" id="qty-ancho" placeholder="0" min="1" step="1" oninput="clearUnitsM2()" onchange="calculateM2()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
+                        <input type="number" id="qty-largo" placeholder="0" min="1" step="1" oninput="clearUnitsM2()" onchange="calculateM2()" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;">
                     </div>
+                    <div style="text-align:center; font-size:10.5px; color:#94a3b8; margin:4px 0 3px;">— o ingresá la cantidad exacta de unidades —</div>
+                    <input type="number" id="qty-units-m2" placeholder="Cantidad de unidades" min="1" step="1" oninput="clearM2()" onchange="updatePrice()" style="width:100%; padding:6px; border:1px solid #ddd; border-radius:4px; font-size:13px;">
                     <div id="m2-info" style="font-size: 11px; color: #666; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee;">
                         <div>Cantidad: <span id="m2-units" style="font-weight: 600; color: #333;">0</span> unidades</div>
                         <div style="margin-top: 2px;">Cortes (5%): <span id="m2-units-cut" style="font-weight: 600; color: #333;">0</span> unidades</div>
@@ -2289,6 +2284,10 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             }
         }
 
+        // Losetas: m² y "cantidad de unidades" son mutuamente excluyentes (una limpia la otra)
+        function clearUnitsM2() { const u = document.getElementById('qty-units-m2'); if (u) u.value = ''; }
+        function clearM2() { ['qty-m2', 'qty-ancho', 'qty-largo'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; }); }
+
         function calculateM2() {
             const ancho = parseFloat(document.getElementById('qty-ancho')?.value || 0);
             const largo = parseFloat(document.getElementById('qty-largo')?.value || 0);
@@ -2345,6 +2344,8 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             }
 
             let quantity = 0;
+            // Losetas: si el visitante ingresó unidades directas, ese modo manda (sin corte).
+            const directUnitsM2 = product.type === 'm2' ? parseFloat(document.getElementById('qty-units-m2')?.value || 0) : 0;
 
             if (product.type === 'm2') {
                 quantity = parseFloat(document.getElementById('qty-m2')?.value || 0);
@@ -2362,11 +2363,16 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             let quantityCut = 0;
 
             if (product.type === 'm2') {
-                // Convertir m2 a unidades
-                const units = quantity * product.per_m2;
-                const unitsBase = Math.ceil(units);
-                quantityCut = isCut ? Math.ceil(unitsBase * 0.05) : 0;
-                totalUnits = unitsBase + quantityCut;
+                if (directUnitsM2 > 0) {
+                    // Ingreso directo por unidades: exactamente esa cantidad, sin corte
+                    totalUnits = Math.ceil(directUnitsM2);
+                    quantityCut = 0;
+                } else {
+                    const units = quantity * product.per_m2;
+                    const unitsBase = Math.ceil(units);
+                    quantityCut = isCut ? Math.ceil(unitsBase * 0.05) : 0;
+                    totalUnits = unitsBase + quantityCut;
+                }
             } else if (product.type === 'units') {
                 quantityCut = isCut ? Math.ceil(quantity * 0.05) : 0;
                 totalUnits = Math.ceil(quantity) + quantityCut;
@@ -2375,10 +2381,15 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 totalUnits = Math.ceil(quantity) + quantityCut;
             }
 
-            // Peso y Pallets (Topes, Cordones y Listones) — debajo de Cantidad
+            // Peso y Pallets — debajo de Cantidad. En losetas por m² lo muestra el bloque m2-info;
+            // en modo unidades-directo (y en Topes/Cordones) lo mostramos acá y ocultamos la conversión de m².
             const wpBox = document.getElementById('weightPalletsBox');
+            const m2InfoEl = document.getElementById('m2-info');
+            const modoDirecto = product.type === 'm2' && directUnitsM2 > 0;
+            if (m2InfoEl) m2InfoEl.style.display = (product.type === 'm2' && !modoDirecto) ? 'block' : 'none';
             if (wpBox) {
-                if ((product.type === 'units' || product.type === 'ml') && quantity > 0 && product.weight && product.per_pallet) {
+                const mostrarWP = (modoDirecto || product.type === 'units' || product.type === 'ml') && totalUnits > 0 && product.weight && product.per_pallet;
+                if (mostrarWP) {
                     document.getElementById('weightVal').textContent = Math.round(totalUnits * product.weight).toLocaleString() + ' kg';
                     document.getElementById('palletsVal').textContent = Math.ceil(totalUnits / product.per_pallet);
                     wpBox.style.display = 'block';
@@ -2453,10 +2464,16 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             const product = catalog[currentProduct.category].products[currentProduct.index];
 
             let quantity = 0, quantityLabel = '';
+            const directUnitsM2Cart = product.type === 'm2' ? parseFloat(document.getElementById('qty-units-m2')?.value || 0) : 0;
 
             if (product.type === 'm2') {
-                quantity = parseFloat(document.getElementById('qty-m2')?.value || 0);
-                quantityLabel = `${quantity} m²`;
+                if (directUnitsM2Cart > 0) {
+                    quantity = directUnitsM2Cart;
+                    quantityLabel = `${Math.ceil(directUnitsM2Cart).toLocaleString()} unidades`;
+                } else {
+                    quantity = parseFloat(document.getElementById('qty-m2')?.value || 0);
+                    quantityLabel = `${quantity} m²`;
+                }
             } else if (product.type === 'units') {
                 quantity = parseFloat(document.getElementById('qty-units')?.value || 0);
                 quantityLabel = `${quantity} unidad(es)`;
@@ -2495,11 +2512,16 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             let quantityCut = 0;
 
             if (product.type === 'm2') {
-                // Convertir m2 a unidades
-                const units = quantity * product.per_m2;
-                const unitsBase = Math.ceil(units);
-                quantityCut = isCut ? Math.ceil(unitsBase * 0.05) : 0;
-                totalUnits = unitsBase + quantityCut;
+                if (directUnitsM2Cart > 0) {
+                    // Unidades directas: exactamente esa cantidad, sin corte
+                    totalUnits = Math.ceil(directUnitsM2Cart);
+                    quantityCut = 0;
+                } else {
+                    const units = quantity * product.per_m2;
+                    const unitsBase = Math.ceil(units);
+                    quantityCut = isCut ? Math.ceil(unitsBase * 0.05) : 0;
+                    totalUnits = unitsBase + quantityCut;
+                }
             } else if (product.type === 'units') {
                 quantityCut = isCut ? Math.ceil(quantity * 0.05) : 0;
                 totalUnits = Math.ceil(quantity) + quantityCut;
@@ -2508,7 +2530,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 totalUnits = Math.ceil(quantity) + quantityCut;
             }
 
-            // Subtotal con precio unitario efectivo (descuento ya aplicado en LC60)
+            // Subtotal = cantidad total de unidades × precio unitario CON descuento; el flete se suma aparte
             const unitPrice = getPriceWithDiscount(product.price, product.code);
             const subtotal = totalUnits * unitPrice;
 
@@ -2522,13 +2544,9 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             const discount = 0; // descuento ya incluido en el subtotal
             const total = subtotal + freightCost;
 
-            // Actualizar quantityLabel si hay corte
-            if (isCut && product.type === 'm2') {
-                const cutLabel = `${quantityCut} unid.`;
-                quantityLabel = `${quantityLabel} + ${cutLabel} (corte)`;
-            } else if (isCut) {
-                const cutLabel = `${quantityCut} unid.`;
-                quantityLabel = `${quantityLabel} + ${cutLabel} (corte)`;
+            // Sumar la aclaración del corte solo si efectivamente hay corte (no en modo unidades directas)
+            if (isCut && quantityCut > 0) {
+                quantityLabel = `${quantityLabel} + ${quantityCut} unid. (corte)`;
             }
 
             const newItem = {
