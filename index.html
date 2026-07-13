@@ -1255,12 +1255,17 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
 /* ===== móvil ===== */
 @media (max-width:767px){
   body.fit .categories-grid, body.fit .products-grid { grid-template-columns:1fr; grid-auto-rows:1fr; }
-  body.fit .category-card, body.fit .product-card { min-height:0; display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; overflow:hidden; padding:8px; }
-  body.fit .category-img-wrap, body.fit .product-card .product-img-wrap { height:100%; min-height:0; }
-  body.fit .category-img-collage { height:100%; }
-  body.fit .category-card img, body.fit .product-card img { width:100%; height:100%; object-fit:contain; }
-  body.fit .category-name, body.fit .product-name { font-size:15px; margin:0 0 2px; text-align:left; }
-  body.fit .category-desc, body.fit .product-desc { font-size:11.5px; line-height:1.35; margin:0; text-align:left; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  /* Productos (Pantalla 2): siguen en fila horizontal (imagen | texto) */
+  body.fit .product-card { min-height:0; display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; overflow:hidden; padding:8px; }
+  body.fit .product-card .product-img-wrap { height:100%; min-height:0; }
+  body.fit .product-card img { width:100%; height:100%; object-fit:contain; }
+  body.fit .product-name { font-size:15px; margin:0 0 2px; text-align:left; }
+  body.fit .product-desc { font-size:11.5px; line-height:1.35; margin:0; text-align:left; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  /* Categorías (Pantalla 1): imagen ARRIBA, título y descripción ABAJO (vertical) */
+  body.fit .category-card { min-height:0; display:flex; flex-direction:column; gap:4px; overflow:hidden; padding:8px; }
+  body.fit .category-img-wrap { flex:1; min-height:0; width:100%; margin:0; }
+  body.fit .category-name { font-size:15px; margin:0; text-align:center; }
+  body.fit .category-desc { font-size:11px; line-height:1.3; margin:0; text-align:center; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   body.fit .detail-top { grid-template-columns:110px minmax(0,1fr); }
   body.fit #mainImageContainer { height:110px !important; min-height:0; }
   body.fit #mainImage { height:110px !important; width:100%; object-fit:contain; }
@@ -1303,6 +1308,17 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .detail-purchase > .trust-strip { grid-row:3; grid-column:1 / -1; }
   body.fit #referencePrices { max-width:420px; }
 }
+/* ===== Collage ADAPTATIVO de categorías: llena el cuadro según cantidad de fotos, sin huecos =====
+   1 foto: completa · 2: dos columnas · 3: una grande + dos apiladas · 4: grilla 2×2. Tiles con cover. */
+body.fit .category-img-wrap { background:#f0f0f0; }
+body.fit .category-img-collage { display:grid; gap:2px; width:100%; height:100%; }
+body.fit .category-img-collage[data-n="1"] { grid-template-columns:1fr; grid-template-rows:1fr; }
+body.fit .category-img-collage[data-n="2"] { grid-template-columns:1fr 1fr; grid-template-rows:1fr; }
+body.fit .category-img-collage[data-n="3"] { grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; }
+body.fit .category-img-collage[data-n="3"] > *:first-child { grid-column:1; grid-row:1 / span 2; }
+body.fit .category-img-collage[data-n="4"] { grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; }
+body.fit .category-img-collage > div { position:relative; overflow:hidden; min-width:0; min-height:0; }
+body.fit .category-img-wrap .category-img-collage img { width:100%; height:100%; object-fit:cover; display:block; }
 </style>
 </head>
 <body>
@@ -1841,32 +1857,19 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
                 const shown = allProducts.slice(0, MAX_COLLAGE);
                 const extraCount = allProducts.length - shown.length;
 
-                // Grilla fija de 4 cuadrantes (formato "Topes de Estacionamiento") para todas las categorías.
-                // 1 foto: ocupa el cuadro completo. 2 fotos: cuadrantes 1 y 4 (diagonal). 3 fotos: 1, 2 y 3.
-                // 4 fotos: los 4 cuadrantes.
-                const quadrantsByCount = {
-                    1: ['q-full'],
-                    2: ['q1', 'q4'],
-                    3: ['q1', 'q2', 'q3'],
-                    4: ['q1', 'q2', 'q3', 'q4']
-                };
-                const quadrants = quadrantsByCount[shown.length] || quadrantsByCount[4];
-
+                // Collage ADAPTATIVO: los tiles llenan el cuadro completo según la cantidad de fotos
+                // (data-n), sin cuadrantes vacíos. El CSS define la grilla por cantidad (1/2/3/4).
                 let collageHtml;
                 if (shown.length === 0) {
-                    collageHtml = `<div class="category-img-collage"></div>`;
+                    collageHtml = `<div class="category-img-collage" data-n="0"></div>`;
                 } else {
                     const tiles = shown.map((p, i) => {
                         const isLast = i === shown.length - 1;
-                        const classes = [quadrants[i]];
-                        let extraAttr = '';
-                        if (isLast && extraCount > 0) {
-                            classes.push('collage-more');
-                            extraAttr = ` data-more="+${extraCount}"`;
-                        }
-                        return `<div class="${classes.join(' ')}"${extraAttr}><img src="${p.image}" alt="${categoryName}" loading="lazy"></div>`;
+                        let cls = '', extraAttr = '';
+                        if (isLast && extraCount > 0) { cls = 'collage-more'; extraAttr = ` data-more="+${extraCount}"`; }
+                        return `<div class="${cls}"${extraAttr}><img src="${p.image}" alt="${categoryName}" loading="lazy"></div>`;
                     }).join('');
-                    collageHtml = `<div class="category-img-collage">${tiles}</div>`;
+                    collageHtml = `<div class="category-img-collage" data-n="${shown.length}">${tiles}</div>`;
                 }
 
                 card.innerHTML = `
