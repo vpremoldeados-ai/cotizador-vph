@@ -1178,6 +1178,132 @@
             animation: none !important;
         }
     </style>
+<style id="vph-fit">
+/* ===== MODO ENCAJE (fit): altura fija, todo visible sin scroll interno =====
+   body.fit siempre activo; .fit-full (pantalla completa) usa 100dvh; embebido usa 700px fijos
+   que postHeight comunica a Wix. Para desactivar: quitar classList.add('fit') en el init. */
+body.fit { height:700px; overflow:hidden; display:flex; flex-direction:column; }
+body.fit.fit-full { height:100vh; height:100dvh; }
+body.fit .global-title { font-size:14px; padding:2px 10px; line-height:1.2; }
+body.fit .breadcrumb-global { padding:2px 10px; font-size:11px; line-height:1.2; }
+body.fit .container { flex:1 1 auto; min-height:0; }
+body.fit .container > [id^="screen-"] { min-height:0 !important; height:100%; overflow:hidden; box-sizing:border-box; width:100%; flex:1 1 auto; min-width:0; }
+
+/* P1/P2: categorías y productos */
+body.fit #screen-categories, body.fit #screen-products { padding:6px 10px; flex-direction:column; }
+body.fit #screen-categories .screen-header, body.fit #screen-products .screen-header { font-size:16px; margin:0 0 6px; }
+body.fit .categories-grid, body.fit .products-grid { flex:1; min-height:0; display:grid; gap:8px; width:100%; overflow:hidden; margin:0; max-width:none; }
+
+/* P3: detalle */
+body.fit #screen-detail { height:100%; overflow:hidden; padding:2px 8px 4px; }
+body.fit #screen-detail > div:first-child { font-size:11px; margin:0 0 4px; }
+body.fit .detail-container { height:calc(100% - 20px); min-height:0; display:flex; flex-direction:column; gap:4px; overflow:hidden; margin:0; padding:0; max-width:none; width:100%; align-items:stretch; }
+body.fit .detail-top { width:100%; display:grid; gap:8px; align-items:start; min-height:0; }
+body.fit .detail-top .detail-gallery, body.fit .detail-top .detail-info { grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; min-height:0; margin:0 !important; padding:0 !important; }
+body.fit .detail-gallery > * { margin:0 !important; }
+body.fit #thumbnails { display:flex; flex-direction:row; gap:3px; margin:3px 0 0 !important; overflow:hidden; }
+body.fit .detail-name { font-size:16px; margin:0; }
+body.fit #detailCode { font-size:11px; margin:0; height:auto; }
+body.fit #detailBadge { font-size:10px; padding:2px 8px; margin:1px 0; display:inline-block; }
+body.fit #referencePrices { display:grid !important; grid-template-columns:1fr 1fr; gap:4px; margin:3px 0 0; padding:0; }
+body.fit #referencePrices .ref-price-item { margin:0; height:auto; min-height:0; padding:3px 5px; font-size:10px; }
+body.fit #referencePrices .ref-price-item > div { height:auto !important; min-height:0; font-size:10px !important; line-height:1.25 !important; }
+body.fit #detailSpecs { display:grid; gap:1px 8px; margin:0; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; }
+body.fit .detail-spec { height:auto !important; padding:2px 0; line-height:1.3; }
+body.fit .detail-purchase { margin:0; display:grid; gap:3px 8px; align-items:start; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; }
+body.fit .detail-purchase .form-label { font-size:11px; margin:0 0 2px; height:auto; }
+body.fit .detail-purchase .form-control { padding:6px; font-size:12.5px; height:auto; }
+body.fit .detail-purchase .form-group { margin:0; height:auto; }
+body.fit #deliveryTime { font-size:9.5px; margin:2px 0 0; padding:1px 4px; height:auto; line-height:1.3; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; max-height:14px; }
+body.fit #cartLockNote { font-size:9px; line-height:1.2; max-height:12px; overflow:hidden; margin:1px 0 0; padding:0; }
+body.fit #quantityInputs { display:flex; flex-direction:column; gap:2px; align-items:stretch; }
+body.fit #quantityInputs, body.fit #quantityInputs * { margin-top:0 !important; margin-bottom:0 !important; }
+body.fit #quantityInputs > div:first-child { display:grid; grid-template-columns:repeat(3,1fr); gap:1px 6px; align-items:end; }
+body.fit #quantityInputs > div:first-child > div { font-size:9.5px; line-height:1.2; }
+body.fit #quantityInputs input { padding:5px 6px; font-size:12.5px; }
+body.fit #m2-info { display:flex; flex-wrap:wrap; gap:2px 10px; font-size:10px; line-height:1.25; margin:1px 0 0; max-height:24px; overflow:hidden; }
+body.fit #m2-info > div { margin:0; font-size:10px; }
+body.fit #weightPalletsBox { display:flex; gap:10px; margin:2px 0 0; padding:2px 6px; }
+body.fit #weightPalletsBox .price-row { margin:0; font-size:10px; display:flex; gap:4px; }
+body.fit .price-breakdown { padding:2px 8px; margin:0; font-size:10.5px; line-height:1.35; }
+body.fit .price-breakdown > div, body.fit .price-breakdown .price-row { margin:0; }
+body.fit .button-group { display:flex; flex-direction:row !important; gap:6px; margin:0; height:auto; }
+body.fit .button-group .btn { padding:8px; font-size:13px; margin:0; width:auto; flex:1; }
+body.fit .detail-purchase .trust-strip { font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:2px 0 0; margin:0; height:16px; }
+
+/* P4: carrito */
+body.fit #screen-cart { padding:6px 10px; flex-direction:column; }
+body.fit #screen-cart > * { flex:0 0 auto; }
+body.fit #screen-cart .screen-header { font-size:16px; margin:0 0 4px; }
+body.fit #screen-cart > div:nth-child(2) { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+body.fit #screen-cart > div:nth-child(2) .form-label { font-size:10.5px; margin:0 0 2px; height:auto; }
+body.fit #screen-cart > div:nth-child(2) .form-control { padding:6px; font-size:12px; }
+body.fit #cartItems { flex:1 1 auto; min-height:56px; overflow-y:auto; margin:4px 0; }
+body.fit .cart-item { padding:6px 8px; margin:0 0 4px; font-size:11.5px; line-height:1.3; }
+body.fit .cart-item * { font-size:11.5px; line-height:1.3; }
+body.fit .cart-total { padding:6px 8px; margin:2px 0; font-size:12px; }
+body.fit .cart-total div { margin:1px 0; }
+body.fit .cart-reassurance { font-size:9.5px; line-height:1.25; margin:2px 0; padding:2px 4px; }
+body.fit #screen-cart .trust-strip { font-size:9.5px; margin:1px 0; padding:0; height:auto; }
+body.fit .cart-buttons { display:flex; gap:6px; margin:3px 0; }
+body.fit .cart-buttons .btn { padding:9px 8px; font-size:13px; margin:0; }
+body.fit #emailBox { margin:3px 0 0; padding:6px 8px; }
+body.fit #emailBox input { padding:7px 8px; font-size:12.5px; }
+body.fit #emailBox .btn, body.fit #emailBox button { padding:8px; font-size:12.5px; margin:4px 0 0; }
+body.fit #emailBox div { font-size:10px; line-height:1.25; }
+
+/* ===== móvil ===== */
+@media (max-width:767px){
+  body.fit .categories-grid, body.fit .products-grid { grid-template-columns:1fr; grid-auto-rows:1fr; }
+  body.fit .category-card, body.fit .product-card { min-height:0; display:grid; grid-template-columns:110px 1fr; gap:10px; align-items:center; overflow:hidden; padding:8px; }
+  body.fit .category-img-wrap, body.fit .product-card .product-img-wrap { height:100%; min-height:0; }
+  body.fit .category-img-collage { height:100%; }
+  body.fit .category-card img, body.fit .product-card img { width:100%; height:100%; object-fit:cover; }
+  body.fit .category-name, body.fit .product-name { font-size:15px; margin:0 0 2px; text-align:left; }
+  body.fit .category-desc, body.fit .product-desc { font-size:11.5px; line-height:1.35; margin:0; text-align:left; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  body.fit .detail-top { grid-template-columns:110px minmax(0,1fr); }
+  body.fit #mainImageContainer { height:110px !important; min-height:0; }
+  body.fit #mainImage { height:110px !important; width:100%; object-fit:cover; }
+  body.fit #thumbnails { height:22px; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  body.fit #thumbnails::-webkit-scrollbar { display:none; }
+  body.fit #thumbnails .thumbnail { width:28px !important; height:18px !important; min-width:28px; flex:0 0 auto; }
+  body.fit #referencePrices { grid-template-columns:1fr; }
+  body.fit #detailSpecs { grid-template-columns:1fr 1fr; }
+  body.fit .detail-spec { font-size:9.5px; }
+  body.fit .detail-purchase { grid-template-columns:1fr 1fr; }
+  body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-row:1; grid-column:1; }
+  body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-row:1; grid-column:2; }
+  body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-row:2; grid-column:1 / -1; }
+  body.fit .detail-purchase > .price-breakdown { grid-row:3; grid-column:1 / -1; }
+  body.fit .detail-purchase > .button-group { grid-row:4; grid-column:1 / -1; }
+  body.fit .detail-purchase > .trust-strip { grid-row:5; grid-column:1 / -1; }
+}
+/* ===== desktop ===== */
+@media (min-width:768px){
+  body.fit .categories-grid, body.fit .products-grid { grid-template-columns:repeat(2,1fr); grid-auto-rows:1fr; }
+  body.fit .category-card, body.fit .product-card { min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+  body.fit .category-img-wrap { flex:1; min-height:0; overflow:hidden; }
+  body.fit .category-img-collage { height:100%; }
+  body.fit .category-card img, body.fit .product-card img { width:100%; height:100%; object-fit:cover; }
+  body.fit .category-desc, body.fit .product-desc { font-size:12.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  body.fit .detail-top { grid-template-columns:300px minmax(0,1fr); }
+  body.fit #mainImageContainer { height:210px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:210px !important; width:100%; object-fit:cover; }
+  body.fit #thumbnails { height:30px; }
+  body.fit #thumbnails .thumbnail { width:40px !important; height:28px !important; }
+  body.fit .detail-name { font-size:19px; }
+  body.fit #detailSpecs { grid-template-columns:repeat(3,1fr); }
+  body.fit .detail-spec { font-size:11px; }
+  body.fit .detail-purchase { grid-template-columns:1fr 1fr 1fr; }
+  body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-row:1; grid-column:1; }
+  body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-row:1; grid-column:2; }
+  body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-row:1; grid-column:3; }
+  body.fit .detail-purchase > .price-breakdown { grid-row:2; grid-column:1 / 3; }
+  body.fit .detail-purchase > .button-group { grid-row:2; grid-column:3; align-self:end; }
+  body.fit .detail-purchase > .trust-strip { grid-row:3; grid-column:1 / -1; }
+  body.fit #referencePrices { max-width:420px; }
+}
+</style>
 </head>
 <body>
     <!-- Breadcrumb Global -->
@@ -1216,6 +1342,7 @@
             </div>
 
             <div class="detail-container">
+                <div class="detail-top"><!-- galería + info lado a lado (modo encaje) -->
                 <!-- Left: Gallery -->
                 <div class="detail-gallery">
                     <div class="main-image" id="mainImageContainer" onmousemove="zoomImage(event)">
@@ -1255,8 +1382,10 @@
                         </div>
                     </div>
 
-                    <div class="detail-specs" id="detailSpecs"></div>
                 </div>
+                </div><!-- /detail-top -->
+
+                <div class="detail-specs" id="detailSpecs"></div>
 
                 <!-- Right: Purchase -->
                 <div class="detail-purchase">
@@ -1806,13 +1935,8 @@
 
         // ========== NAVEGAR A PRODUCTOS ==========
         function selectCategory(categoryName) {
-            // En movil embebido: abrir el cotizador completo en pantalla completa,
-            // ya posicionado en la categoria elegida (evita scroll anidado).
-            if (EMBEDDED && window.innerWidth < 768) {
-                const base = location.origin + location.pathname;
-                window.open(base + '?cat=' + encodeURIComponent(categoryName), '_blank');
-                return;
-            }
+            // Modo encaje: se navega dentro del embed (antes en móvil se abría otra
+            // pestaña para evitar el scroll anidado; ya no hace falta).
             currentCategory = categoryName;
             showScreen('products');
             renderProducts();
@@ -2404,6 +2528,7 @@
 
         function updateCartCount() {
             document.getElementById('cartCount').textContent = cart.length;
+            persistCart();
         }
 
         function updateEmailButtonState() {
@@ -2422,6 +2547,7 @@
         function renderCart() {
             const container = document.getElementById('cartItems');
             updateEmailButtonState();
+            persistCart();   // cubre mutaciones vía selectores globales (destino/pago)
 
             if (cart.length === 0) {
                 container.innerHTML = '<div class="empty-state">El carrito está vacío</div>';
@@ -2872,6 +2998,12 @@
             }
         }
 
+        // Integración con el historial del navegador: el gesto/botón "atrás" vuelve a la
+        // pantalla anterior del cotizador en vez de salir del sitio (clave en móvil).
+        // No cambia la URL visible (en el embed la barra muestra la página de Wix).
+        let _navFromPop = false;
+        let _currentScreen = null;
+
         function showScreen(screenName) {
             document.getElementById('screen-categories').style.display = 'none';
             document.getElementById('screen-products').style.display = 'none';
@@ -2880,8 +3012,49 @@
 
             document.getElementById(`screen-${screenName}`).style.display = screenName === 'categories' || screenName === 'products' || screenName === 'cart' ? 'flex' : 'block';
 
+            // Registrar la pantalla en el historial (salvo que vengamos de un "atrás")
+            if (!_navFromPop && screenName !== _currentScreen) {
+                const st = { vph: true, screen: screenName, cat: currentCategory, prod: currentProduct, edit: editingCartIndex };
+                try {
+                    if (_currentScreen === null) history.replaceState(st, '');
+                    else history.pushState(st, '');
+                } catch (e) {}
+            }
+            _currentScreen = screenName;
+
             // Actualizar breadcrumb
             updateBreadcrumb(screenName);
+        }
+
+        window.addEventListener('popstate', (e) => {
+            const st = e.state;
+            if (!st || !st.vph) return;   // entrada ajena al cotizador
+            _navFromPop = true;
+            try {
+                if (st.cat) currentCategory = st.cat;
+                if (st.prod) currentProduct = st.prod;
+                editingCartIndex = (st.edit === undefined ? null : st.edit);
+                showScreen(st.screen);
+                if (st.screen === 'products' && currentCategory) renderProducts();
+                else if (st.screen === 'detail' && currentProduct) renderDetail();
+                else if (st.screen === 'cart') renderCart();
+            } catch (err) {} finally { _navFromPop = false; }
+        });
+
+        // Persistencia del carrito: recargar o volver más tarde no pierde lo cargado.
+        const CART_KEY = 'vph_cotizador_v1';
+        function persistCart() {
+            try { localStorage.setItem(CART_KEY, JSON.stringify({ cart: cart, ts: Date.now() })); } catch (e) {}
+        }
+        function restoreCart() {
+            try {
+                const raw = localStorage.getItem(CART_KEY);
+                if (!raw) return;
+                const d = JSON.parse(raw);
+                if (!d || !Array.isArray(d.cart) || !d.cart.length) return;
+                if (Date.now() - (d.ts || 0) > 24 * 60 * 60 * 1000) { localStorage.removeItem(CART_KEY); return; }
+                if (cart.length === 0) { cart = d.cart; updateCartCount(); }
+            } catch (e) {}
         }
 
         function goToCategories() {
@@ -2957,12 +3130,9 @@
         const EMBEDDED = (window.self !== window.top);
 
         function applyEmbedMode() {
-            // En movil embebido: que la altura siga al contenido (evita scroll interno)
-            if (EMBEDDED && window.innerWidth < 768) {
-                document.body.classList.add('embed-fluid');
-            } else {
-                document.body.classList.remove('embed-fluid');
-            }
+            // Modo encaje: altura fija (700px embebido / 100dvh pantalla completa);
+            // embed-fluid (altura según contenido) quedó reemplazado por body.fit.
+            document.body.classList.remove('embed-fluid');
         }
 
         let _lastH = 0;
@@ -2995,7 +3165,11 @@
 
         // ========== INICIALIZAR ==========
         document.addEventListener('DOMContentLoaded', () => {
+            // Modo encaje: cada pantalla ocupa una altura fija sin scroll interno.
+            document.body.classList.add('fit');
+            if (!EMBEDDED) document.body.classList.add('fit-full');
             initCategories();
+            restoreCart();   // recuperar carrito de una visita reciente (<24h)
             showScreen('categories');
             applyEmbedMode();
             postHeight();
