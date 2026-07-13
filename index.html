@@ -2568,6 +2568,8 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 freight: freightCost,
                 quote: false,
                 pallets: pallets,
+                perPallet: product.per_pallet || 0,
+                unitWeight: product.weight || 0,
                 discount: discount,
                 destination: destination,
                 localidad: localidad,
@@ -2607,6 +2609,24 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             if (hint) hint.style.display = ok ? 'none' : 'block';
         }
 
+        // Flete CONSOLIDADO: junta las fracciones de pallet de todos los productos del carrito
+        // (comparten destino), con tope de 1500 kg por pallet. Así dos productos que ocupan
+        // pallets parciales viajan en el mismo pallet y no se cobra de más.
+        const MAX_KG_PALLET = 1500;
+        function cartFreight() {
+            if (!cart.length) return { pallets: 0, freight: 0, weightKg: 0 };
+            const dest = cart[0].destination;
+            if (dest === 'retiro') return { pallets: 0, freight: 0, weightKg: 0 };
+            let frac = 0, weightKg = 0;
+            cart.forEach(it => {
+                frac += it.perPallet ? (it.totalUnits || 0) / it.perPallet : 1;
+                weightKg += (it.totalUnits || 0) * (it.unitWeight || 0);
+            });
+            const pallets = Math.max(Math.ceil(frac - 1e-9), Math.ceil(weightKg / MAX_KG_PALLET), 1);
+            const cost = (destinations[dest] || {}).cost || 0;
+            return { pallets, freight: cost * pallets, weightKg };
+        }
+
         function renderCart() {
             const container = document.getElementById('cartItems');
             updateEmailButtonState();
@@ -2627,25 +2647,11 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
 
             cart.forEach((item, idx) => {
                 totalSubtotal += item.subtotal;
-                totalFreight += item.freight;
                 totalDiscount += item.discount || 0;
-                totalFinal += item.total;
 
-                // Calcular información de cuotas
                 if (item.quote) anyQuote = true;
                 let paymentInfo = `Destino: ${destLabels[item.destination] || item.destination}${item.localidad ? ' - ' + item.localidad : ''} | Forma de pago: ${item.paymentMethod}`;
                 let cuotasInfo = '';
-
-                if (item.paymentMethod === 'tarjeta-macro') {
-                    const cuota = Math.round(item.total / 12);
-                    cuotasInfo = ` (12 cuotas de $${cuota.toLocaleString()})`;
-                } else if (item.paymentMethod === 'otros-3') {
-                    const cuota = Math.round(item.total / 3);
-                    cuotasInfo = ` (3 cuotas de $${cuota.toLocaleString()})`;
-                } else if (item.paymentMethod === 'otros-6') {
-                    const cuota = Math.round(item.total / 6);
-                    cuotasInfo = ` (6 cuotas de $${cuota.toLocaleString()})`;
-                }
 
                 html += `
                     <div class="summary-product">
@@ -2656,7 +2662,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                             <p>${paymentInfo}${cuotasInfo}</p>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-weight: 700; color: #3483fa; margin-bottom: 5px;">$${item.total.toLocaleString()}</div>
+                            <div style="font-weight: 700; color: #3483fa; margin-bottom: 5px;">$${item.subtotal.toLocaleString()}</div>
                             <button class="btn-edit" style="width: 100%; margin-bottom: 5px;" onclick="editCartItem(${idx})">Editar</button>
                             <button class="btn-remove" style="width: 100%;" onclick="removeCartItem(${idx})">Quitar</button>
                         </div>
@@ -2664,9 +2670,15 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 `;
             });
 
+            // Flete consolidado (junta pallets parciales de todos los productos) y total final
+            const fr = cartFreight();
+            totalFreight = fr.freight;
+            totalFinal = totalSubtotal - totalDiscount + totalFreight;
+
             container.innerHTML = html;
             document.getElementById('cartSubtotal').textContent = `$${totalSubtotal.toLocaleString()}`;
-            document.getElementById('cartFreight').textContent = anyQuote ? 'A confirmar' : `$${totalFreight.toLocaleString()}`;
+            document.getElementById('cartFreight').textContent = anyQuote ? 'A confirmar'
+                : (fr.pallets > 0 ? `$${totalFreight.toLocaleString()} · ${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}` : '$0');
 
             if (promotion.active && totalDiscount > 0) {
                 document.getElementById('cartDiscountRow').style.display = 'flex';
@@ -2797,7 +2809,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                         producto: CRM_PRODUCT_MAP[it.code] || it.name,
                         codigo: CRM_CODE_MAP[it.code] || '',
                         cantidad: Math.round(it.totalUnits || it.quantity || 0),
-                        detalle: (it.quantityLabel || '') + (it.quote ? ' · flete a cotizar' : (it.freight > 0 ? ' · flete $' + it.freight.toLocaleString() : ''))
+                        detalle: (it.quantityLabel || '')
                     };
                 });
                 let nota = 'Pedido del cotizador web (' + method + ').';
@@ -2833,23 +2845,26 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
 
             let message = '🛒 *COTIZACIÓN VPH PREMOLDEADOS*\n\n';
 
-            let totalFinal = 0;
+            let totalSubtotal = 0, totalDiscount = 0;
             let paymentMethod = '';
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. *${item.name}*\n`;
                 message += `   Cantidad: ${item.quantityLabel}\n`;
-                message += `   Destino: ${destLabels[item.destination] || item.destination}${item.localidad ? ' - ' + item.localidad : ''}\n`;
-                message += `   Subtotal: $${item.subtotal.toLocaleString()}\n`;
-                if (item.quote) message += `   Flete: a cotizar\n`;
-                else if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
                 if (item.discount > 0) message += `   Descuento (20%): -$${item.discount.toLocaleString()}\n`;
-                if (item.cut > 0) message += `   Corte (5%): $${item.cut.toLocaleString()}\n`;
-                message += `   *Total: $${item.total.toLocaleString()}*\n\n`;
-                totalFinal += item.total;
+                message += `   Subtotal: $${item.subtotal.toLocaleString()}\n\n`;
+                totalSubtotal += item.subtotal;
+                totalDiscount += item.discount || 0;
                 paymentMethod = item.paymentMethod;
             });
 
+            const fr = cartFreight();
+            const dest = cart[0].destination;
+            const totalFinal = totalSubtotal - totalDiscount + fr.freight;
+
             message += `━━━━━━━━━━━━━━━━━\n`;
+            message += `Destino: ${destLabels[dest] || dest}${cart[0].localidad ? ' - ' + cart[0].localidad : ''}\n`;
+            if (dest === 'retiro') message += `Flete: retirás en fábrica\n`;
+            else message += `Flete (${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}): $${fr.freight.toLocaleString()}\n`;
             message += `*TOTAL GENERAL: $${totalFinal.toLocaleString()}*\n`;
             message += `━━━━━━━━━━━━━━━━━\n\n`;
 
@@ -2899,23 +2914,26 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             let message = '🛒 COTIZACIÓN VPH PREMOLDEADOS\n\n';
             message += `Teléfono del cliente: ${phoneNumber}\n\n`;
 
-            let totalFinal = 0;
+            let totalSubtotal = 0, totalDiscount = 0;
             let paymentMethod = '';
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. ${item.name}\n`;
                 message += `   Cantidad: ${item.quantityLabel}\n`;
-                message += `   Destino: ${destLabels[item.destination] || item.destination}${item.localidad ? ' - ' + item.localidad : ''}\n`;
-                message += `   Subtotal: $${item.subtotal.toLocaleString()}\n`;
-                if (item.quote) message += `   Flete: a cotizar\n`;
-                else if (item.freight > 0) message += `   Flete: $${item.freight.toLocaleString()}\n`;
                 if (item.discount > 0) message += `   Descuento (20%): -$${item.discount.toLocaleString()}\n`;
-                if (item.cut > 0) message += `   Corte (5%): $${item.cut.toLocaleString()}\n`;
-                message += `   Total: $${item.total.toLocaleString()}\n\n`;
-                totalFinal += item.total;
+                message += `   Subtotal: $${item.subtotal.toLocaleString()}\n\n`;
+                totalSubtotal += item.subtotal;
+                totalDiscount += item.discount || 0;
                 paymentMethod = item.paymentMethod;
             });
 
+            const fr = cartFreight();
+            const dest = cart[0].destination;
+            const totalFinal = totalSubtotal - totalDiscount + fr.freight;
+
             message += `━━━━━━━━━━━━━━━━━\n`;
+            message += `Destino: ${destLabels[dest] || dest}${cart[0].localidad ? ' - ' + cart[0].localidad : ''}\n`;
+            if (dest === 'retiro') message += `Flete: retirás en fábrica\n`;
+            else message += `Flete (${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}): $${fr.freight.toLocaleString()}\n`;
             message += `TOTAL GENERAL: $${totalFinal.toLocaleString()}\n`;
             message += `━━━━━━━━━━━━━━━━━\n\n`;
 
@@ -3181,8 +3199,9 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 item.destination = destination;
                 item.paymentMethod = paymentMethod;
                 item.localidad = localidad;
-                item.freight = (destination === 'retiro') ? 0 : destinations[destination].cost * (item.pallets || 1);
-                item.total = item.subtotal - (item.discount || 0) + item.freight;
+                // El flete se calcula CONSOLIDADO a nivel carrito (cartFreight); por ítem queda solo la mercadería
+                item.freight = 0;
+                item.total = item.subtotal - (item.discount || 0);
             });
 
             // Re-renderizar el carrito
