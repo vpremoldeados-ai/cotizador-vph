@@ -1302,28 +1302,45 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .category-img-collage > div { height:100%; max-height:100%; }
   body.fit .product-card img { width:100%; height:100%; object-fit:contain; }
   body.fit .category-desc, body.fit .product-desc { font-size:12.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-  body.fit .detail-container { gap:6px; }
-  body.fit .detail-top { grid-template-columns:270px minmax(0,1fr); gap:16px; }
-  body.fit #mainImageContainer { height:165px !important; min-height:0; width:100%; }
-  body.fit #mainImage { height:165px !important; width:100%; object-fit:contain; }
-  body.fit #thumbnails { height:28px; }
-  body.fit #thumbnails .thumbnail { width:40px !important; height:26px !important; }
-  body.fit .detail-purchase { overflow:visible !important; flex-shrink:0; }
-  body.fit .detail-name { font-size:20px; }
-  body.fit #detailSpecs { grid-template-columns:repeat(3,1fr); gap:3px 18px; }
-  body.fit .detail-spec { font-size:12px; }
-  /* Zona de compra: Destino+Pago arriba, Cantidad ancha, y Resumen+Botones abajo */
-  body.fit .detail-purchase { display:grid; grid-template-columns:1fr 1fr; grid-template-areas:"dest pago" "cant cant" "resumen botones" "trust trust"; gap:8px 18px; align-content:start; }
-  body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-area:dest; }
-  body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-area:cant; }
-  body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-area:pago; }
-  body.fit .detail-purchase > .price-breakdown { grid-area:resumen; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:10px 14px; align-self:center; }
-  body.fit .detail-purchase > .button-group { grid-area:botones; align-self:center; }
-  body.fit .detail-purchase > .trust-strip { grid-area:trust; }
-  body.fit .detail-purchase .form-label { font-size:13px; margin-bottom:4px; }
-  body.fit .detail-purchase .form-control { padding:8px; font-size:14px; }
-  body.fit .detail-purchase .price-breakdown .price-row { font-size:14px; }
-  body.fit #referencePrices { max-width:460px; }
+  /* ===== Layout 3 columnas estilo MercadoLibre: galería | info | tarjeta de compra ===== */
+  body.fit .detail-container { display:grid; grid-template-columns:minmax(0,1fr) 372px; grid-template-rows:auto; gap:24px; align-content:start; align-items:start; overflow:visible; }
+  body.fit #screen-detail .detail-top { grid-column:1 !important; grid-row:1 !important; grid-template-columns:300px minmax(0,1fr); gap:22px; align-items:start; }
+  body.fit #screen-detail .detail-purchase { grid-column:2 !important; grid-row:1 !important; }
+  /* características (bajo los precios, en la columna central, estilo "Lo que tenés que saber") */
+  body.fit #screen-detail #detailSpecs { display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; margin-top:12px; padding-top:10px; border-top:1px solid #ececec; grid-column:auto !important; grid-row:auto !important; }
+  /* galería más grande */
+  body.fit #mainImageContainer { height:300px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:300px !important; width:100%; object-fit:contain; }
+  body.fit #thumbnails { height:40px; }
+  body.fit #thumbnails .thumbnail { width:52px !important; height:34px !important; }
+  /* info: título y precios grandes */
+  body.fit .detail-name { font-size:24px; line-height:1.15; margin-bottom:3px; }
+  body.fit #detailCode { font-size:12.5px; }
+  body.fit #detailBadge { font-size:11px; padding:3px 10px; }
+  body.fit #referencePrices { display:flex; gap:10px; margin-top:10px; max-width:none; }
+  body.fit #referencePrices .ref-price-item { padding:9px 13px; }
+  body.fit #referencePrices .ref-lbl { font-size:11.5px; }
+  body.fit #referencePrices .original-price { font-size:13px; }
+  body.fit #referencePrices .discounted-price { font-size:23px; }
+  body.fit #referencePrices .ref-off { font-size:10.5px; padding:1px 6px; }
+  body.fit .detail-spec { font-size:13px; padding:3px 0; }
+  /* tarjeta de compra (buy box) a la derecha */
+  body.fit .detail-purchase { display:flex; flex-direction:column; gap:12px; border:1px solid #e2e8f0; border-radius:14px; padding:16px 18px; box-shadow:0 2px 12px rgba(15,23,42,.08); background:#fff; align-self:start; overflow:visible !important; }
+  body.fit .detail-purchase .form-group { display:flex; flex-direction:column; }
+  body.fit .detail-purchase .form-label { font-size:13.5px; font-weight:700; margin-bottom:5px; color:#334155; }
+  body.fit .detail-purchase .form-control { padding:10px; font-size:14px; }
+  body.fit #quantityInputs input { padding:8px 6px; font-size:14px; }
+  body.fit #quantityInputs .qh { font-size:12px; }
+  body.fit #quantityInputs > div:first-child > div { font-size:12px; }
+  body.fit #m2-info, body.fit #m2-info > div { font-size:12px; line-height:1.35; }
+  body.fit #weightPalletsBox .price-row { font-size:13px; }
+  body.fit .price-breakdown { background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; padding:12px 15px; font-size:14px; }
+  body.fit .price-breakdown .price-row { font-size:14px; }
+  body.fit .price-breakdown .price-row.total { font-size:17px; }
+  body.fit .button-group { display:flex; flex-direction:column !important; gap:9px; }
+  body.fit .button-group .btn { padding:13px; font-size:15px; }
+  body.fit .button-group .btn-primary { order:-1; }
+  body.fit .detail-purchase .trust-strip { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; height:auto; white-space:normal; padding-top:2px; color:#64748b; }
 }
 /* ===== Pantalla 1: miniaturas CUADRADAS y SIN RECORTE (contain), reducidas para entrar en la caja =====
    PC: una fila de cuadrados centrada. Móvil: cuadrados a la izquierda, título a la derecha, descripción abajo. */
@@ -1407,10 +1424,9 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                         </div>
                     </div>
 
+                    <div class="detail-specs" id="detailSpecs"></div>
                 </div>
                 </div><!-- /detail-top -->
-
-                <div class="detail-specs" id="detailSpecs"></div>
 
                 <!-- Right: Purchase -->
                 <div class="detail-purchase">
