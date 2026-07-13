@@ -1733,9 +1733,22 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
         const promotion = {
             active: true,
             discount: 0.20, // 20%
-            endDate: new Date(2026, 6, 10, 23, 59, 59), // 10 de julio 2026 (viernes)
-            description: "20% de descuento hasta el 10 de julio"
+            // Promoción RODANTE: primer corte el viernes 17/07/2026 y se renueva sola +7 días
+            // cada vez que vence, y así sucesivamente (nunca queda "vencida").
+            anchor: new Date(2026, 6, 17, 23, 59, 59), // viernes 17 de julio 2026, 23:59:59
+            endDate: null, // se calcula abajo: siempre el próximo corte semanal en el futuro
+            description: "20% de descuento — se renueva cada semana"
         };
+
+        // Próximo vencimiento futuro = anchor + N semanas (la primera que caiga después de ahora).
+        function promoNextEnd() {
+            const now = new Date();
+            const week = 7 * 24 * 60 * 60 * 1000;
+            let end = new Date(promotion.anchor.getTime());
+            while (end.getTime() <= now.getTime()) end = new Date(end.getTime() + week);
+            return end;
+        }
+        promotion.endDate = promoNextEnd();
 
         function getPriceWithDiscount(originalPrice, code) {
             if (!promotion.active || !PROMO_CODES.includes(code)) return originalPrice;
@@ -1744,11 +1757,12 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
 
         function getTimeRemaining() {
             const now = new Date();
-            const diff = promotion.endDate - now;
+            let diff = promotion.endDate - now;
 
             if (diff <= 0) {
-                promotion.active = false;
-                return null;
+                // Se venció (p. ej. con la página abierta un viernes a la noche): renovar +7 días.
+                promotion.endDate = promoNextEnd();
+                diff = promotion.endDate - now;
             }
 
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
