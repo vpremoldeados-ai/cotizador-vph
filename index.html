@@ -2588,6 +2588,9 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 pallets: pallets,
                 perPallet: product.per_pallet || 0,
                 unitWeight: product.weight || 0,
+                m2: (product.type === 'm2' && directUnitsM2Cart <= 0) ? quantity : null,
+                baseUnits: totalUnits - quantityCut,
+                cutUnits: quantityCut,
                 discount: discount,
                 destination: destination,
                 localidad: localidad,
@@ -2645,6 +2648,21 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             return { pallets, freight: cost * pallets, weightKg };
         }
 
+        // Desglose por ítem: m² · unidades base + corte = total · peso. html=true resalta el total en <b>.
+        function itemBreakdown(item, html) {
+            const b = (s) => html ? `<b>${s}</b>` : s;
+            const parts = [];
+            if (item.m2 != null && item.m2 > 0) parts.push(`${item.m2} m²`);
+            const base = (item.baseUnits != null) ? item.baseUnits : item.totalUnits;
+            const cut = item.cutUnits || 0;
+            const tot = (item.totalUnits || 0).toLocaleString() + ' u';
+            if (cut > 0) parts.push(`${base.toLocaleString()} u + ${cut.toLocaleString()} de corte = ${b(tot)}`);
+            else parts.push(b(tot));
+            const kg = Math.round((item.totalUnits || 0) * (item.unitWeight || 0));
+            if (kg > 0) parts.push(`${kg.toLocaleString()} kg`);
+            return parts.join(' · ');
+        }
+
         function renderCart() {
             const container = document.getElementById('cartItems');
             updateEmailButtonState();
@@ -2676,7 +2694,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                         <div class="summary-image"><img src="${item.image}" alt=""></div>
                         <div class="summary-details">
                             <h3>${item.name}</h3>
-                            <p>${item.quantityLabel}</p>
+                            <p>${itemBreakdown(item, true)}</p>
                             <p>${paymentInfo}${cuotasInfo}</p>
                         </div>
                         <div style="text-align: right;">
@@ -2872,7 +2890,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             let paymentMethod = '';
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. *${item.name}*\n`;
-                message += `   Cantidad: ${item.quantityLabel}\n`;
+                message += `   Cantidad: ${itemBreakdown(item, false)}\n`;
                 if (item.discount > 0) message += `   Descuento (20%): -$${item.discount.toLocaleString()}\n`;
                 message += `   Subtotal: $${item.subtotal.toLocaleString()}\n\n`;
                 totalSubtotal += item.subtotal;
@@ -2941,7 +2959,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             let paymentMethod = '';
             cart.forEach((item, idx) => {
                 message += `${idx + 1}. ${item.name}\n`;
-                message += `   Cantidad: ${item.quantityLabel}\n`;
+                message += `   Cantidad: ${itemBreakdown(item, false)}\n`;
                 if (item.discount > 0) message += `   Descuento (20%): -$${item.discount.toLocaleString()}\n`;
                 message += `   Subtotal: $${item.subtotal.toLocaleString()}\n\n`;
                 totalSubtotal += item.subtotal;
