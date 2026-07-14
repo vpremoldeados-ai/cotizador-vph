@@ -1220,7 +1220,7 @@ body.fit .detail-purchase .form-label { font-size:11px; margin:0 0 2px; height:a
 body.fit .detail-purchase .form-control { padding:6px; font-size:12.5px; height:auto; }
 body.fit .detail-purchase .form-group { margin:0; height:auto; }
 body.fit #deliveryTime { font-size:9.5px; margin:2px 0 0; padding:1px 4px; height:auto; line-height:1.3; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; max-height:14px; }
-body.fit #cartLockNote { font-size:9px; line-height:1.2; max-height:12px; overflow:hidden; margin:1px 0 0; padding:0; }
+body.fit #cartLockNote { font-size:9.5px; line-height:1.2; margin:2px 0 0; padding:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 body.fit #quantityInputs { display:flex; flex-direction:column; gap:2px; align-items:stretch; }
 body.fit #quantityInputs, body.fit #quantityInputs * { margin-top:0 !important; margin-bottom:0 !important; }
 body.fit #quantityInputs > div:first-child { display:grid; grid-template-columns:repeat(3,1fr); gap:1px 6px; align-items:end; }
@@ -1278,8 +1278,8 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   /* móvil: imagen grande a la izquierda | info a la derecha; miniaturas envueltas (se ven las 7) */
   body.fit #screen-detail .detail-top { display:grid !important; grid-template-columns:180px minmax(0,1fr); gap:10px; align-items:start; flex:0 0 auto; }
   body.fit #screen-detail .detail-gallery, body.fit #screen-detail .detail-info { overflow:visible !important; height:auto !important; min-height:0; }
-  body.fit #mainImageContainer { height:135px !important; min-height:0; width:100%; }
-  body.fit #mainImage { height:135px !important; width:100%; object-fit:contain; }
+  body.fit #mainImageContainer { height:128px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:128px !important; width:100%; object-fit:contain; }
   body.fit #thumbnails { height:auto; display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-start; overflow:visible; margin-top:4px !important; }
   body.fit #thumbnails .thumbnail { width:40px !important; height:27px !important; min-width:0; flex:0 0 auto; }
   body.fit #screen-detail #referencePrices { display:grid !important; grid-template-columns:1fr !important; gap:4px; }
@@ -1290,7 +1290,7 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .detail-purchase .form-label { font-size:10.5px; margin-bottom:2px; }
   body.fit .detail-purchase .form-control { padding:5px 8px; font-size:12px; }
   body.fit #quantityInputs input { padding:5px 6px; font-size:12px; }
-  body.fit .detail-purchase { grid-template-columns:1fr 1fr; gap:5px 10px; }
+  body.fit .detail-purchase { grid-template-columns:1fr 1fr; gap:3px 10px; }
   body.fit .detail-purchase > .form-group:nth-of-type(1) { grid-row:1; grid-column:1; }
   body.fit .detail-purchase > .form-group:nth-of-type(3) { grid-row:1; grid-column:2; }
   body.fit .detail-purchase > .form-group:nth-of-type(2) { grid-row:2; grid-column:1 / -1; }
@@ -1443,18 +1443,18 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                     <!-- Destination -->
                     <div class="form-group">
                         <label class="form-label">Destino de entrega</label>
-                        <select id="destination" class="form-control" onchange="updatePrice()">
+                        <select id="destination" class="form-control" onchange="syncCartDestPay(); updatePrice()">
                             <option value="retiro">Retirar en fábrica (Gratis)</option>
                             <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
                             <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($39.000 por pallet)</option>
                             <option value="argentina">A todo Argentina ($140.000 por pallet · posible variación)</option>
                         </select>
                         <div id="localidadBox" style="display:none; margin-top:6px;">
-                            <input id="localidad" type="text" placeholder="¿En qué localidad?" oninput="updatePrice()" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:14px;">
+                            <input id="localidad" type="text" placeholder="¿En qué localidad?" oninput="syncCartDestPay(); updatePrice()" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:14px;">
                             <div id="localidadNote" style="font-size:12px; color:#2563eb; margin-top:4px;"></div>
                         </div>
                         <div style="font-size: 11px; color: #999; margin-top: 3px;" id="deliveryTime"></div>
-                        <div id="cartLockNote" style="display:none; font-size:12px; color:#2563eb; margin-top:4px;">🔒 Mismo destino y forma de pago que tu carrito</div>
+                        <div id="cartLockNote" style="display:none; font-size:12px; color:#2563eb; margin-top:4px;">🔄 Aplica a todo tu carrito</div>
                     </div>
 
                     <!-- Quantity -->
@@ -1470,7 +1470,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                     <!-- Payment Method -->
                     <div class="form-group">
                         <label class="form-label">Forma de pago</label>
-                        <select id="paymentMethod" class="form-control" onchange="updatePrice()">
+                        <select id="paymentMethod" class="form-control" onchange="syncCartDestPay(); updatePrice()">
                             <option value="contado">Contado Transferencia</option>
                             <option value="tarjeta-macro">Tarjeta Macro (12 cuotas sin interés)</option>
                             <option value="otros-3">Tarjetas Bancarizadas otros Bancos (3 cuotas sin interés)</option>
@@ -1571,6 +1571,7 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                     <span>Flete total:</span>
                     <span id="cartFreight">$0</span>
                 </div>
+                <div id="cartFreightNote" style="display:none; font-size:12px; color:#0a7d3f; margin:-2px 0 4px; line-height:1.3;">✓ Combinamos tus productos en los mismos pallets para optimizar el flete.</div>
                 <div class="cart-total-row" id="cartDiscountRow" style="display: none; color: #2563eb;">
                     <span>Descuento (20%):</span>
                     <span id="cartDiscount">-$0</span>
@@ -2201,19 +2202,19 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             const paySel = document.getElementById('paymentMethod');
             const lockNote = document.getElementById('cartLockNote');
             const locInput = document.getElementById('localidad');
+            // Si ya hay productos en el carrito, mostrar el destino/pago del carrito (editable:
+            // al cambiarlo acá se sincroniza en todo el carrito para mantener un único destino).
             if (cart.length > 0 && editingCartIndex === null) {
                 destSel.value = cart[0].destination;
                 paySel.value = cart[0].paymentMethod;
-                destSel.disabled = true;
-                paySel.disabled = true;
-                if (locInput) { locInput.value = cart[0].localidad || ''; locInput.disabled = true; }
+                if (locInput) locInput.value = cart[0].localidad || '';
                 if (lockNote) lockNote.style.display = 'block';
             } else {
-                destSel.disabled = false;
-                paySel.disabled = false;
-                if (locInput) locInput.disabled = false;
                 if (lockNote) lockNote.style.display = 'none';
             }
+            destSel.disabled = false;
+            paySel.disabled = false;
+            if (locInput) locInput.disabled = false;
 
             // Actualizar precio
             updatePrice();
@@ -2323,6 +2324,23 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
                 document.getElementById('qty-m2').value = m2.toFixed(2);
                 updatePrice(); // updatePrice arma el desglose (Cantidad · Cortes · Total · Peso · Pallets)
             }
+        }
+
+        // Al cambiar destino/forma de pago en la ficha con el carrito cargado, se aplica a TODO el carrito
+        // (todos los ítems comparten un único destino, base del flete consolidado).
+        function syncCartDestPay() {
+            if (editingCartIndex !== null || !cart.length) return;
+            const dest = document.getElementById('destination').value;
+            const pay = document.getElementById('paymentMethod').value;
+            const loc = ((document.getElementById('localidad') || {}).value || '').trim();
+            cart.forEach(it => {
+                it.destination = dest;
+                it.paymentMethod = pay;
+                it.localidad = loc;
+                it.freight = 0; // el flete se calcula consolidado en el carrito
+                it.total = it.subtotal - (it.discount || 0);
+            });
+            persistCart();
         }
 
         // ========== ACTUALIZAR PRECIO ==========
@@ -2679,6 +2697,11 @@ body.fit .category-img-collage .collage-more::after { border-radius:5px; }
             document.getElementById('cartSubtotal').textContent = `$${totalSubtotal.toLocaleString()}`;
             document.getElementById('cartFreight').textContent = anyQuote ? 'A confirmar'
                 : (fr.pallets > 0 ? `$${totalFreight.toLocaleString()} · ${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}` : '$0');
+
+            // Nota de consolidación: solo si al combinar productos se ahorran pallets
+            const palletsSueltos = cart.reduce((s, it) => s + (it.perPallet ? Math.ceil((it.totalUnits || 0) / it.perPallet) : 1), 0);
+            const freightNote = document.getElementById('cartFreightNote');
+            if (freightNote) freightNote.style.display = (fr.pallets > 0 && cart.length > 1 && fr.pallets < palletsSueltos) ? 'block' : 'none';
 
             if (promotion.active && totalDiscount > 0) {
                 document.getElementById('cartDiscountRow').style.display = 'flex';
