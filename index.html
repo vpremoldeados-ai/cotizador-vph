@@ -1313,23 +1313,6 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .product-card .product-image { width:126px; height:126px; align-self:center; }
   body.fit .product-card .product-img-wrap { height:100%; min-height:0; }
   body.fit .product-card img { width:100%; height:100%; object-fit:contain; }
-  /* PC: ficha horizontal — la foto se lleva todo el alto de la tarjeta (antes quedaba
-     aplastada a ~109px porque el texto se comía el espacio) */
-  /* Mitad foto / mitad ficha. La foto NO puede tomar el alto libremente: en las categorías
-     de 2 productos la tarjeta mide el doble de alto y la imagen se comía toda la columna
-     del texto (quedaba en 0px de ancho). Con 1fr/1fr la foto se ajusta al mínimo entre
-     el ancho de su columna y el alto disponible, y el texto siempre tiene su mitad. */
-  body.fit .product-card { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; align-items:center; }
-  body.fit .product-card .product-image { width:100%; height:100%; aspect-ratio:auto; align-self:center; }
-  body.fit .product-card .product-info { padding:0; justify-content:center; }
-  /* Categorías de solo 2 productos: la grilla arma una sola fila y la tarjeta queda muy alta.
-     Ahí conviene apilar (foto arriba, ficha abajo): la foto pasa de ~331px a ~454px.
-     Si el navegador no soporta :has(), simplemente queda el layout de mitades de arriba. */
-  body.fit .products-grid:has(> .product-card:nth-child(2):last-child) .product-card {
-    grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr) auto; gap:8px;
-  }
-  body.fit .products-grid:has(> .product-card:nth-child(2):last-child) .product-info { text-align:center; }
-  body.fit .products-grid:has(> .product-card:nth-child(2):last-child) .badge-bestseller { align-self:center; }
   body.fit .product-card .product-info { padding:0; justify-content:center; min-height:0; }
   body.fit .product-name { font-size:15px; line-height:1.2; margin:0 0 3px; text-align:left; }
   body.fit .product-card .product-price { font-size:20px; line-height:1.15; }
