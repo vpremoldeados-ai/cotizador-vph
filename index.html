@@ -147,48 +147,6 @@
             color: #000;
         }
 
-        /* Franja de promo — formato de la web nueva: verde marca, sin degradado ni radio */
-        .promotion-banner {
-            background: var(--verde-marca);
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            color: var(--papel);
-        }
-
-        .promotion-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px 16px;
-        }
-
-        .promotion-text {
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: -.01em;
-        }
-        @media (max-width: 600px) {
-            .promotion-banner { padding: 10px 12px; }
-            .promotion-content { justify-content: center; text-align: center; }
-            .promotion-text { font-size: 14px; }
-            .promotion-countdown { font-size: 12px; }
-        }
-
-        .promotion-countdown {
-            font-size: 12px;
-            background: var(--papel);
-            color: var(--verde-marca);
-            padding: 6px 12px;
-            font-weight: 800;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-        }
-
-        #countdownDisplay {
-            font-weight: 700;
-        }
-
         /* Regla de forma 2: tarjetas pegadas, junta de 2px y marco de 2px alrededor del grupo */
         .categories-grid {
             display: grid;
@@ -481,7 +439,7 @@
         }
 
         .original-price {
-            font-size: 14px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--cemento);
             text-decoration: line-through;
@@ -1228,9 +1186,6 @@
 body.fit { height:700px; overflow:hidden; display:flex; flex-direction:column; }
 body.fit.fit-full { height:100vh; height:100dvh; }
 body.fit .global-title { font-size:14px; padding:2px 10px; line-height:1.2; }
-body.fit .promotion-banner { padding:7px 14px; margin-bottom:8px; }
-body.fit .promotion-text { font-size:14px; }
-body.fit .promotion-countdown { font-size:11px; padding:4px 9px; }
 body.fit .breadcrumb-global { padding:2px 10px; font-size:11px; line-height:1.2; }
 body.fit .container { flex:1 1 auto; min-height:0; }
 body.fit .container > [id^="screen-"] { min-height:0 !important; height:100%; overflow:hidden; box-sizing:border-box; width:100%; flex:1 1 auto; min-width:0; }
@@ -1256,7 +1211,7 @@ body.fit #referencePrices { display:flex; gap:6px; margin:4px 0 0; }
 body.fit #referencePrices .ref-price-item { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; margin:0; padding:5px 8px; height:auto; min-height:0; border:1px solid var(--linea); background:var(--fondo-alt); }
 body.fit #referencePrices .ref-lbl { font-size:10px; font-weight:600; color:var(--tinta-suave); line-height:1.2; }
 body.fit #referencePrices .ref-vals { display:flex; align-items:baseline; gap:5px; flex-wrap:wrap; }
-body.fit #referencePrices .original-price { font-size:10.5px; color:var(--cemento); text-decoration:line-through; }
+body.fit #referencePrices .original-price { font-size:14px; color:var(--cemento); text-decoration:line-through; }
 body.fit #referencePrices .discounted-price { font-size:16px; font-weight:800; color:var(--tinta); line-height:1.1; }
 body.fit #referencePrices .ref-off { font-size:9px; font-weight:800; color:var(--verde-marca); background:var(--verde-claro); padding:0 4px; }
 body.fit #detailSpecs { display:grid; gap:1px 8px; margin:0; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; }
@@ -1380,7 +1335,7 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #emailBox .btn, body.fit #emailBox button { padding:7px; font-size:11.5px; letter-spacing:.06em; margin:3px 0 0; }
   body.fit #screen-cart .trust-strip { font-size:9px; line-height:1.25; }
   body.fit .cart-total-row { margin-bottom:4px; }
-  body.fit #referencePrices .original-price { font-size:9.5px; }
+  body.fit #referencePrices .original-price { font-size:12.5px; }
   /* holgura extra para que los botones nunca queden al ras */
   body.fit #screen-detail #detailSpecs { gap:0 8px; }
   body.fit #screen-detail .detail-spec { line-height:1.1; }
@@ -1459,7 +1414,7 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #referencePrices .ref-vals { align-items:baseline; }
   body.fit #referencePrices .ref-price-item { padding:9px 13px; }
   body.fit #referencePrices .ref-lbl { font-size:11.5px; }
-  body.fit #referencePrices .original-price { font-size:13px; }
+  body.fit #referencePrices .original-price { font-size:16px; }
   body.fit #referencePrices .discounted-price { font-size:23px; }
   body.fit #referencePrices .ref-off { font-size:10.5px; padding:1px 6px; }
   body.fit .detail-spec { font-size:13px; padding:3px 0; }
@@ -1533,12 +1488,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
     <div class="container">
         <!-- PANTALLA 1: CATEGORÍAS -->
         <div id="screen-categories">
-            <div class="promotion-banner" id="promotionBanner">
-                <div class="promotion-content">
-                    <div class="promotion-text">🔥 20% OFF en Loseta Cribada Rectangular</div>
-                    <div class="promotion-countdown">⏳ Termina en <span id="countdownDisplay">--</span></div>
-                </div>
-            </div>
             <div class="screen-header">Selecciona una categoría</div>
             <div class="categories-grid" id="categoriesGrid"></div>
         </div>
@@ -1592,7 +1541,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                                 <span class="ref-off" id="refOffM2" style="display:none;">30,5% OFF</span>
                             </div>
                         </div>
-                        <div id="promoIncluida" style="display:none; font-size:12px; font-weight:700; color:var(--verde-texto); margin-top:6px;">🔥 Estos precios ya incluyen la promo 20% OFF</div>
                     </div>
 
                     <!-- Escalera: precio de lista (12 cuotas) y bonificaciones por forma de pago -->
@@ -1742,10 +1690,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     <span id="cartFreight">$0</span>
                 </div>
                 <div id="cartFreightNote" style="display:none; font-size:12px; color:var(--verde-marca); margin:-2px 0 4px; line-height:1.3;">✓ Combinamos tus productos en los mismos pallets para optimizar el flete.</div>
-                <div class="cart-total-row" id="cartDiscountRow" style="display: none; color: var(--verde-texto);">
-                    <span>Descuento (20%):</span>
-                    <span id="cartDiscount">-$0</span>
-                </div>
                 <div class="cart-total-row" id="cartListaRow" style="display:none;">
                     <span>Precio de lista (12 cuotas):</span>
                     <span id="cartListaTotal">$0</span>
@@ -1796,7 +1740,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     {
                         code: "LC60",
                         name: "Loseta Cribada Rectangular",
-                        price: 7321.25,
+                        price: 5857,
                         weight: 18,
                         per_m2: 4.3,
                         per_pallet: 75,
@@ -1960,47 +1904,24 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
         };
 
         // ========== PROMOCIÓN ==========
+        // ⚠️ APAGADA el 12/08 (pedido de Marcelo): con la escalera de financiación, el 20% encima
+        // del 30,5% OFF contado confundía. El precio de la LC60 del catálogo de arriba ya es el
+        // contado REAL ($5.857, el mismo del Tablero). Si algún día se reactiva la promo, hay que
+        // volver a poner el ANCLA (contado ÷ 0,8) como price de la LC60 — si no, el 20% se
+        // descontaría dos veces del precio real.
+        // Ya no hay cartel, ni cuenta regresiva, ni fecha de vencimiento: la promo no se
+        // anuncia ni se calcula en ningún lado. Queda sólo el interruptor y el porcentaje,
+        // para que reactivarla sea cambiar `active` a true (y volver a poner el ANCLA en el
+        // precio de la LC60, como avisa la nota de arriba).
         const promotion = {
-            active: true,
+            active: false,
             discount: 0.20, // 20%
-            // Promoción RODANTE: primer corte el viernes 17/07/2026 y se renueva sola +7 días
-            // cada vez que vence, y así sucesivamente (nunca queda "vencida").
-            anchor: new Date(2026, 6, 17, 23, 59, 59), // viernes 17 de julio 2026, 23:59:59
-            endDate: null, // se calcula abajo: siempre el próximo corte semanal en el futuro
-            description: "20% de descuento — se renueva cada semana"
+            description: "20% de descuento — dada de baja"
         };
-
-        // Próximo vencimiento futuro = anchor + N semanas (la primera que caiga después de ahora).
-        function promoNextEnd() {
-            const now = new Date();
-            const week = 7 * 24 * 60 * 60 * 1000;
-            let end = new Date(promotion.anchor.getTime());
-            while (end.getTime() <= now.getTime()) end = new Date(end.getTime() + week);
-            return end;
-        }
-        promotion.endDate = promoNextEnd();
 
         function getPriceWithDiscount(originalPrice, code) {
             if (!promotion.active || !PROMO_CODES.includes(code)) return originalPrice;
             return Math.round(originalPrice * (1 - promotion.discount));
-        }
-
-        function getTimeRemaining() {
-            const now = new Date();
-            let diff = promotion.endDate - now;
-
-            if (diff <= 0) {
-                // Se venció (p. ej. con la página abierta un viernes a la noche): renovar +7 días.
-                promotion.endDate = promoNextEnd();
-                diff = promotion.endDate - now;
-            }
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            return { days, hours, minutes, seconds, diff };
         }
 
         // ========== ESTADO GLOBAL ==========
@@ -2175,10 +2096,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 startBackgroundCarousel(card, categoryName);
             });
 
-            // Iniciar actualización de cuenta regresiva
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-
             // Dimensionar las miniaturas como cuadrados perfectos que entren en cada caja
             requestAnimationFrame(sizeCategoryCollages);
             setTimeout(sizeCategoryCollages, 300);
@@ -2200,32 +2117,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             });
         }
         window.addEventListener('resize', sizeCategoryCollages);
-
-        function updateCountdown() {
-            const timeRemaining = getTimeRemaining();
-
-            // Actualizar todos los elementos con id o clase countdownDisplay
-            document.querySelectorAll('#countdownDisplay, .countdownDisplay').forEach(el => {
-                if (!timeRemaining) {
-                    el.textContent = 'Promoción finalizada';
-                } else {
-                    el.textContent = `${timeRemaining.days}d ${timeRemaining.hours}h ${timeRemaining.minutes}m ${timeRemaining.seconds}s`;
-                }
-            });
-
-            // Ocultar banners si la promoción finalizó
-            if (!timeRemaining) {
-                const promotionBanner = document.getElementById('promotionBanner');
-                if (promotionBanner) {
-                    promotionBanner.style.display = 'none';
-                }
-                document.querySelectorAll('.promotion-banner').forEach(el => {
-                    if (el) {
-                        el.style.display = 'none';
-                    }
-                });
-            }
-        }
 
         // ========== CARRUSEL DE FONDO ==========
         function startBackgroundCarousel(card, categoryName) {
@@ -2296,16 +2187,15 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const unitLista = precioLista(unitContado);
                 const cuotaVal = Math.round(unitLista / FINANCIACION.cuotasLista);
                 const priceM2Contado = product.per_m2 ? (unitContado * product.per_m2) : null;
-                const esPromo = promotion.active && PROMO_CODES.includes(product.code);
 
                 // Especificaciones
                 const specsWithPallet = [...product.specs, product.per_pallet + ' u/pallet'];
                 const specsHtml = specsWithPallet.map(s => `<div class="spec-line" style="font-size: 14px; color: var(--tinta-suave); margin: 3px 0;">• ${s}</div>`).join('');
 
                 const priceHtml = `
-                    <div style="font-size: 13px; color: var(--cemento); text-decoration: line-through; margin: 3px 0;">$${unitLista.toLocaleString()}</div>
+                    <div style="font-size: 16px; color: var(--cemento); text-decoration: line-through; margin: 3px 0;">$${unitLista.toLocaleString()}</div>
                     <div class="product-price" style="margin: 3px 0;">$${unitContado.toLocaleString()} <span style="font-size: 12px; color: var(--verde-marca); font-weight: 700;">${offTxt(0)}</span></div>
-                    <div class="product-contado">Contado transferencia${esPromo ? ' · 🔥 promo 20% incluida' : ''}</div>
+                    <div class="product-contado">Contado transferencia</div>
                 `;
                 const badgeHtml = (product.code === MAS_VENDIDA_CODE) ? '<div class="badge-bestseller">⭐ Más vendida</div>' : '';
 
@@ -2456,7 +2346,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             } else {
                 refPriceM2Container.style.display = 'none';
             }
-            document.getElementById('promoIncluida').style.display = isDisc ? 'block' : 'none';
 
             document.getElementById('referencePrices').style.display = 'block';
 
@@ -2962,8 +2851,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 container.innerHTML = '<div class="empty-state">El carrito está vacío</div>';
                 document.getElementById('cartSubtotal').textContent = '$0';
                 document.getElementById('cartFreight').textContent = '$0';
-                document.getElementById('cartDiscount').textContent = '-$0';
-                document.getElementById('cartDiscountRow').style.display = 'none';
                 document.getElementById('cartFinalTotal').textContent = '$0';
                 return;
             }
@@ -3019,13 +2906,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             const palletsSueltos = cart.reduce((s, it) => s + (it.perPallet ? Math.ceil((it.totalUnits || 0) / it.perPallet) : 1), 0);
             const freightNote = document.getElementById('cartFreightNote');
             if (freightNote) freightNote.style.display = (fr.pallets > 0 && cart.length > 1 && fr.pallets < palletsSueltos) ? 'block' : 'none';
-
-            if (promotion.active && totalDiscount > 0) {
-                document.getElementById('cartDiscountRow').style.display = 'flex';
-                document.getElementById('cartDiscount').textContent = `-$${totalDiscount.toLocaleString()}`;
-            } else {
-                document.getElementById('cartDiscountRow').style.display = 'none';
-            }
 
             // Precio de lista + bonificación (cuando la forma de pago no es la del precio de lista)
             const hayBonifCart = ncCart !== FINANCIACION.cuotasLista && totalFinal > 0;
