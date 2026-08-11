@@ -481,7 +481,7 @@
         }
 
         .original-price {
-            font-size: 14px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--cemento);
             text-decoration: line-through;
@@ -1256,7 +1256,7 @@ body.fit #referencePrices { display:flex; gap:6px; margin:4px 0 0; }
 body.fit #referencePrices .ref-price-item { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; margin:0; padding:5px 8px; height:auto; min-height:0; border:1px solid var(--linea); background:var(--fondo-alt); }
 body.fit #referencePrices .ref-lbl { font-size:10px; font-weight:600; color:var(--tinta-suave); line-height:1.2; }
 body.fit #referencePrices .ref-vals { display:flex; align-items:baseline; gap:5px; flex-wrap:wrap; }
-body.fit #referencePrices .original-price { font-size:10.5px; color:var(--cemento); text-decoration:line-through; }
+body.fit #referencePrices .original-price { font-size:14px; color:var(--cemento); text-decoration:line-through; }
 body.fit #referencePrices .discounted-price { font-size:16px; font-weight:800; color:var(--tinta); line-height:1.1; }
 body.fit #referencePrices .ref-off { font-size:9px; font-weight:800; color:var(--verde-marca); background:var(--verde-claro); padding:0 4px; }
 body.fit #detailSpecs { display:grid; gap:1px 8px; margin:0; grid-column:auto !important; grid-row:auto !important; width:auto; max-width:none; }
@@ -1380,7 +1380,7 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #emailBox .btn, body.fit #emailBox button { padding:7px; font-size:11.5px; letter-spacing:.06em; margin:3px 0 0; }
   body.fit #screen-cart .trust-strip { font-size:9px; line-height:1.25; }
   body.fit .cart-total-row { margin-bottom:4px; }
-  body.fit #referencePrices .original-price { font-size:9.5px; }
+  body.fit #referencePrices .original-price { font-size:12.5px; }
   /* holgura extra para que los botones nunca queden al ras */
   body.fit #screen-detail #detailSpecs { gap:0 8px; }
   body.fit #screen-detail .detail-spec { line-height:1.1; }
@@ -1459,7 +1459,7 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #referencePrices .ref-vals { align-items:baseline; }
   body.fit #referencePrices .ref-price-item { padding:9px 13px; }
   body.fit #referencePrices .ref-lbl { font-size:11.5px; }
-  body.fit #referencePrices .original-price { font-size:13px; }
+  body.fit #referencePrices .original-price { font-size:16px; }
   body.fit #referencePrices .discounted-price { font-size:23px; }
   body.fit #referencePrices .ref-off { font-size:10.5px; padding:1px 6px; }
   body.fit .detail-spec { font-size:13px; padding:3px 0; }
@@ -1796,7 +1796,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     {
                         code: "LC60",
                         name: "Loseta Cribada Rectangular",
-                        price: 7321.25,
+                        price: 5857,
                         weight: 18,
                         per_m2: 4.3,
                         per_pallet: 75,
@@ -1960,8 +1960,13 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
         };
 
         // ========== PROMOCIÓN ==========
+        // ⚠️ APAGADA el 12/08 (pedido de Marcelo): con la escalera de financiación, el 20% encima
+        // del 30,5% OFF contado confundía. El precio de la LC60 del catálogo de arriba ya es el
+        // contado REAL ($5.857, el mismo del Tablero). Si algún día se reactiva la promo, hay que
+        // volver a poner el ANCLA (contado ÷ 0,8) como price de la LC60 — si no, el 20% se
+        // descontaría dos veces del precio real.
         const promotion = {
-            active: true,
+            active: false,
             discount: 0.20, // 20%
             // Promoción RODANTE: primer corte el viernes 17/07/2026 y se renueva sola +7 días
             // cada vez que vence, y así sucesivamente (nunca queda "vencida").
@@ -2175,9 +2180,13 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 startBackgroundCarousel(card, categoryName);
             });
 
-            // Iniciar actualización de cuenta regresiva
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+            // Banner y cuenta regresiva SOLO si la promo está activa; apagada, ni se muestran
+            const banner = document.getElementById('promotionBanner');
+            if (banner) banner.style.display = promotion.active ? '' : 'none';
+            if (promotion.active) {
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
 
             // Dimensionar las miniaturas como cuadrados perfectos que entren en cada caja
             requestAnimationFrame(sizeCategoryCollages);
@@ -2303,7 +2312,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const specsHtml = specsWithPallet.map(s => `<div class="spec-line" style="font-size: 14px; color: var(--tinta-suave); margin: 3px 0;">• ${s}</div>`).join('');
 
                 const priceHtml = `
-                    <div style="font-size: 13px; color: var(--cemento); text-decoration: line-through; margin: 3px 0;">$${unitLista.toLocaleString()}</div>
+                    <div style="font-size: 16px; color: var(--cemento); text-decoration: line-through; margin: 3px 0;">$${unitLista.toLocaleString()}</div>
                     <div class="product-price" style="margin: 3px 0;">$${unitContado.toLocaleString()} <span style="font-size: 12px; color: var(--verde-marca); font-weight: 700;">${offTxt(0)}</span></div>
                     <div class="product-contado">Contado transferencia${esPromo ? ' · 🔥 promo 20% incluida' : ''}</div>
                 `;
