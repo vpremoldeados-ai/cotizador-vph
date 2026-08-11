@@ -1909,10 +1909,13 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
         // contado REAL ($5.857, el mismo del Tablero). Si algún día se reactiva la promo, hay que
         // volver a poner el ANCLA (contado ÷ 0,8) como price de la LC60 — si no, el 20% se
         // descontaría dos veces del precio real.
+<<<<<<< HEAD
         // Ya no hay cartel, ni cuenta regresiva, ni fecha de vencimiento: la promo no se
         // anuncia ni se calcula en ningún lado. Queda sólo el interruptor y el porcentaje,
         // para que reactivarla sea cambiar `active` a true (y volver a poner el ANCLA en el
         // precio de la LC60, como avisa la nota de arriba).
+=======
+>>>>>>> db381140fe0f4a74df7023b417ba75e43c155e30
         const promotion = {
             active: false,
             discount: 0.20, // 20%
@@ -2096,6 +2099,17 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 startBackgroundCarousel(card, categoryName);
             });
 
+<<<<<<< HEAD
+=======
+            // Banner y cuenta regresiva SOLO si la promo está activa; apagada, ni se muestran
+            const banner = document.getElementById('promotionBanner');
+            if (banner) banner.style.display = promotion.active ? '' : 'none';
+            if (promotion.active) {
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
+
+>>>>>>> db381140fe0f4a74df7023b417ba75e43c155e30
             // Dimensionar las miniaturas como cuadrados perfectos que entren en cada caja
             requestAnimationFrame(sizeCategoryCollages);
             setTimeout(sizeCategoryCollages, 300);
