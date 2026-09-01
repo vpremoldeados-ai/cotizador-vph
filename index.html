@@ -1285,11 +1285,17 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .category-desc { grid-area:desc; font-size:12.5px; line-height:1.35; margin:0; text-align:left; align-self:start; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
   /* la grilla de 4 cuadrantes se mantiene, ocupando todo el cuadro de la foto */
   body.fit .category-img-collage { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:2px; width:100%; height:100%; }
-  /* móvil: imagen grande a la izquierda | info a la derecha; miniaturas envueltas (se ven las 7) */
-  body.fit #screen-detail .detail-top { display:grid !important; grid-template-columns:190px minmax(0,1fr); gap:10px; align-items:start; flex:0 0 auto; }
+  /* ── Detalle en móvil (12/08, pedido de Marcelo: los textos no se leían) ──
+     ANTES: galería 190px | info al costado → la columna de info quedaba en ~160px y los
+     precios/escalera salían encajonados, superpuestos y cortados (overflow:hidden).
+     AHORA: TODO APILADO a lo ancho de la pantalla, con scroll vertical dentro del detalle:
+     foto arriba → precios grandes → formas de pago → specs → cotizador. */
+  body.fit #screen-detail { overflow-y:auto !important; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+  body.fit .detail-container { height:auto; overflow:visible; }
+  body.fit #screen-detail .detail-top { display:grid !important; grid-template-columns:1fr; gap:8px; align-items:start; flex:0 0 auto; }
   body.fit #screen-detail .detail-gallery, body.fit #screen-detail .detail-info { overflow:visible !important; height:auto !important; min-height:0; }
-  body.fit #mainImageContainer { height:150px !important; min-height:0; width:100%; }
-  body.fit #mainImage { height:150px !important; width:100%; object-fit:contain; }
+  body.fit #mainImageContainer { height:180px !important; min-height:0; width:100%; }
+  body.fit #mainImage { height:180px !important; width:100%; object-fit:contain; }
   /* una sola fila deslizable: no roba alto a la foto */
   body.fit #thumbnails { height:auto; display:flex; flex-wrap:nowrap; gap:3px; justify-content:flex-start; overflow-x:auto; overflow-y:hidden; margin-top:4px !important; }
   body.fit #thumbnails .thumbnail { width:34px !important; height:26px !important; min-width:0; flex:0 0 auto; }
@@ -1298,22 +1304,28 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #thumbnails { scrollbar-width:none; -ms-overflow-style:none; }
   /* que los botones nunca queden pegados al borde inferior */
   body.fit #screen-detail { padding-bottom:10px; }
-  body.fit #screen-detail #referencePrices { display:grid !important; grid-template-columns:1fr !important; gap:4px; }
+  body.fit #screen-detail #referencePrices { display:grid !important; grid-template-columns:1fr !important; gap:6px; }
   body.fit #detailSpecs { grid-template-columns:1fr 1fr; gap:0 8px; }
-  body.fit .detail-spec { font-size:9.5px; line-height:1.15; padding:0 !important; height:auto !important; }
-  body.fit #referencePrices .ref-price-item { padding:3px 7px; }
-  body.fit #referencePrices .discounted-price { font-size:15px; }
+  body.fit .detail-spec { font-size:11.5px; line-height:1.3; padding:1px 0 !important; height:auto !important; }
+  body.fit #referencePrices .ref-price-item { padding:8px 12px; }
+  body.fit #referencePrices .discounted-price { font-size:24px; }
   /* la ayuda de cantidades en una línea, sin cortar palabras a la mitad */
   body.fit #screen-detail #m2-info { display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; max-height:13px; }
   body.fit #screen-detail .price-breakdown { padding:2px 6px; }
   body.fit #screen-detail .price-row.total { padding-top:3px; margin-top:3px; font-size:17px; }
   body.fit #screen-detail #weightPalletsBox { margin:0; padding:0 6px; }
-  /* precios: el "20% OFF" en la misma línea, si no roba un renglón por tarjeta */
-  body.fit #referencePrices .ref-vals { flex-wrap:nowrap; gap:4px; align-items:baseline; }
-  body.fit #referencePrices .ref-lbl { font-size:9.5px; line-height:1.1; }
-  body.fit #referencePrices .ref-off { font-size:8.5px; padding:0 3px; white-space:nowrap; }
+  /* precios a lo ancho: tachado + precio grande + badge en una sola línea, legibles */
+  body.fit #referencePrices .ref-vals { flex-wrap:nowrap; gap:8px; align-items:baseline; }
+  body.fit #referencePrices .ref-lbl { font-size:11.5px; line-height:1.2; }
+  body.fit #referencePrices .ref-off { font-size:11px; padding:1px 6px; white-space:nowrap; }
+  /* la escalera ocupa todo el ancho: cada forma de pago en su renglón, letra legible */
+  body.fit .escalera { padding:8px 10px; margin:6px 0 0; }
+  body.fit .escalera .esc-title { font-size:11.5px; }
+  body.fit .esc-row { font-size:13px; padding:4px 0; }
+  body.fit .esc-row .esc-off { font-size:11px; }
+  body.fit .esc-row.esc-contado .esc-precio { font-size:17px; }
   /* los selects muestran la opción completa, sin cortar la palabra */
-  body.fit #screen-detail .detail-purchase select.form-control { font-size:11px; padding:5px 4px; }
+  body.fit #screen-detail .detail-purchase select.form-control { font-size:12.5px; padding:7px 6px; }
 
   /* ── Carrito en móvil ──
      Los ítems usan la clase .summary-product (no .cart-item): sin estas reglas
@@ -1335,7 +1347,7 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #emailBox .btn, body.fit #emailBox button { padding:7px; font-size:11.5px; letter-spacing:.06em; margin:3px 0 0; }
   body.fit #screen-cart .trust-strip { font-size:9px; line-height:1.25; }
   body.fit .cart-total-row { margin-bottom:4px; }
-  body.fit #referencePrices .original-price { font-size:12.5px; }
+  body.fit #referencePrices .original-price { font-size:15px; }
   /* holgura extra para que los botones nunca queden al ras */
   body.fit #screen-detail #detailSpecs { gap:0 8px; }
   body.fit #screen-detail .detail-spec { line-height:1.1; }
@@ -1462,13 +1474,10 @@ body.fit .category-img-wrap .category-img-collage img { width:100%; height:100%;
 body.fit .escalera { padding:5px 8px; margin:4px 0 0; }
 body.fit .esc-row { font-size:11px; padding:2px 0; }
 body.fit .esc-row.esc-lista .esc-precio { font-size:13px; }
-/* Columna angosta (móvil): cada escalón en 2 líneas — etiqueta arriba, precio + % OFF abajo —
-   para que la escalera no se estire a lo alto con los textos partidos letra por letra */
+/* Móvil: la escalera ocupa todo el ancho (el detalle va apilado desde el 12/08), así que cada
+   escalón entra en UNA línea; el wrap queda solo como red por si un texto largo no llega. */
 @media (max-width: 700px) {
-  .escalera .esc-row { display:block; }
-  .escalera .esc-row .esc-lbl { display:block; }
-  /* en bloque los spans pierden el gap del flex: separar el badge del precio */
-  .escalera .esc-row .esc-off { margin-left:6px; }
+  .escalera .esc-row { flex-wrap:wrap; row-gap:1px; }
 }
 body.fit .product-cuotas { font-size:11px; margin-top:2px; }
 body.fit .product-contado { font-size:10.5px; margin-top:1px; }
