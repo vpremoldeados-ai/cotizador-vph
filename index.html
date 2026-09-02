@@ -1178,6 +1178,44 @@
             background: var(--verde-claro) !important;
             animation: none !important;
         }
+
+        /* ===== Botón de carrito global (arriba a la derecha, en todas las pantallas) ===== */
+        .cart-btn {
+            position: absolute; top: 6px; right: 10px; z-index: 20;
+            display: none; align-items: center; gap: 6px;
+            background: var(--verde-marca); color: #fff; border: none;
+            padding: 7px 12px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+            cursor: pointer; transition: background .25s;
+        }
+        .cart-btn:hover { background: var(--verde-hover); }
+        .cart-btn-count {
+            background: #fff; color: var(--verde-marca);
+            font-size: 11px; font-weight: 800; min-width: 18px; padding: 1px 5px; text-align: center;
+        }
+
+        /* ===== Aviso breve al agregar al carrito ===== */
+        .vph-toast {
+            position: absolute; left: 50%; top: 46px; transform: translateX(-50%); z-index: 30;
+            background: var(--tinta); color: var(--papel);
+            padding: 10px 16px; font-size: 13px; font-weight: 700; max-width: 90%; text-align: center;
+            opacity: 0; pointer-events: none; transition: opacity .25s;
+        }
+        .vph-toast.show { opacity: 1; }
+
+        /* ===== Mensajes en línea (reemplazan a los alert()) ===== */
+        .inline-error { color: #dc2626; font-size: 12.5px; font-weight: 600; margin-top: 5px; line-height: 1.3; }
+
+        /* ===== Precio por m² como renglón secundario del bloque de precio ===== */
+        .ref-m2 { font-size: 14px; color: var(--tinta-media); margin-top: 4px; }
+        .ref-m2 b { color: var(--verde-texto); font-size: 16px; font-weight: 800; }
+        .ref-m2-lista { color: var(--tinta-suave); font-size: 12px; }
+
+        /* ===== Foco visible para navegar con teclado (sin sombras: solo contorno) ===== */
+        :focus-visible { outline: 2px solid var(--verde-marca); outline-offset: 2px; }
+
+        /* ===== Fila "+ Agregar más productos" del carrito ===== */
+        #cartAddMore { display: flex; justify-content: flex-start; margin: 0 0 8px; }
+        #cartAddMore .btn { flex: 0 0 auto; width: auto; padding: 8px 16px; font-size: 12px; }
     </style>
 <style id="vph-fit">
 /* ===== MODO ENCAJE (fit): altura fija, todo visible sin scroll interno =====
@@ -1367,6 +1405,26 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .detail-purchase > .price-breakdown { grid-row:3; grid-column:1 / -1; }
   body.fit .detail-purchase > .button-group { grid-row:4; grid-column:1 / -1; }
   body.fit .detail-purchase > .trust-strip { grid-row:5; grid-column:1 / -1; }
+
+  /* ── Carrito en móvil: la pantalla scrollea entera (antes la lista de ítems iba en una
+     caja chica con scroll propio y los botones Editar/Quitar quedaban cortados) ── */
+  body.fit #screen-cart { overflow-y:auto !important; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+  body.fit #cartItems { flex:0 0 auto; overflow:visible; min-height:0; }
+  body.fit #cartSide { flex:0 0 auto; }
+  body.fit #cartItems .summary-details p { display:block; -webkit-line-clamp:unset; overflow:visible; }
+  body.fit #cartAddMore .btn { width:100%; padding:9px; font-size:12px; }
+  /* nota de entrega y franja de confianza completas (antes se cortaban con "…") */
+  body.fit #deliveryTime { -webkit-line-clamp:3 !important; max-height:42px !important; }
+  body.fit .detail-purchase .trust-strip { height:auto; white-space:normal; overflow:visible; text-overflow:clip; flex-wrap:wrap; justify-content:center; gap:2px 10px; font-size:9.5px; line-height:1.3; }
+  /* totales del carrito: letra un poco menor para que "Bonificación contado (30,5% OFF)" entre en un renglón */
+  body.fit .cart-total-row { font-size:15px; }
+  body.fit .cart-total-final { font-size:20px; }
+  /* botón de carrito compacto (solo ícono + cantidad) y título con lugar a los costados;
+     un nombre de producto largo puede pasar a 2 renglones en vez de meterse bajo el botón */
+  body.fit .global-title { padding:6px 58px 2px !important; font-size:14px !important; white-space:normal; line-height:1.15; }
+  .cart-btn { top:5px; right:6px; padding:5px 8px; font-size:12px; gap:4px; }
+  .cart-btn-txt { display:none; }
+  .vph-toast { top:40px; font-size:12.5px; padding:8px 12px; }
 }
 /* ===== desktop ===== */
 @media (min-width:768px){
@@ -1447,6 +1505,26 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit .button-group .btn { padding:13px; font-size:15px; }
   body.fit .button-group .btn-primary { order:-1; }
   body.fit .detail-purchase .trust-strip { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; height:auto; white-space:normal; padding-top:2px; color:var(--tinta-suave); }
+  /* título con lugar para el botón de carrito a la derecha (queda centrado igual) */
+  body.fit .global-title { padding-left:160px; padding-right:160px; }
+  /* ===== Carrito en PC: ítems a la izquierda con todo el alto; totales y envío a la derecha =====
+     Antes todo iba apilado y la lista de ítems quedaba en una caja de ~110px con scroll propio:
+     con 2 productos ya se cortaban los botones Editar/Quitar. */
+  /* (el display:grid lo pone showScreen() en línea; acá solo la forma de la grilla) */
+  body.fit #screen-cart { grid-template-columns:minmax(0,1fr) 400px; grid-template-rows:auto auto auto minmax(0,1fr); gap:6px 18px; align-content:start; padding:6px 12px 8px; }
+  body.fit #screen-cart > .screen-header { grid-column:1 / -1; grid-row:1; }
+  body.fit #screen-cart > div:nth-child(2) { grid-column:1 / -1; grid-row:2; }
+  body.fit #cartAddMore { grid-column:1; grid-row:3; margin:0; }
+  body.fit #cartItems { grid-column:1; grid-row:4; min-height:0; overflow-y:auto; margin:0; }
+  body.fit #cartSide { grid-column:2; grid-row:3 / 5; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:6px; }
+  body.fit #cartSide > * { flex:0 0 auto; }
+  body.fit #cartSide #emailBox { max-width:none; margin:0; }
+  body.fit #cartSide .cart-buttons { margin:0 !important; }
+  body.fit #cartSide .cart-reassurance { margin:0; }
+  body.fit .summary-product { padding:10px 12px; margin:0 0 6px; grid-template-columns:70px minmax(0,1fr) 110px; gap:12px; align-items:center; }
+  body.fit .summary-image { width:70px; height:70px; }
+  body.fit .summary-details h3 { font-size:15px; }
+  body.fit .summary-details p { font-size:12.5px; }
 }
 /* ===== Pantalla 1: miniaturas CUADRADAS y SIN RECORTE (contain), reducidas para entrar en la caja =====
    PC: una fila de cuadrados centrada. Móvil: cuadrados a la izquierda, título a la derecha, descripción abajo. */
@@ -1484,9 +1562,16 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
 </style>
 </head>
 <body>
+    <!-- Botón de carrito visible en TODAS las pantallas (aparece cuando hay productos cargados).
+         Antes el único acceso era un 🛒 chico dentro de la ficha: desde categorías o productos
+         no había forma de volver al carrito. -->
+    <button type="button" id="cartBtn" class="cart-btn" onclick="goToCart()" aria-label="Ver carrito" style="display:none;">🛒 <span class="cart-btn-txt">Ver carrito</span> <span class="cart-btn-count">0</span></button>
+    <!-- Aviso breve (toast) al agregar un producto con "Agregar y seguir" -->
+    <div id="vphToast" class="vph-toast" role="status" aria-live="polite"></div>
+
     <!-- Breadcrumb Global -->
     <div class="global-title" id="globalTitle">Selecciona una categoría</div>
-    <div class="breadcrumb-global" id="globalBreadcrumb">
+    <div class="breadcrumb-global" id="globalBreadcrumb" role="navigation" aria-label="Ruta de navegación" onkeydown="if((event.key==='Enter'||event.key===' ')&&event.target.onclick){event.preventDefault();event.target.onclick();}">
         <span id="breadcrumb-home" onclick="goHomeOrCategories()" style="cursor: pointer;">Inicio</span>
         <span id="separator-0" style="display: none;">›</span>
         <span id="breadcrumb-category" class="inactive" style="cursor: default;"></span>
@@ -1509,10 +1594,6 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
 
         <!-- PANTALLA 3: DETALLE -->
         <div id="screen-detail" style="position: relative;">
-            <div style="position: absolute; top: 18px; right: 15px; z-index: 10;">
-                <span onclick="goToCart()" style="cursor: pointer; font-size: 14px; color: var(--verde-marca); padding: 2px 4px;">🛒 <span id="cartCount" style="font-size: 11px;">0</span></span>
-            </div>
-
             <div class="detail-container">
                 <div class="detail-top"><!-- galería + info lado a lado (modo encaje) -->
                 <!-- Left: Gallery -->
@@ -1533,6 +1614,9 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     <!-- Reference Prices -->
                     <!-- El precio grande es el CONTADO (el más bajo); el tachado es el precio
                          de lista (12 cuotas) y el badge, la bonificación por pagar contado -->
+                    <!-- Un solo bloque de precio: el contado por unidad es el titular y el precio
+                         por m² va como renglón secundario del mismo bloque (antes eran dos cajas
+                         iguales que repetían el mismo % OFF; la escalera de abajo es el comparador). -->
                     <div id="referencePrices" class="reference-prices" style="display: none;">
                         <div class="ref-price-item">
                             <div class="ref-lbl">Precio contado por unidad</div>
@@ -1541,13 +1625,9 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                                 <span class="discounted-price" id="refPriceDiscounted"></span>
                                 <span class="ref-off" id="refOffUnit" style="display:none;">30,5% OFF</span>
                             </div>
-                        </div>
-                        <div class="ref-price-item" id="refPricePerM2Container" style="display: none;">
-                            <div class="ref-lbl">Precio contado por m²</div>
-                            <div class="ref-vals">
-                                <span class="original-price" id="refPriceM2Original"></span>
-                                <span class="discounted-price" id="refPriceM2Discounted"></span>
-                                <span class="ref-off" id="refOffM2" style="display:none;">30,5% OFF</span>
+                            <div class="ref-m2" id="refPricePerM2Container" style="display: none;">
+                                <b id="refPriceM2Discounted"></b> por m² contado
+                                <span class="ref-m2-lista">· lista <span id="refPriceM2Original"></span></span>
                             </div>
                         </div>
                     </div>
@@ -1585,6 +1665,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     <div class="form-group">
                         <label class="form-label">Cantidad</label>
                         <div id="quantityInputs" class="quantity-inputs"></div>
+                        <div id="qtyError" class="inline-error" role="alert" style="display:none;"></div>
                         <div id="weightPalletsBox" style="display:none; background:white; border:1px solid var(--linea); padding:6px 8px; margin-top:6px; font-size:14px;">
                             <div class="price-row"><span>Peso:</span><span id="weightVal" style="color:var(--tinta); font-weight:600;">0 kg</span></div>
                             <div class="price-row"><span>Pallets:</span><span id="palletsVal" style="color:var(--tinta); font-weight:600;">0</span></div>
@@ -1685,10 +1766,19 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 </div>
             </div>
 
+            <!-- "+ Agregar más productos" vivía dentro del .screen-header, que está oculto
+                 globalmente (display:none) desde que el título pasó arriba: el botón nunca se veía.
+                 Ahora va en su propia fila, siempre visible. -->
+            <div id="cartAddMore">
+                <button type="button" class="btn btn-secondary" onclick="goToCategories()">+ Agregar más productos</button>
+            </div>
+
             <div class="cart-items" id="cartItems">
                 <div class="empty-state">El carrito está vacío</div>
             </div>
 
+            <!-- Columna derecha en PC (totales + envío); en móvil sigue apilada debajo de los ítems -->
+            <div id="cartSide">
             <div class="cart-total">
                 <div class="cart-total-row">
                     <span>Subtotal:</span>
@@ -1726,16 +1816,18 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 <span>⭐ 4,8 · 150 opiniones en Google</span>
                 <span>💬 Te contactamos en menos de 24 hs</span>
             </div>
+            <div id="cartError" class="inline-error" role="alert" style="display:none; text-align:center;"></div>
             <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
                 <button class="btn-whatsapp" onclick="sendToWhatsApp()">Enviar por WhatsApp 💬</button>
             </div>
 
             <div id="emailBox" style="max-width: 420px; margin: 0 auto; padding: 14px 16px; background: var(--fondo-alt); border: 1px solid var(--verde-claro); ">
-                <label class="form-label" style="display:block; margin-bottom:4px;">Teléfono <span style="color:#dc2626;">*</span> (obligatorio para enviar por email)</label>
-                <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" oninput="updateEmailButtonState()" style="width: 100%; padding: 9px; border: 1px solid var(--linea); font-size: 14px; margin-bottom: 10px;">
+                <label class="form-label" for="phoneNumber" style="display:block; margin-bottom:4px;">Teléfono <span style="color:#dc2626;">*</span> (obligatorio para enviar por email)</label>
+                <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" autocomplete="tel" inputmode="numeric" oninput="updateEmailButtonState()" style="width: 100%; padding: 9px; border: 1px solid var(--linea); font-size: 14px; margin-bottom: 10px;">
                 <button class="btn btn-primary" id="emailBtn" onclick="sendByEmail()" disabled style="width: 100%; padding: 11px; opacity: 0.5; cursor: not-allowed;">Enviar por Email</button>
-                <div id="emailHint" style="font-size:12px; color:#dc2626; margin-top:6px; text-align:center;">Ingresá tu teléfono para habilitar el envío por email</div>
+                <div id="emailHint" role="status" style="font-size:12px; color:#dc2626; margin-top:6px; text-align:center;">Ingresá tu teléfono para habilitar el envío por email</div>
             </div>
+            </div><!-- /cartSide -->
         </div>
     </div>
 
@@ -1928,6 +2020,54 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             description: "20% de descuento — dada de baja"
         };
 
+        // ===== Formato de montos =====
+        // Siempre "5.857" (punto de miles, sin decimales), sin depender del idioma del navegador.
+        // Antes se usaba toLocaleString() sin locale: en español mostraba "5857" pero "25.185"
+        // (no agrupa los números de 4 cifras) y en un navegador en inglés salía "5,857".
+        function fmt(n) {
+            return Math.round(Number(n) || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // ===== Avisos en línea (reemplazan a los alert() nativos) =====
+        let _toastTimer = null;
+        function showToast(msg, ms = 2600) {
+            const t = document.getElementById('vphToast');
+            if (!t) return;
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+        }
+        function showFieldError(id, msg) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function hideFieldError(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        }
+
+        // Botón de carrito global: visible solo cuando hay productos y no estamos en el carrito
+        function refreshCartBtn() {
+            const b = document.getElementById('cartBtn');
+            if (!b) return;
+            const show = cart.length > 0 && _currentScreen !== 'cart';
+            b.style.display = show ? 'inline-flex' : 'none';
+            b.setAttribute('aria-label', `Ver carrito (${cart.length} producto${cart.length === 1 ? '' : 's'})`);
+        }
+
+        // Accesibilidad: una tarjeta/miniatura clickeable también se activa con Enter o Espacio
+        function makeKeyboardClickable(el, label) {
+            el.setAttribute('role', 'button');
+            el.tabIndex = 0;
+            if (label) el.setAttribute('aria-label', label);
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+            });
+        }
+
         function getPriceWithDiscount(originalPrice, code) {
             if (!promotion.active || !PROMO_CODES.includes(code)) return originalPrice;
             return Math.round(originalPrice * (1 - promotion.discount));
@@ -2070,6 +2210,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const card = document.createElement('div');
                 card.className = 'category-card';
                 card.onclick = () => selectCategory(categoryName);
+                makeKeyboardClickable(card, `Ver productos de ${categoryName}`);
 
                 const allProducts = (data.products || []).filter(p => p.image);
                 const MAX_COLLAGE = 4;
@@ -2188,6 +2329,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.onclick = () => selectProduct(currentCategory, idx);
+                makeKeyboardClickable(card, `Cotizar ${product.name}`);
 
                 // El precio grande es el CONTADO (el más bajo abre la comparación); la lista
                 // (12 cuotas) va tachada arriba y el badge muestra la bonificación contado.
@@ -2202,8 +2344,8 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const specsHtml = specsWithPallet.map(s => `<div class="spec-line" style="font-size: 14px; color: var(--tinta-suave); margin: 3px 0;">• ${s}</div>`).join('');
 
                 const priceHtml = `
-                    <div style="font-size: 16px; color: var(--cemento); text-decoration: line-through; margin: 3px 0;">$${unitLista.toLocaleString()}</div>
-                    <div class="product-price" style="margin: 3px 0;">$${unitContado.toLocaleString()} <span style="font-size: 12px; color: var(--verde-marca); font-weight: 700;">${offTxt(0)}</span></div>
+                    <div style="font-size: 16px; color: var(--cemento); text-decoration: line-through; margin: 3px 0;">$${fmt(unitLista)}</div>
+                    <div class="product-price" style="margin: 3px 0;">$${fmt(unitContado)} <span style="font-size: 12px; color: var(--verde-marca); font-weight: 700;">${offTxt(0)}</span></div>
                     <div class="product-contado">Contado transferencia</div>
                 `;
                 const badgeHtml = (product.code === MAS_VENDIDA_CODE) ? '<div class="badge-bestseller">⭐ Más vendida</div>' : '';
@@ -2218,8 +2360,8 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                         <div class="product-name">${product.name}</div>
                         <div>
                             ${priceHtml}
-                            <div class="product-cuotas">${FINANCIACION.cuotasLista} cuotas sin interés de $${cuotaVal.toLocaleString()}</div>
-                            ${priceM2Contado ? `<div class="product-per-m2">$${Math.round(priceM2Contado).toLocaleString()} /m² contado</div>` : ''}
+                            <div class="product-cuotas">${FINANCIACION.cuotasLista} cuotas sin interés de $${fmt(cuotaVal)}</div>
+                            ${priceM2Contado ? `<div class="product-per-m2">$${fmt(Math.round(priceM2Contado))} /m² contado</div>` : ''}
                         </div>
                         <div class="product-specs" style="font-size: 14px; color: var(--tinta-suave); margin-top: 8px;">
                             ${specsHtml}
@@ -2314,7 +2456,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             const images = product.images || [product.image];
             const limitedImages = images.slice(0, images.length);
             const thumbnailsHtml = limitedImages.map((img, idx) => `
-                <div class="thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeImage(this, '${img}')">
+                <div class="thumbnail ${idx === 0 ? 'active' : ''}" role="button" tabindex="0" aria-label="Ver foto ${idx + 1}" onclick="changeImage(this, '${img}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
                     <img src="${img}" alt="Miniatura ${idx + 1}">
                 </div>
             `).join('');
@@ -2335,23 +2477,18 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             const unitLista = precioLista(unitContado);
             const refPriceOriginalEl = document.getElementById('refPriceOriginal');
             refPriceOriginalEl.style.display = 'inline';
-            refPriceOriginalEl.textContent = `$${unitLista.toLocaleString()}`;
-            document.getElementById('refPriceDiscounted').textContent = `$${unitContado.toLocaleString()}`;
+            refPriceOriginalEl.textContent = `$${fmt(unitLista)}`;
+            document.getElementById('refPriceDiscounted').textContent = `$${fmt(unitContado)}`;
             const refOffUnitEl = document.getElementById('refOffUnit');
             refOffUnitEl.textContent = offTxt(0);
             refOffUnitEl.style.display = 'inline';
 
-            // Precio POR M² (solo losetas): idem, contado con la lista tachada
+            // Precio POR M² (solo losetas): renglón secundario dentro del mismo bloque
             const refPriceM2Container = document.getElementById('refPricePerM2Container');
             if (product.per_m2) {
-                refPriceM2Container.style.display = 'flex';
-                const refPriceM2OriginalEl = document.getElementById('refPriceM2Original');
-                refPriceM2OriginalEl.style.display = 'inline';
-                refPriceM2OriginalEl.textContent = `$${Math.round(unitLista * product.per_m2).toLocaleString()}`;
-                document.getElementById('refPriceM2Discounted').textContent = `$${Math.round(unitContado * product.per_m2).toLocaleString()}`;
-                const refOffM2El = document.getElementById('refOffM2');
-                refOffM2El.textContent = offTxt(0);
-                refOffM2El.style.display = 'inline';
+                refPriceM2Container.style.display = 'block';
+                document.getElementById('refPriceM2Original').textContent = `$${fmt(unitLista * product.per_m2)}`;
+                document.getElementById('refPriceM2Discounted').textContent = `$${fmt(unitContado * product.per_m2)}`;
             } else {
                 refPriceM2Container.style.display = 'none';
             }
@@ -2364,14 +2501,14 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             if (escRows) {
                 let escHtml = `<div class="esc-row esc-contado">` +
                     `<span class="esc-lbl">💰 Contado transferencia</span>` +
-                    `<span class="esc-precio">$${unitContado.toLocaleString()}</span>` +
+                    `<span class="esc-precio">$${fmt(unitContado)}</span>` +
                     `<span class="esc-off">${offTxt(0)}</span></div>`;
                 FINANCIACION.planes.slice().sort((a, b) => a.cuotas - b.cuotas).forEach(p => {
                     const precio = precioFinanciado(unitContado, p.cuotas);
                     const esLista = p.cuotas === FINANCIACION.cuotasLista;
                     escHtml += `<div class="esc-row">` +
-                        `<span class="esc-lbl">💳 ${p.cuotas} cuotas${esLista ? ' sin interés' : ''} de $${Math.round(precio / p.cuotas).toLocaleString()}</span>` +
-                        `<span class="esc-precio">$${precio.toLocaleString()}</span>` +
+                        `<span class="esc-lbl">💳 ${p.cuotas} cuotas${esLista ? ' sin interés' : ''} de $${fmt(Math.round(precio / p.cuotas))}</span>` +
+                        `<span class="esc-precio">$${fmt(precio)}</span>` +
                         `<span class="esc-off${esLista ? ' esc-neutro' : ''}">${esLista ? 'Precio de lista' : offTxt(p.cuotas)}</span></div>`;
                 });
                 escRows.innerHTML = escHtml;
@@ -2542,9 +2679,9 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     const weight = unitsTotal * product.weight;
                     const l1 = document.getElementById('m2-info-line1');
                     if (l1) l1.innerHTML = aplicaCorte
-                        ? `Necesitás <b style="color:var(--tinta);">${unitsTotal.toLocaleString()} unidades</b> = ${unitsBase.toLocaleString()} + <b style="color:var(--verde-marca);">${unitsCut.toLocaleString()}</b> adicionales por corte (5%)`
-                        : `Necesitás <b style="color:var(--tinta);">${unitsTotal.toLocaleString()} unidades</b>`;
-                    const w = document.getElementById('m2-weight'); if (w) w.textContent = Math.round(weight).toLocaleString() + ' kg';
+                        ? `Necesitás <b style="color:var(--tinta);">${fmt(unitsTotal)} unidades</b> = ${fmt(unitsBase)} + <b style="color:var(--verde-marca);">${fmt(unitsCut)}</b> adicionales por corte (5%)`
+                        : `Necesitás <b style="color:var(--tinta);">${fmt(unitsTotal)} unidades</b>`;
+                    const w = document.getElementById('m2-weight'); if (w) w.textContent = fmt(Math.round(weight)) + ' kg';
                     const p = document.getElementById('m2-pallets'); if (p && product.per_pallet) p.textContent = Math.ceil(unitsTotal / product.per_pallet);
                 }
             }
@@ -2596,7 +2733,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             if (wpBox) {
                 const mostrarWP = (modoDirecto || product.type === 'units' || product.type === 'ml') && totalUnits > 0 && product.weight && product.per_pallet;
                 if (mostrarWP) {
-                    document.getElementById('weightVal').textContent = Math.round(totalUnits * product.weight).toLocaleString() + ' kg';
+                    document.getElementById('weightVal').textContent = fmt(Math.round(totalUnits * product.weight)) + ' kg';
                     document.getElementById('palletsVal').textContent = Math.ceil(totalUnits / product.per_pallet);
                     wpBox.style.display = 'block';
                 } else {
@@ -2623,8 +2760,8 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             // Total a precio de LISTA (12 cuotas), para mostrar la bonificación
             const totalLista = totalUnits * precioLista(unitContadoUP) + precioLista(freightCost);
 
-            document.getElementById('priceProduct').textContent = `$${subtotalFin.toLocaleString()}`;
-            document.getElementById('priceFreight').textContent = `$${freightFin.toLocaleString()}`;
+            document.getElementById('priceProduct').textContent = `$${fmt(subtotalFin)}`;
+            document.getElementById('priceFreight').textContent = `$${fmt(freightFin)}`;
 
             document.getElementById('priceCutRow').style.display = 'none';
             // Si no se paga al precio de lista, mostrar la lista y la bonificación aplicada
@@ -2632,12 +2769,12 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             document.getElementById('priceTotalWithoutDiscount').style.display = hayBonif ? 'flex' : 'none';
             document.getElementById('priceSavingsRow').style.display = hayBonif ? 'flex' : 'none';
             if (hayBonif) {
-                document.getElementById('priceTotalNoDiscount').textContent = `$${totalLista.toLocaleString()}`;
+                document.getElementById('priceTotalNoDiscount').textContent = `$${fmt(totalLista)}`;
                 document.getElementById('priceSavingsLabel').textContent = `Bonificación ${nc > 0 ? nc + ' cuotas' : 'contado'} (${offTxt(nc)}):`;
-                document.getElementById('priceSavings').textContent = `-$${(totalLista - totalFin).toLocaleString()}`;
+                document.getElementById('priceSavings').textContent = `-$${fmt((totalLista - totalFin))}`;
             }
 
-            document.getElementById('priceTotal').textContent = `$${totalFin.toLocaleString()}`;
+            document.getElementById('priceTotal').textContent = `$${fmt(totalFin)}`;
             const qn = document.getElementById('quoteNote');
             if (qn) qn.style.display = 'none';
 
@@ -2662,7 +2799,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 document.getElementById('installmentTitle').textContent = nc === FINANCIACION.cuotasLista
                     ? `${nc} cuotas sin interés (precio de lista)`
                     : `${nc} cuotas con tarjeta — ${offTxt(nc)} sobre el precio de lista`;
-                document.getElementById('installmentDetail').innerHTML = `<div>Valor de cada cuota: $${cuota.toLocaleString()}</div>`;
+                document.getElementById('installmentDetail').innerHTML = `<div>Valor de cada cuota: $${fmt(cuota)}</div>`;
                 document.getElementById('installmentContainer').style.display = 'block';
             } else {
                 document.getElementById('installmentContainer').style.display = 'none';
@@ -2679,7 +2816,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             if (product.type === 'm2') {
                 if (directUnitsM2Cart > 0) {
                     quantity = directUnitsM2Cart;
-                    quantityLabel = `${Math.ceil(directUnitsM2Cart).toLocaleString()} unidades`;
+                    quantityLabel = `${fmt(Math.ceil(directUnitsM2Cart))} unidades`;
                 } else {
                     quantity = parseFloat(document.getElementById('qty-m2')?.value || 0);
                     quantityLabel = `${quantity} m²`;
@@ -2700,9 +2837,15 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             }
 
             if (quantity <= 0) {
-                alert('Por favor ingresa una cantidad');
+                // Aviso al lado del campo (antes: alert() nativo) y foco en el primer input
+                showFieldError('qtyError', 'Ingresá la cantidad para poder cotizar.');
+                const qBox = document.getElementById('quantityInputs');
+                const firstQty = qBox ? qBox.querySelector('input') : null;
+                if (firstQty) firstQty.focus();
+                if (qBox) qBox.addEventListener('input', () => hideFieldError('qtyError'), { once: true });
                 return false;
             }
+            hideFieldError('qtyError');
 
             let destination = document.getElementById('destination').value;
             let paymentMethod = document.getElementById('paymentMethod').value;
@@ -2788,7 +2931,8 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             };
 
             // Si se está editando un item, reemplazarlo; si no, agregar uno nuevo
-            if (editingCartIndex !== null) {
+            const wasEditing = editingCartIndex !== null;
+            if (wasEditing) {
                 cart[editingCartIndex] = newItem;
                 editingCartIndex = null; // Limpiar el índice de edición
             } else {
@@ -2797,11 +2941,15 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
 
             updateCartCount();
             if (!stay) goToCart();
+            else showToast(wasEditing
+                ? `✓ ${product.name}: cantidad actualizada`
+                : `✓ ${product.name} agregado al carrito (${cart.length})`);
             return true;
         }
 
         function updateCartCount() {
-            document.getElementById('cartCount').textContent = cart.length;
+            document.querySelectorAll('.cart-btn-count').forEach(e => { e.textContent = cart.length; });
+            refreshCartBtn();
             persistCart();
         }
 
@@ -2815,7 +2963,11 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 btn.style.opacity = ok ? '1' : '0.5';
                 btn.style.cursor = ok ? 'pointer' : 'not-allowed';
             }
-            if (hint) hint.style.display = ok ? 'none' : 'block';
+            if (hint) {
+                hint.style.display = ok ? 'none' : 'block';
+                // Al escribir se vuelve al texto base (pisa cualquier error puntual anterior)
+                if (!ok) hint.textContent = 'Ingresá tu teléfono para habilitar el envío por email';
+            }
         }
 
         // Flete CONSOLIDADO: junta las fracciones de pallet de todos los productos del carrito
@@ -2843,11 +2995,11 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             if (item.m2 != null && item.m2 > 0) parts.push(`${item.m2} m²`);
             const base = (item.baseUnits != null) ? item.baseUnits : item.totalUnits;
             const cut = item.cutUnits || 0;
-            const tot = (item.totalUnits || 0).toLocaleString() + ' u';
-            if (cut > 0) parts.push(`${base.toLocaleString()} u + ${cut.toLocaleString()} de corte = ${b(tot)}`);
+            const tot = fmt((item.totalUnits || 0)) + ' u';
+            if (cut > 0) parts.push(`${fmt(base)} u + ${fmt(cut)} de corte = ${b(tot)}`);
             else parts.push(b(tot));
             const kg = Math.round((item.totalUnits || 0) * (item.unitWeight || 0));
-            if (kg > 0) parts.push(`${kg.toLocaleString()} kg`);
+            if (kg > 0) parts.push(`${fmt(kg)} kg`);
             return parts.join(' · ');
         }
 
@@ -2891,9 +3043,9 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                             <p>${paymentInfo}${cuotasInfo}</p>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-weight: 700; color: var(--verde-marca); margin-bottom: 5px;">$${subFin.toLocaleString()}</div>
-                            <button class="btn-edit" style="width: 100%; margin-bottom: 5px;" onclick="editCartItem(${idx})">Editar</button>
-                            <button class="btn-remove" style="width: 100%;" onclick="removeCartItem(${idx})">Quitar</button>
+                            <div style="font-weight: 700; color: var(--verde-marca); margin-bottom: 5px;">$${fmt(subFin)}</div>
+                            <button type="button" class="btn-edit" style="width: 100%; margin-bottom: 5px;" aria-label="Editar ${item.name}" onclick="editCartItem(${idx})">Editar</button>
+                            <button type="button" class="btn-remove" style="width: 100%;" aria-label="Quitar ${item.name} del carrito" onclick="removeCartItem(${idx})">Quitar</button>
                         </div>
                     </div>
                 `;
@@ -2907,9 +3059,9 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             const totalLista = totalSubtotalLista + precioLista(fr.freight);
 
             container.innerHTML = html;
-            document.getElementById('cartSubtotal').textContent = `$${totalSubtotal.toLocaleString()}`;
+            document.getElementById('cartSubtotal').textContent = `$${fmt(totalSubtotal)}`;
             document.getElementById('cartFreight').textContent = anyQuote ? 'A confirmar'
-                : (fr.pallets > 0 ? `$${totalFreight.toLocaleString()} · ${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}` : '$0');
+                : (fr.pallets > 0 ? `$${fmt(totalFreight)} · ${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}` : '$0');
 
             // Nota de consolidación: solo si al combinar productos se ahorran pallets
             const palletsSueltos = cart.reduce((s, it) => s + (it.perPallet ? Math.ceil((it.totalUnits || 0) / it.perPallet) : 1), 0);
@@ -2921,12 +3073,12 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             document.getElementById('cartListaRow').style.display = hayBonifCart ? 'flex' : 'none';
             document.getElementById('cartBonifRow').style.display = hayBonifCart ? 'flex' : 'none';
             if (hayBonifCart) {
-                document.getElementById('cartListaTotal').textContent = `$${totalLista.toLocaleString()}`;
+                document.getElementById('cartListaTotal').textContent = `$${fmt(totalLista)}`;
                 document.getElementById('cartBonifLabel').textContent = `Bonificación ${ncCart > 0 ? ncCart + ' cuotas' : 'contado'} (${offTxt(ncCart)}):`;
-                document.getElementById('cartBonifValue').textContent = `-$${(totalLista - totalFinal).toLocaleString()}`;
+                document.getElementById('cartBonifValue').textContent = `-$${fmt((totalLista - totalFinal))}`;
             }
 
-            document.getElementById('cartFinalTotal').textContent = `$${totalFinal.toLocaleString()}`;
+            document.getElementById('cartFinalTotal').textContent = `$${fmt(totalFinal)}`;
 
             // Cuotas en el total (todos los productos comparten forma de pago)
             const instRow = document.getElementById('cartInstallmentRow');
@@ -2934,7 +3086,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const cuota = Math.round(totalFinal / ncCart);
                 document.getElementById('cartInstallmentTitle').textContent = ncCart === FINANCIACION.cuotasLista
                     ? `${ncCart} cuotas sin interés:` : `${ncCart} cuotas con tarjeta:`;
-                document.getElementById('cartInstallmentValue').textContent = `$${cuota.toLocaleString()} c/u`;
+                document.getElementById('cartInstallmentValue').textContent = `$${fmt(cuota)} c/u`;
                 instRow.style.display = 'flex';
             } else {
                 instRow.style.display = 'none';
@@ -3055,7 +3207,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 // forma de pago (el contado va con la bonificación ya aplicada).
                 let nota = 'Pedido del cotizador web (' + method + ').';
                 const ncLead = cuotasDe(first.paymentMethod);
-                if (ncLead > 0) nota += ' ' + ncLead + ' cuotas de $' + Math.round((Number(totalValue) || 0) / ncLead).toLocaleString() + ' (precio financiado, escalera web).';
+                if (ncLead > 0) nota += ' ' + ncLead + ' cuotas de $' + fmt(Math.round((Number(totalValue) || 0) / ncLead)) + ' (precio financiado, escalera web).';
                 else nota += ' Contado con bonificación ' + offTxt(0) + ' s/ lista (escalera web).';
 
                 const hoy = new Date();
@@ -3080,9 +3232,10 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
         // ========== ENVIAR A WHATSAPP ==========
         function sendToWhatsApp() {
             if (cart.length === 0) {
-                alert('El carrito está vacío');
+                showFieldError('cartError', 'Tu carrito está vacío. Agregá un producto para enviar el presupuesto.');
                 return;
             }
+            hideFieldError('cartError');
 
             let message = '🛒 *COTIZACIÓN VPH PREMOLDEADOS*\n\n';
 
@@ -3093,7 +3246,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const subFin = (item.totalUnits || 0) * precioFinanciado(getPriceWithDiscount(item.price, item.code), ncMsg);
                 message += `${idx + 1}. *${item.name}*\n`;
                 message += `   Cantidad: ${itemBreakdown(item, false)}\n`;
-                message += `   Subtotal: $${subFin.toLocaleString()}\n\n`;
+                message += `   Subtotal: $${fmt(subFin)}\n\n`;
                 totalSubtotal += subFin;
                 totalSubtotalLista += (item.totalUnits || 0) * precioLista(getPriceWithDiscount(item.price, item.code));
             });
@@ -3107,19 +3260,19 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             message += `━━━━━━━━━━━━━━━━━\n`;
             message += `Destino: ${destLabels[dest] || dest}${cart[0].localidad ? ' - ' + cart[0].localidad : ''}\n`;
             if (dest === 'retiro') message += `Flete: retirás en fábrica\n`;
-            else message += `Flete (${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}): $${freightFin.toLocaleString()}\n`;
-            message += `*TOTAL GENERAL: $${totalFinal.toLocaleString()}*\n`;
+            else message += `Flete (${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}): $${fmt(freightFin)}\n`;
+            message += `*TOTAL GENERAL: $${fmt(totalFinal)}*\n`;
             message += `━━━━━━━━━━━━━━━━━\n\n`;
 
             // Forma de pago con la bonificación sobre el precio de lista
             if (ncMsg === FINANCIACION.cuotasLista) {
                 message += `*FORMA DE PAGO:* ${ncMsg} cuotas sin interés con tarjeta bancarizada (precio de lista)\n`;
-                message += `*Valor de cada cuota:* $${Math.round(totalFinal / ncMsg).toLocaleString()}\n\n`;
+                message += `*Valor de cada cuota:* $${fmt(Math.round(totalFinal / ncMsg))}\n\n`;
             } else if (ncMsg > 0) {
-                message += `*FORMA DE PAGO:* ${ncMsg} cuotas con tarjeta bancarizada (${offTxt(ncMsg)} s/ precio de lista $${totalLista.toLocaleString()})\n`;
-                message += `*Valor de cada cuota:* $${Math.round(totalFinal / ncMsg).toLocaleString()}\n\n`;
+                message += `*FORMA DE PAGO:* ${ncMsg} cuotas con tarjeta bancarizada (${offTxt(ncMsg)} s/ precio de lista $${fmt(totalLista)})\n`;
+                message += `*Valor de cada cuota:* $${fmt(Math.round(totalFinal / ncMsg))}\n\n`;
             } else {
-                message += `*FORMA DE PAGO:* Contado transferencia (${offTxt(0)} s/ precio de lista $${totalLista.toLocaleString()})\n\n`;
+                message += `*FORMA DE PAGO:* Contado transferencia (${offTxt(0)} s/ precio de lista $${fmt(totalLista)})\n\n`;
             }
 
             message += `Favor confirmar disponibilidad y coordinar entrega.\n`;
@@ -3134,20 +3287,24 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
 
             // Validar teléfono
+            const phoneInput = document.getElementById('phoneNumber');
             if (!phoneNumber) {
-                alert('Por favor ingresa tu número de teléfono');
+                showFieldError('emailHint', 'Ingresá tu número de teléfono para enviar por email.');
+                if (phoneInput) phoneInput.focus();
                 return;
             }
 
-            if (phoneNumber.length < 10) {
-                alert('El número de teléfono debe tener al menos 10 dígitos');
+            if (phoneNumber.replace(/\D/g, '').length < 10) {
+                showFieldError('emailHint', 'El teléfono debe tener al menos 10 dígitos (con código de área).');
+                if (phoneInput) phoneInput.focus();
                 return;
             }
 
             if (cart.length === 0) {
-                alert('El carrito está vacío');
+                showFieldError('cartError', 'Tu carrito está vacío. Agregá un producto para enviar el presupuesto.');
                 return;
             }
+            hideFieldError('cartError');
 
             // Construir mensaje para email
             let message = '🛒 COTIZACIÓN VPH PREMOLDEADOS\n\n';
@@ -3160,7 +3317,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 const subFin = (item.totalUnits || 0) * precioFinanciado(getPriceWithDiscount(item.price, item.code), ncMail);
                 message += `${idx + 1}. ${item.name}\n`;
                 message += `   Cantidad: ${itemBreakdown(item, false)}\n`;
-                message += `   Subtotal: $${subFin.toLocaleString()}\n\n`;
+                message += `   Subtotal: $${fmt(subFin)}\n\n`;
                 totalSubtotal += subFin;
                 totalSubtotalLista += (item.totalUnits || 0) * precioLista(getPriceWithDiscount(item.price, item.code));
             });
@@ -3174,19 +3331,19 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             message += `━━━━━━━━━━━━━━━━━\n`;
             message += `Destino: ${destLabels[dest] || dest}${cart[0].localidad ? ' - ' + cart[0].localidad : ''}\n`;
             if (dest === 'retiro') message += `Flete: retirás en fábrica\n`;
-            else message += `Flete (${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}): $${freightFin.toLocaleString()}\n`;
-            message += `TOTAL GENERAL: $${totalFinal.toLocaleString()}\n`;
+            else message += `Flete (${fr.pallets} pallet${fr.pallets > 1 ? 's' : ''}): $${fmt(freightFin)}\n`;
+            message += `TOTAL GENERAL: $${fmt(totalFinal)}\n`;
             message += `━━━━━━━━━━━━━━━━━\n\n`;
 
             // Forma de pago con la bonificación sobre el precio de lista
             if (ncMail === FINANCIACION.cuotasLista) {
                 message += `FORMA DE PAGO: ${ncMail} cuotas sin interés con tarjeta bancarizada (precio de lista)\n`;
-                message += `Valor de cada cuota: $${Math.round(totalFinal / ncMail).toLocaleString()}\n\n`;
+                message += `Valor de cada cuota: $${fmt(Math.round(totalFinal / ncMail))}\n\n`;
             } else if (ncMail > 0) {
-                message += `FORMA DE PAGO: ${ncMail} cuotas con tarjeta bancarizada (${offTxt(ncMail)} s/ precio de lista $${totalLista.toLocaleString()})\n`;
-                message += `Valor de cada cuota: $${Math.round(totalFinal / ncMail).toLocaleString()}\n\n`;
+                message += `FORMA DE PAGO: ${ncMail} cuotas con tarjeta bancarizada (${offTxt(ncMail)} s/ precio de lista $${fmt(totalLista)})\n`;
+                message += `Valor de cada cuota: $${fmt(Math.round(totalFinal / ncMail))}\n\n`;
             } else {
-                message += `FORMA DE PAGO: Contado transferencia (${offTxt(0)} s/ precio de lista $${totalLista.toLocaleString()})\n\n`;
+                message += `FORMA DE PAGO: Contado transferencia (${offTxt(0)} s/ precio de lista $${fmt(totalLista)})\n\n`;
             }
 
             // Enviar el presupuesto en segundo plano con Web3Forms (sin que el visitante salga del sitio)
@@ -3201,10 +3358,10 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
                     access_key: WEB3FORMS_KEY,
-                    subject: `Nuevo presupuesto web - Tel: ${phoneNumber} - Total $${totalFinal.toLocaleString()}`,
+                    subject: `Nuevo presupuesto web - Tel: ${phoneNumber} - Total $${fmt(totalFinal)}`,
                     from_name: 'Cotizador VPH Premoldeados',
                     telefono: phoneNumber,
-                    total_estimado: `$${totalFinal.toLocaleString()}`,
+                    total_estimado: `$${fmt(totalFinal)}`,
                     message: message
                 })
             })
@@ -3311,6 +3468,10 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                     breadcrumbProduct.textContent = '';
                     separator1.style.display = 'none';
                 }
+                // Accesibilidad: solo los tramos clickeables entran en el orden de tabulación
+                [breadcrumbHome, breadcrumbCategory, breadcrumbProduct].forEach(s => {
+                    s.tabIndex = (s.onclick && s.className !== 'inactive') ? 0 : -1;
+                });
             } catch (e) {
                 console.error('Error updating breadcrumb:', e);
             }
@@ -3328,7 +3489,11 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
             document.getElementById('screen-detail').style.display = 'none';
             document.getElementById('screen-cart').style.display = 'none';
 
-            document.getElementById(`screen-${screenName}`).style.display = screenName === 'categories' || screenName === 'products' || screenName === 'cart' ? 'flex' : 'block';
+            // El carrito en PC es una grilla de 2 columnas (ítems | totales); en móvil sigue apilado (flex)
+            const disp = screenName === 'detail' ? 'block'
+                : (screenName === 'cart' && window.innerWidth >= 768) ? 'grid'
+                : 'flex';
+            document.getElementById(`screen-${screenName}`).style.display = disp;
 
             // Registrar la pantalla en el historial (salvo que vengamos de un "atrás")
             if (!_navFromPop && screenName !== _currentScreen) {
@@ -3339,6 +3504,11 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
                 } catch (e) {}
             }
             _currentScreen = screenName;
+
+            // Botón de carrito global y limpieza de avisos en línea al cambiar de pantalla
+            refreshCartBtn();
+            hideFieldError('cartError');
+            hideFieldError('qtyError');
 
             // Actualizar breadcrumb
             updateBreadcrumb(screenName);

@@ -300,3 +300,21 @@ El tag **`FB_CONVERSIONS_API-…-GA4_Event`** (tipo *evento de GA4*, ID `G-18CMT
 14. "Enviar por Email" automático con Web3Forms (sin abrir el correo del visitante).
 15. Fix del Meta Pixel duplicado (desactivada la entrada "24-04-25 Pixel de Meta").
 16. Verificación de GA4 (tráfico OK, conversiones en 0). Se marcó `phone_call_click` como conversión en GA4 y se agregó `generate_lead` (WhatsApp + Email) al cotizador. Pendiente publicar y limpiar `Pageview` duplicado.
+
+---
+
+## 14. Mejoras de interfaz (01/09/2026) — editadas en local, PENDIENTE PUBLICAR con GitHub Desktop
+
+Revisión completa de las 4 pantallas en PC (1425×710) y móvil (375 px) y arreglos aplicados en `index.html`:
+
+1. **Formato de montos unificado:** nueva función `fmt(n)` (punto de miles, sin decimales, `$5.857`). Reemplazó los 52 `toLocaleString()` sin locale, que en español mostraban `$5857` junto a `$25.185` y en navegadores en inglés `$5,857`.
+2. **Botón de carrito global** `#cartBtn` (arriba a la derecha, todas las pantallas). Aparece solo con productos cargados y se oculta en el carrito. En móvil es solo ícono + cantidad. Se quitó el 🛒 chico que vivía dentro de la ficha (era el único acceso al carrito). `refreshCartBtn()` lo actualiza desde `updateCartCount()` y `showScreen()`.
+3. **Aviso (toast) al "Agregar y seguir"**: `showToast()` sobre `#vphToast`, 2,6 s.
+4. **"+ Agregar más productos" estaba invisible:** vivía dentro de `.screen-header`, que está oculto globalmente (`display:none !important`) desde que el título pasó arriba. Ahora va en su propia fila `#cartAddMore`.
+5. **Carrito en PC a 2 columnas:** ítems a la izquierda con todo el alto, totales + envío a la derecha en `#cartSide`. `showScreen()` pone `display:grid` en línea para el carrito cuando `innerWidth >= 768` (no usar `!important` en CSS para esto: pisaba el `display:none` en línea y el carrito se veía en todas las pantallas). En móvil `#screen-cart` scrollea entero (antes la lista iba en una caja de ~110 px con botones Editar/Quitar cortados).
+6. **Un solo bloque de precio en la ficha:** el precio por m² pasó a ser un renglón secundario (`.ref-m2`) dentro del bloque del precio contado por unidad; se eliminó la segunda caja y el `refOffM2`. La escalera de formas de pago queda como único comparador.
+7. **Mensajes en línea en vez de `alert()`:** `showFieldError()/hideFieldError()` sobre `#qtyError` (cantidad vacía, con foco al primer input), `#cartError` (carrito vacío al enviar) y `#emailHint` (teléfono). No queda ningún `alert()`.
+8. **Textos truncados:** nota de entrega en móvil hasta 3 renglones, franja de confianza envuelve (ya no se pierde "Te contactamos en menos de 24 hs"), descripción de ítems del carrito sin recorte, totales del carrito en móvil a 15 px para que "Bonificación contado (30,5% OFF)" entre en un renglón. Título móvil a 14 px con lugar para el botón de carrito.
+9. **Accesibilidad básica:** tarjetas de categoría/producto y miniaturas con `role="button"`, `tabindex="0"`, `aria-label` y activación con Enter/Espacio (`makeKeyboardClickable()`); breadcrumb con `tabindex` solo en tramos clickeables; `:focus-visible` con contorno verde; `aria-label` en Editar/Quitar; `label for` + `inputmode="numeric"` en el teléfono.
+
+Verificado en local (servidor estático en `localhost:8765`) en PC y móvil: navegación, toast, errores en línea, carrito con 2 ítems, teclado. Sintaxis de los scripts chequeada con `node --check`.
