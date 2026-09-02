@@ -318,3 +318,24 @@ Revisión completa de las 4 pantallas en PC (1425×710) y móvil (375 px) y arre
 9. **Accesibilidad básica:** tarjetas de categoría/producto y miniaturas con `role="button"`, `tabindex="0"`, `aria-label` y activación con Enter/Espacio (`makeKeyboardClickable()`); breadcrumb con `tabindex` solo en tramos clickeables; `:focus-visible` con contorno verde; `aria-label` en Editar/Quitar; `label for` + `inputmode="numeric"` en el teléfono.
 
 Verificado en local (servidor estático en `localhost:8765`) en PC y móvil: navegación, toast, errores en línea, carrito con 2 ítems, teclado. Sintaxis de los scripts chequeada con `node --check`.
+
+**Publicado y confirmado en producción el 02/09/2026** (commit `a628320`, deploy de Pages en <1 min).
+
+---
+
+## 15. Mejoras tomadas de MercadoLibre (02/09/2026) — editadas en local, PENDIENTE PUBLICAR
+
+Se recorrió ML (listado "loseta cribada hormigón", ficha de la publicación de VASSALLO y carrito) midiendo tamaños: título de ficha 22 px, precio 28 px, cuerpo 13-14 px (nunca menos de 12), tarjeta de listado 240×240, miniaturas verticales de 56 px, botón de 48 px. Cambios aplicados en `index.html`:
+
+1. **Listado con pestañas de categoría** (`#catTabs`, `renderCatTabs()`): en PC y en pantalla completa se aterriza directo en "Losetas Cribadas" con pestañas para cambiar, sin pasar por la pantalla de categorías (`useTabs()` = `!(EMBEDDED && innerWidth < 768)`). En **móvil embebido en Wix** se mantiene la pantalla de categorías porque es la que abre el cotizador en pestaña nueva. `goToCategories()` y el breadcrumb respetan lo mismo (en el listado con pestañas el breadcrumb se oculta).
+2. **Precio por m² como principal en losetas** en las tarjetas del listado (tachado de lista /m², unidad y cuotas como líneas secundarias). Topes y cordones siguen por unidad.
+3. **Ficha:** nombre del producto visible a 22 px en la columna central (`.detail-name`; el título global pasa a mostrar la categoría), precio de 30 px sin caja, "Lo que tenés que saber" con 3 datos + desplegable "Ver más características", y desplegables `#detailExtras`: **Para qué sirve**, **Cómo se coloca** y **Preguntas frecuentes**. Los textos de uso/colocación salen de la publicación de VASSALLO en ML y viven en el catálogo por categoría (`uso`, `colocacion`, `faq`); hoy solo cargados en "Losetas Cribadas". Las FAQ genéricas (cálculo de cantidad, entrega, pago) se arman en `renderDetail()`.
+4. **Galería PC estilo ML:** miniaturas verticales de 60 px a la izquierda y foto principal de 398×522. **Galería móvil:** carrusel deslizable `#mobileGallery` (280 px de alto, scroll-snap) con contador "1/7"; la foto fija y las miniaturas se ocultan.
+5. **Barra fija inferior en móvil** (`#mobileBar`): total estimado + "Pedir presupuesto" siempre visibles; `updatePrice()` la actualiza (muestra "Falta la cantidad" cuando el total es 0).
+6. **Escalera de formas de pago en móvil colapsada:** una línea resumen (`#escSummary`: cuotas + contado) y botón "Ver todas las formas de pago" (`toggleEscalera()`). En PC sigue completa.
+7. **Piso de 12 px** en todo el modo encaje (nota de entrega, ayuda de cantidad, desglose, ítems del carrito, etc.). Para que la tarjeta de compra siga entrando en 700 px se quitó la franja de confianza de la ficha (queda solo en el carrito). Botones principales a 48 px.
+8. **Carrito vacío con salida:** ícono, texto y botón "Ver productos".
+
+Verificado en local en PC (1425×710) y móvil (375 px): pestañas, ficha, desplegables, carrusel y contador, barra fija, error de cantidad desde la barra, carrito vacío. Sin errores de consola. Sintaxis chequeada con `node --check`.
+
+Pendiente opcional: cargar `uso`/`colocacion`/`faq` para Losetas Green, Topes y Cordones (hoy esas fichas solo muestran las FAQ genéricas).
