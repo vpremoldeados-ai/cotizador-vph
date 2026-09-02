@@ -3686,6 +3686,10 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
 
                 const gt = document.getElementById('globalTitle');
                 if (gt) {
+                    // En el listado (pantalla con pestañas de categoría) el título de arriba
+                    // repetía el nombre de la categoría ya resaltado en la pestaña activa: se
+                    // oculta acá (PC y móvil) y las pestañas quedan como único encabezado.
+                    gt.style.display = (screen === 'products') ? 'none' : '';
                     if (screen === 'categories') gt.textContent = 'Selecciona una categoría';
                     else if (screen === 'products') gt.textContent = currentCategory || '';
                     // En la ficha el nombre del producto va grande en la columna central (22px);
