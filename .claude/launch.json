@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cotizador-local",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:/Users/ingma/AppData/Local/Temp/claude/D--Google-Drive-VPH-CLAUDE-AI-MEJORAS-WIX-cotizador-vph/87c3daf9-cafb-48ad-a4dc-77963c66ba79/scratchpad/server.js"],
+      "port": 8765
+    }
+  ]
+}

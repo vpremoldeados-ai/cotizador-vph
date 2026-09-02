@@ -1566,7 +1566,7 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
    Va al final del bloque para ganar en cascada a las reglas anteriores de igual especificidad. */
 
 /* Pestañas de categoría (reemplazan a la pantalla de categorías en PC y pantalla completa) */
-.cat-tabs { display:flex; gap:6px; flex-wrap:nowrap; overflow-x:auto; margin:0 0 8px; padding-bottom:2px; scrollbar-width:none; width:100%; align-self:stretch; justify-content:safe center; }
+.cat-tabs { display:flex; gap:6px; flex-wrap:nowrap; overflow-x:auto; margin:0 0 6px; padding:3px 3px 4px; scrollbar-width:none; width:100%; align-self:stretch; justify-content:safe center; }
 .cat-tabs::-webkit-scrollbar { display:none; }
 .cat-tab { flex:0 0 auto; background:transparent; border:1px solid var(--verde-marca); color:var(--verde-marca); padding:8px 14px; font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:background .2s, color .2s; }
 .cat-tab:hover { background:var(--verde-claro); }
@@ -1709,7 +1709,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             <div class="screen-header" id="productsCategoryTitle" style="text-align: center;"></div>
             <!-- Pestañas de categoría (estilo listado de ML): en PC y en pantalla completa se
                  aterriza directo acá, sin pasar por la pantalla de categorías -->
-            <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Categorías"></div>
+            <nav class="cat-tabs" id="catTabs" aria-label="Categorías"></nav>
             <div class="products-grid" id="productsGrid"></div>
         </div>
 
@@ -1720,7 +1720,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                 <!-- Left: Gallery -->
                 <div class="detail-gallery">
                     <!-- Móvil: carrusel deslizable a lo ancho con contador "1/7" (estilo ML) -->
-                    <div class="mobile-gallery" id="mobileGallery" aria-label="Fotos del producto">
+                    <div class="mobile-gallery" id="mobileGallery" role="region" aria-label="Fotos del producto">
                         <div class="mg-track" id="mgTrack"></div>
                         <div class="mg-counter" id="mgCounter">1/1</div>
                     </div>
@@ -1975,10 +1975,10 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                 icon: "🏛️",
                 description: "Nuestras losetas clásicas, si lo que querés es lograr un diseño donde la loseta se pierda en el césped.",
                 // Textos de la publicación de VASSALLO en MercadoLibre (ficha "Baldosa Loseta Cribada 60x40")
-                uso: "Ideal para ingresos de cocheras y estacionamientos: mantiene el verde del césped, drena el agua y evita huellas con barro. Hormigón vibrado con hierro ADN 420 de 4,2 mm en todos los nervios, apta para tránsito pesado.",
+                uso: "Ideal para ingresos de cocheras y estacionamientos: mantiene el verde del césped, drena el agua y evita huellas con barro. Hormigón vibrado con hierro ADN 420 de 4,2 mm en todos los nervios, apto para tránsito pesado.",
                 colocacion: "Se excava una zanja de 10 cm de profundidad, se nivela una cama de 3 cm de arena gruesa y se apoyan las losetas encima. Por último se completan los huecos con la tierra sobrante para que vuelva a crecer el césped.",
                 faq: [
-                    { q: "¿Soporta el paso de autos y camionetas?", a: "Sí. Es hormigón vibrado con hierro ADN 420 de 4,2 mm en todos los nervios, apta para tránsito pesado." }
+                    { q: "¿Soporta el paso de autos y camionetas?", a: "Sí. Es hormigón vibrado con hierro ADN 420 de 4,2 mm en todos los nervios, apto para tránsito pesado." }
                 ],
                 products: [
                     {
@@ -2448,22 +2448,28 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
         function selectCategory(categoryName) {
             // Modo encaje: se navega dentro del embed (antes en móvil se abría otra
             // pestaña para evitar el scroll anidado; ya no hace falta).
+            // Si se activó una pestaña con el teclado, el foco vuelve a la pestaña activa
+            // (las pestañas se reconstruyen con innerHTML y el foco se perdería).
+            const fromTab = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('cat-tab');
             currentCategory = categoryName;
             showScreen('products');
             renderProducts();
+            if (fromTab) { const t = document.querySelector('.cat-tab.active'); if (t) t.focus(); }
         }
 
-        // Pestañas de categoría arriba del listado. En PC y en pantalla completa reemplazan a la
-        // pantalla de categorías (un paso menos, como el listado de ML). En móvil embebido en Wix
-        // se mantiene la pantalla de categorías porque abre el cotizador en pestaña nueva.
+        // Pestañas de categoría arriba del listado: reemplazan a la pantalla de categorías en todos
+        // los casos (un paso menos, como el listado de ML). La pantalla de categorías queda como
+        // respaldo: si algún día hace falta volver a mostrarla en algún contexto, useTabs() decide.
+        // (El viejo "escape" móvil que abría el cotizador en pestaña nueva ya no existe en el código:
+        // selectCategory() navega dentro del embed desde el modo encaje.)
         function useTabs() {
-            return !(EMBEDDED && window.innerWidth < 768);
+            return true;
         }
         function renderCatTabs() {
             const box = document.getElementById('catTabs');
             if (!box) return;
             box.innerHTML = Object.keys(catalog).map(name =>
-                `<button type="button" role="tab" class="cat-tab${name === currentCategory ? ' active' : ''}" aria-selected="${name === currentCategory}" onclick="selectCategory('${name.replace(/'/g, "\\'")}')">${name}</button>`
+                `<button type="button" class="cat-tab${name === currentCategory ? ' active' : ''}"${name === currentCategory ? ' aria-current="true"' : ''} onclick="selectCategory('${name.replace(/'/g, "\\'")}')">${name}</button>`
             ).join('');
         }
 
@@ -2632,6 +2638,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
 
             // Galería
             document.getElementById('mainImage').src = product.image;
+            document.getElementById('mainImage').alt = product.name;
 
             // Renderizar miniaturas (todas las imágenes disponibles)
             const images = product.images || [product.image];
@@ -3324,22 +3331,43 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                         showScreen('detail');
                         renderDetail();
 
-                        // Restaurar los valores ingresados
-                        if (item.quantityLabel.includes('m²')) {
-                            const m2Value = parseFloat(item.quantityLabel);
-                            document.getElementById('qty-m2').value = m2Value;
-                        } else if (item.quantityLabel.includes('unidades')) {
-                            const unitsValue = parseFloat(item.quantityLabel);
-                            document.getElementById('qty-units').value = unitsValue;
-                        } else if (item.quantityLabel.includes('ml')) {
-                            const mlValue = parseFloat(item.quantityLabel);
-                            document.getElementById('qty-ml').value = mlValue;
+                        // Restaurar la cantidad desde los datos del ítem (antes se parseaba el texto
+                        // "43 unidades"/"12 m.l." y fallaba: con punto de miles parseFloat("1.000") da 1,
+                        // en losetas por unidades no existe #qty-units y "unidad(es)"/"m.l." no matcheaban).
+                        const product = catalog[category].products[i];
+                        const setQty = (id, val) => {
+                            const el = document.getElementById(id);
+                            if (!el || !(val > 0)) return;
+                            el.value = val;
+                            refreshActionField(el);
+                        };
+                        if (product.type === 'm2') {
+                            if (item.m2 != null && item.m2 > 0) setQty('qty-m2', item.m2);
+                            else setQty('qty-units-m2', item.baseUnits || item.totalUnits);
+                        } else if (product.type === 'units') {
+                            setQty('qty-units', item.baseUnits || Math.ceil(item.quantity));
+                        } else if (product.type === 'ml') {
+                            if ((item.quantityLabel || '').includes('m.l.')) {
+                                setQty('qty-ml', item.quantity);
+                                calculateMLUnits();
+                            } else {
+                                setQty('qty-units-ml', item.baseUnits || item.totalUnits);
+                                calculateMLFromUnits();
+                            }
+                            refreshActionField(document.getElementById('qty-ml'));
+                            refreshActionField(document.getElementById('qty-units-ml'));
                         }
 
                         // Restaurar destino, forma de pago y localidad
-                        document.getElementById('destination').value = item.destination;
-                        document.getElementById('paymentMethod').value = item.paymentMethod;
+                        ['destination', 'paymentMethod'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if (!el) return;
+                            el.value = id === 'destination' ? item.destination : item.paymentMethod;
+                            el.dataset.touched = '1';
+                            refreshActionField(el);
+                        });
                         if (document.getElementById('localidad')) document.getElementById('localidad').value = item.localidad || '';
+                        syncCartDestPay();
 
                         // Actualizar precio
                         updatePrice();
@@ -3705,11 +3733,13 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                 : 'flex';
             document.getElementById(`screen-${screenName}`).style.display = disp;
 
-            // Registrar la pantalla en el historial (salvo que vengamos de un "atrás")
-            if (!_navFromPop && screenName !== _currentScreen) {
+            // Registrar la pantalla en el historial (salvo que vengamos de un "atrás").
+            // Misma pantalla con otro estado (cambiar de pestaña de categoría, abrir con ?cat=):
+            // se REEMPLAZA la entrada para que "atrás" desde la ficha vuelva a la categoría correcta.
+            if (!_navFromPop) {
                 const st = { vph: true, screen: screenName, cat: currentCategory, prod: currentProduct, edit: editingCartIndex };
                 try {
-                    if (_currentScreen === null) history.replaceState(st, '');
+                    if (_currentScreen === null || screenName === _currentScreen) history.replaceState(st, '');
                     else history.pushState(st, '');
                 } catch (e) {}
             }
@@ -3889,8 +3919,8 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             fillPagoSelects();   // % OFF de cada forma de pago, derivados de las tasas vigentes
             initCategories();
             restoreCart();   // recuperar carrito de una visita reciente (<24h)
-            // PC y pantalla completa: aterrizar directo en el listado con pestañas (un paso menos).
-            // Móvil embebido en Wix: pantalla de categorías (abre el cotizador en pestaña nueva).
+            // Aterrizar directo en el listado con pestañas de categoría (un paso menos).
+            // La pantalla de categorías queda solo como respaldo (useTabs() === false).
             if (useTabs()) {
                 currentCategory = Object.keys(catalog)[0];
                 showScreen('products');
