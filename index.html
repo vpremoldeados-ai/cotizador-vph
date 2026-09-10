@@ -353,14 +353,40 @@
             background: var(--papel);
             padding: 0;
             cursor: pointer;
-            transition: background 0.25s;
+            transition: background 0.25s, outline-color 0.25s;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            outline: 2px solid transparent !important;
+            outline-offset: -2px;
         }
 
-        .product-card:hover {
+        /* Resalte claro de que la tarjeta es clickeable (mouse y teclado); outline hacia
+           adentro (offset negativo) para que nunca quede recortado por el overflow del
+           contenedor ni se superponga con la tarjeta vecina (pedido del usuario, 10/09/2026).
+           !important para que gane sin ambigüedad sobre la regla base (mismo patrón que el
+           resto del archivo usa para reglas de forma/color que no deben pisarse). */
+        .product-card:hover,
+        .product-card:focus-visible {
             background: #ffffff;
+            outline-color: var(--verde-marca) !important;
+        }
+
+        /* Llamado a la acción, siempre visible (no solo al pasar el mouse: en celular no hay
+           hover) para que quede claro que tocar la tarjeta abre el precio y el cotizador. */
+        .product-cta {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--fondo-alt);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: .03em;
+            color: var(--verde-marca);
+        }
+        .product-card:hover .product-cta,
+        .product-card:focus-visible .product-cta {
+            color: var(--verde-hover);
+            text-decoration: underline;
         }
 
         .product-image {
@@ -1593,6 +1619,11 @@ body.fit .product-contado { font-size:10.5px; margin-top:1px; }
 .cat-tab:hover { background:var(--verde-claro); }
 .cat-tab.active { background:var(--verde-marca); color:#fff; }
 
+/* Llamado a la acción entre las pestañas y la grilla: el visitante debe entender que
+   tiene que elegir/tocar un producto (pedido del usuario, 10/09/2026). Texto genérico, no
+   repite el nombre de la categoría (eso ya se quitó por redundante en una sesión anterior). */
+.products-hint { text-align:center; font-size:13px; font-weight:600; color:var(--tinta-suave); margin:2px 0 8px; }
+
 /* Listado: precio por m² como principal en losetas */
 .product-unit { font-size:14px; font-weight:600; color:var(--tinta-suave); }
 .product-off { font-size:12px; color:var(--verde-marca); font-weight:700; }
@@ -1742,6 +1773,9 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             <!-- Pestañas de categoría (estilo listado de ML): en PC y en pantalla completa se
                  aterriza directo acá, sin pasar por la pantalla de categorías -->
             <nav class="cat-tabs" id="catTabs" aria-label="Categorías"></nav>
+            <!-- Texto de acción: el visitante debe entender que las pestañas y las tarjetas
+                 se tocan/clickean para avanzar (pedido explícito del usuario, 10/09/2026) -->
+            <div class="products-hint">👉 Tocá un producto para ver el precio y armar tu cotización</div>
             <div class="products-grid" id="productsGrid"></div>
         </div>
 
@@ -2500,9 +2534,12 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
         function renderCatTabs() {
             const box = document.getElementById('catTabs');
             if (!box) return;
-            box.innerHTML = Object.keys(catalog).map(name =>
-                `<button type="button" class="cat-tab${name === currentCategory ? ' active' : ''}"${name === currentCategory ? ' aria-current="true"' : ''} onclick="selectCategory('${name.replace(/'/g, "\\'")}')">${name}</button>`
-            ).join('');
+            box.innerHTML = Object.keys(catalog).map(name => {
+                const isActive = name === currentCategory;
+                // La pestaña activa lleva un tilde: además del relleno verde, deja clarísimo
+                // cuál es "la opción seleccionada" (pedido explícito del usuario, 10/09/2026).
+                return `<button type="button" class="cat-tab${isActive ? ' active' : ''}"${isActive ? ' aria-current="true"' : ''} onclick="selectCategory('${name.replace(/'/g, "\\'")}')">${isActive ? '✓ ' : ''}${name}</button>`;
+            }).join('');
         }
 
         function renderProducts() {
@@ -2567,6 +2604,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                         <div class="product-specs" style="font-size: 14px; color: var(--tinta-suave); margin-top: 8px;">
                             ${specsHtml}
                         </div>
+                        <div class="product-cta">Ver y cotizar <span aria-hidden="true">→</span></div>
                     </div>
                 `;
 
