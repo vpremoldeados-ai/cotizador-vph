@@ -1443,9 +1443,14 @@ body.fit #emailBox div { font-size:10px; line-height:1.25; }
   body.fit #cartItems .summary-details p { font-size:10.5px; line-height:1.25; margin-top:1px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
   body.fit #cartItems .summary-actions { gap:3px; }
   body.fit #cartItems .summary-actions button { padding:5px 8px; font-size:9px; letter-spacing:.06em; }
-  /* etiquetas y selects de arriba: que no roben alto ni corten la opción */
-  body.fit #screen-cart > div:nth-child(2) .form-label { font-size:9.5px; line-height:1.15; }
-  body.fit #screen-cart > div:nth-child(2) .form-control { font-size:11px; padding:5px 4px; }
+  /* Destino/forma de pago "para todos": en 2 columnas ("Retirar en fábrica (Gratis)" y
+     "Contado Transferencia — 30,5% OFF" en ~130px) no entraban ni reduciendo la letra a
+     11px — se leían "Retirar en fábrica (Gr...". Pasan a apilarse en 1 columna: con el
+     ancho completo el texto entra entero y hasta sube la letra (pedido del usuario,
+     10/09/2026, "dale otra mirada" a este truncado). */
+  body.fit #screen-cart > div:nth-child(2) { grid-template-columns:1fr !important; }
+  body.fit #screen-cart > div:nth-child(2) .form-label { font-size:11px; line-height:1.2; margin-bottom:3px; }
+  body.fit #screen-cart > div:nth-child(2) .form-control { font-size:12.5px; padding:6px 8px; }
   /* caja de email compacta */
   body.fit #emailBox { padding:5px 8px; }
   body.fit #emailBox input { padding:6px 8px; font-size:12px; }
@@ -4051,15 +4056,16 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             postHeight();
 
             // Aviso único (la primera vez) en móvil embebido: el cotizador tiene scroll
-            // propio dentro del marco verde, distinto del scroll de la página de Wix. Sin
-            // esto, el visitante no tiene forma de saber que arrastrar justo afuera del
-            // recuadro mueve la web entera en vez del cotizador. Se muestra una sola vez
-            // por dispositivo (localStorage) para no molestar en visitas siguientes.
+            // propio dentro del marco verde, distinto del scroll de la página de Wix. El
+            // mensaje explica las DOS direcciones (no solo "adentro mueve el cotizador":
+            // el usuario también necesita saber cómo seguir bajando en la página real una
+            // vez que termina de ver el cotizador — pedido explícito, 10/09/2026). Se
+            // muestra una sola vez por dispositivo (localStorage) para no molestar después.
             if (EMBEDDED && window.innerWidth < 768) {
                 try {
                     if (!localStorage.getItem('vph_scroll_hint_seen')) {
                         localStorage.setItem('vph_scroll_hint_seen', '1');
-                        setTimeout(() => showToast('💡 Deslizá dentro del recuadro verde para moverte', 4500), 900);
+                        setTimeout(() => showToast('💡 Centro: te movés en el cotizador · Costados: seguís bajando en la página', 5500), 900);
                     }
                 } catch (e) {}
             }
