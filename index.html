@@ -4081,13 +4081,27 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                 }, { passive: true });
             }
 
-            // Si se abrio a pantalla completa con ?cat=, ir directo a esa categoria
+            // Deep link desde la web: ?cat=<categoría>&prod=<código> abre esa categoría (y,
+            // si se pasa el código de producto, directo la ficha de ese producto). Se usa
+            // desde las imágenes-link de la home de Wix (ver custom embed "Deep link imágenes
+            // hacia el cotizador"), cambiando el src del iframe a esta URL con esos parámetros.
+            // Antes esto se salteaba en móvil embebido (`!(EMBEDDED && innerWidth<768)`): esa
+            // guarda era del viejo "escape a pestaña completa" que ya no existe en el código
+            // (selectCategory navega dentro del embed desde el modo encaje), así que ahora
+            // aplica siempre.
             try {
-                const cat = new URLSearchParams(location.search).get('cat');
-                if (cat && catalog[cat] && !(EMBEDDED && window.innerWidth < 768)) {
+                const params = new URLSearchParams(location.search);
+                const cat = params.get('cat');
+                const prodCode = params.get('prod');
+                if (cat && catalog[cat]) {
                     currentCategory = cat;
-                    showScreen('products');
-                    renderProducts();
+                    const idx = prodCode ? catalog[cat].products.findIndex(p => p.code === prodCode) : -1;
+                    if (idx > -1) {
+                        selectProduct(cat, idx);
+                    } else {
+                        showScreen('products');
+                        renderProducts();
+                    }
                 }
             } catch (e) {}
         });
