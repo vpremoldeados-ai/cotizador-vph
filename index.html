@@ -2051,15 +2051,19 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                 <span>💬 Te contactamos en menos de 24 hs</span>
             </div>
             <div id="cartError" class="inline-error" role="alert" style="display:none; text-align:center;"></div>
-            <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
-                <button class="btn-whatsapp" onclick="sendToWhatsApp()">Enviar por WhatsApp 💬</button>
+
+            <div id="emailBox" style="max-width: 420px; margin: 0 auto 14px; padding: 14px 16px; background: var(--fondo-alt); border: 1px solid var(--verde-claro); ">
+                <label class="form-label" for="phoneNumber" style="display:block; margin-bottom:4px;">Teléfono <span style="color:#dc2626;">*</span> (para que te podamos contactar)</label>
+                <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" autocomplete="tel" inputmode="numeric" oninput="updatePhoneGatedButtons()" style="width: 100%; padding: 9px; border: 1px solid var(--linea); font-size: 14px;">
+                <div id="emailHint" role="status" style="font-size:12px; color:#dc2626; margin-top:6px; text-align:center;">Ingresá tu teléfono para poder enviar la cotización</div>
             </div>
 
-            <div id="emailBox" style="max-width: 420px; margin: 0 auto; padding: 14px 16px; background: var(--fondo-alt); border: 1px solid var(--verde-claro); ">
-                <label class="form-label" for="phoneNumber" style="display:block; margin-bottom:4px;">Teléfono <span style="color:#dc2626;">*</span> (obligatorio para enviar por email)</label>
-                <input type="tel" id="phoneNumber" placeholder="Ej: 3573123456" autocomplete="tel" inputmode="numeric" oninput="updateEmailButtonState()" style="width: 100%; padding: 9px; border: 1px solid var(--linea); font-size: 14px; margin-bottom: 10px;">
+            <div class="cart-buttons" style="gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
+                <button class="btn-whatsapp" id="whatsappBtn" onclick="sendToWhatsApp()" disabled style="opacity: 0.5; cursor: not-allowed;">Enviar por WhatsApp 💬</button>
+            </div>
+
+            <div style="max-width: 420px; margin: 0 auto 14px;">
                 <button class="btn btn-primary" id="emailBtn" onclick="sendByEmail()" disabled style="width: 100%; padding: 11px; opacity: 0.5; cursor: not-allowed;">Enviar por Email</button>
-                <div id="emailHint" role="status" style="font-size:12px; color:#dc2626; margin-top:6px; text-align:center;">Ingresá tu teléfono para habilitar el envío por email</div>
             </div>
             </div><!-- /cartSide -->
         </div>
@@ -3274,20 +3278,28 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             persistCart();
         }
 
-        function updateEmailButtonState() {
-            const btn = document.getElementById('emailBtn');
+        // Gatilla los botones de "Enviar por WhatsApp" y "Enviar por Email" al teléfono:
+        // sin teléfono cargado el lead que se guarda en el CRM (vph_leads) queda sin forma
+        // de contactar a quien cotiza. WhatsApp abre wa.me con TU número, no el del cliente
+        // — si no llega a apretar enviar adentro de su propio WhatsApp, el lead queda
+        // anónimo (pasó el 21/09 con un pedido de Green Rombo). Los dos botones dependen
+        // del mismo campo, así que se gatillan juntos.
+        function updatePhoneGatedButtons() {
+            const btnEmail = document.getElementById('emailBtn');
+            const btnWa = document.getElementById('whatsappBtn');
             const hint = document.getElementById('emailHint');
             const phone = (document.getElementById('phoneNumber').value || '').replace(/\D/g, '');
             const ok = phone.length >= 10;
-            if (btn) {
+            [btnEmail, btnWa].forEach(function (btn) {
+                if (!btn) return;
                 btn.disabled = !ok;
                 btn.style.opacity = ok ? '1' : '0.5';
                 btn.style.cursor = ok ? 'pointer' : 'not-allowed';
-            }
+            });
             if (hint) {
                 hint.style.display = ok ? 'none' : 'block';
                 // Al escribir se vuelve al texto base (pisa cualquier error puntual anterior)
-                if (!ok) hint.textContent = 'Ingresá tu teléfono para habilitar el envío por email';
+                if (!ok) hint.textContent = 'Ingresá tu teléfono para poder enviar la cotización';
             }
         }
 
@@ -3326,7 +3338,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
 
         function renderCart() {
             const container = document.getElementById('cartItems');
-            updateEmailButtonState();
+            updatePhoneGatedButtons();
             persistCart();   // cubre mutaciones vía selectores globales (destino/pago)
 
             if (cart.length === 0) {
@@ -3586,6 +3598,16 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                 return;
             }
             hideFieldError('cartError');
+
+            // Redundante con el botón deshabilitado (defensa por las dudas): sin teléfono
+            // el lead que se guarda en el CRM queda sin forma de contactar al cliente.
+            const phoneInput = document.getElementById('phoneNumber');
+            const phoneDigits = ((phoneInput || {}).value || '').replace(/\D/g, '');
+            if (phoneDigits.length < 10) {
+                showFieldError('emailHint', 'Ingresá tu número de teléfono para que te podamos contactar.');
+                if (phoneInput) phoneInput.focus();
+                return;
+            }
 
             let message = '🛒 *COTIZACIÓN VPH PREMOLDEADOS*\n\n';
 
