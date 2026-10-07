@@ -1768,6 +1768,8 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
      categorías quedan siempre a la vista, sin scroll horizontal; el texto largo pasa a 2 líneas. */
   .cat-tabs { display:grid; grid-template-columns:repeat(2,1fr); overflow-x:visible; }
   .cat-tab { padding:8px 6px; font-size:11.5px; line-height:1.25; white-space:normal; text-align:center; }
+  /* Con un número impar de categorías (5 desde la Base Nivel, 07/10), la última ocupa toda la fila */
+  .cat-tab:last-child:nth-child(odd) { grid-column:1 / -1; }
   body.fit .product-specs, body.fit .product-specs .spec-line { font-size:12px !important; }
   body.fit .product-card .badge-bestseller { font-size:9.5px; }
 }
@@ -2243,6 +2245,39 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                         images: ["Fotos en Cotizador/Fotos cada producto/Cordones y Listones/Cordon/1b.jpg", "Fotos en Cotizador/Fotos cada producto/Cordones y Listones/Cordon/2.jpg", "Fotos en Cotizador/Fotos cada producto/Cordones y Listones/Cordon/3.jpg", "Fotos en Cotizador/Fotos cada producto/Cordones y Listones/Cordon/4.jpg", "Fotos en Cotizador/Fotos cada producto/Cordones y Listones/Cordon/5.jpg"],
                         // Rutas de carrusel locales deshabilitadas (almacenadas en Google Drive)
                         specs: ["40×9×10 cm", "Por metro lineal", "2,5 u/ml"]
+                    }
+                ]
+            },
+            // 07/10/2026 (pedido de Marcelo): Base Nivel BNV-40, apoyo regulable para módulos y
+            // contenedores. Se ofrece con el kit de nivelación, pero tiene que poder comprarse la base
+            // sola. Precios de la cotización a empresas del 01/10 (base $25.000 + kit $27.500).
+            // En el Tablero son dos productos: BNV40 (base) y KNIV (kit), ver CRM_CODE_MAP.
+            // No hay foto de la base sin herrajes: la ficha "sin kit" usa la misma y lo aclara en specs.
+            "Bases para Módulos": {
+                icon: "📐",
+                description: "Apoyo de hormigón regulable para módulos y contenedores: se nivela con llave el mismo día, sin encofrar ni esperar fragüe.",
+                products: [
+                    {
+                        code: "BNV40K",
+                        name: "Base Nivel BNV-40 con kit",
+                        price: 52500,
+                        weight: 52,
+                        per_pallet: 12,
+                        type: "units",
+                        image: "Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/1.jpg",
+                        images: ["Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/1.jpg", "Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/2.jpg"],
+                        specs: ["Base 400×400×200 mm", "Regula 0 a 100 mm", "Kit de nivelación zincado", "6 por módulo"]
+                    },
+                    {
+                        code: "BNV40",
+                        name: "Base Nivel BNV-40 sin kit",
+                        price: 25000,
+                        weight: 50,
+                        per_pallet: 12,
+                        type: "units",
+                        image: "Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/1.jpg",
+                        images: ["Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/1.jpg", "Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/2.jpg"],
+                        specs: ["Base 400×400×200 mm", "≈50 kg", "Solo hormigón (foto con kit)", "6 por módulo"]
                     }
                 ]
             }
@@ -3520,12 +3555,16 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             'TET100': 'Tope Trapecio 15x12x100',
             'TEC100': 'Tope Cuadrado 15x15x100',
             'L60': 'Listón',
-            'CC10': 'Cordón Confinamiento'
+            'CC10': 'Cordón Confinamiento',
+            'BNV40K': 'Base Nivel BNV-40',
+            'BNV40': 'Base Nivel BNV-40'
         };
         // Código del cotizador → código del catálogo del CRM (para matchear por código, más robusto que por nombre)
         const CRM_CODE_MAP = {
             'LC60':'ULC60','LC40':'ULC40','GB35':'UGB35','GR35':'UGR35','GC35':'UGC35',
-            'TET50':'TET50','TEC50':'TEC50','TET100':'TET100','TEC100':'TEC100','L60':'ULL50','CC10':'UCC10'
+            'TET50':'TET50','TEC50':'TEC50','TET100':'TET100','TEC100':'TEC100','L60':'ULL50','CC10':'UCC10',
+            // El combo con kit se registra como la base (BNV40); el kit (KNIV) se agrega a mano en la venta.
+            'BNV40K':'BNV40','BNV40':'BNV40'
         };
         const CRM_PAGO_MAP = {
             'contado': 'Transferencia',
