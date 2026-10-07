@@ -404,10 +404,28 @@ Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarje
 - **Gotcha:** Wix monta el iframe recién cuando el visitante scrollea cerca (lazy-mount). El primer clic llegaba antes de que el iframe existiera y no hacía nada. Solución: `MutationObserver` + reintentos hasta 20 s.
 - Si el rediseño de la home cambia las tarjetas, listar los `alt` en vivo (`a[href*="cotizador"] img`) antes de tocar el `MAP` del embed.
 
-### Franja de reseñas (embed "CRO - Social proof band v4 (inline)", id `db4f507a-cbf3-4988-80f4-045cd49b2335`, rev 11)
-- Muestra "★★★★★ 4,8 / 5 | 150 opiniones verificadas en Google — Junio 2026 | Ver en Google". Estaba deshabilitada; **ahora está activa**.
-- Se achicó (de ~50 px a ~30 px de alto, tipografías de 10–14 px) y se quitó la restricción que la mostraba solo en celular (≤768 px): ahora se ve también en escritorio, pegada debajo del header. Se esconde al scrollear más de 120 px.
-- Las cifras (4,8 / 150 / "Junio 2026") están escritas a mano en el embed: actualizarlas cuando cambien las reseñas reales de Google.
+> **Actualización 07/10/2026 (tarde), desde la sesión del rediseño web:** el embed del deep link va por
+> la **rev 10**. Suma: el catálogo «Elegí tu modelo» como UNA imagen (`catalogo-modelos-pc/-movil`, y
+> sus versiones `-v3` con la BNV-40) donde el modelo se elige por la posición del toque (tabla `ZONAS`),
+> el banner `BNV-40-banner-*` → `?cat=Bases para Módulos&prod=BNV40K`, y 11 fichas sueltas `ficha-*`.
+> Detalle completo en el CLAUDE.md de `MEJORAS WIX\REDISEÑO WEB` (§6 bis y §7).
+
+### Franja de reseñas (embed "CRO - Social proof band v4 (inline)", id `db4f507a-cbf3-4988-80f4-045cd49b2335`)
+- **APAGADA (rev 12, 07/10/2026) a pedido de Marcelo, en PC y celular. No reactivarla sin que él lo pida.**
+  Ya la había pedido sacar el 20/08; la rev 11 de esta sesión la había vuelto a prender por error de contexto.
+  Las reseñas reales viven en la franja del widget de Google y en la franja de opiniones de la home.
+- (Historial) La rev 11 la achicaba a ~30 px y la mostraba también en PC. Las cifras 4,8 / 150 / "Junio 2026"
+  están escritas a mano en el embed.
+
+## 18. Base Nivel BNV-40 — pestaña «Bases para Módulos» (07/10/2026)
+- Categoría nueva con `BNV40K` (con kit de nivelación, $52.500) y `BNV40` (base sola, $25.000), por unidad,
+  12 por pallet, 6 por módulo. Precios de la cotización a empresas del 01/10 (base $25.000 + kit $27.500).
+- En el CRM ambos entran con el código del Tablero `BNV40` (`CRM_CODE_MAP`); el kit (`KNIV`) se agrega a mano.
+- Fotos en `Fotos en Cotizador/Fotos cada producto/Bases para Modulos/BNV-40/`. No hay foto de la base sin
+  herrajes: la ficha «sin kit» usa la misma y lo aclara en specs.
+- Con 5 categorías: `.cat-tabs` hace `flex-wrap` y las pestañas son más compactas (entran las 5 a 980 px);
+  en móvil la 5ª ocupa toda la fila (`.cat-tab:last-child:nth-child(odd)`).
+- **Pendiente:** cargar el precio en el catálogo del Tablero (lista separada).
 
 ### Cómo editar embeds de Wix por API
 - siteId `6f9e39de-6dde-49fe-9c97-d6709700e7ba`, endpoint `https://www.wixapis.com/embeds/v1/custom-embeds`. El PATCH exige `id` + `revision` actual (hacer GET antes) y el código va en `embedData.html`.
