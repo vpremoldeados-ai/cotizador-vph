@@ -388,3 +388,27 @@ El usuario pidió usar el azul de MercadoLibre (`#3483FA`, el que ML usa en su c
 Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarjeta y foco de teclado en azul; badges OFF, "Más vendida" y bonificación en verde; WhatsApp intacto. Sin errores de consola.
 
 **Otro ajuste chico (mismo día):** el usuario reportó que en móvil solo podía scrollear la página hacia abajo tocando y arrastrando cerca de los bordes laterales. Causa: `.mg-track` (el carrusel de fotos de la ficha, ancho completo, único elemento con scroll horizontal en toda la interfaz móvil) tenía `scroll-snap-type:x mandatory`, que hace que el navegador capture el gesto táctil apenas se toca esa franja — incluso si el usuario quería scrollear la página, no la foto — y solo lo soltaba cerca de los bordes (fuera del carrusel). Es un problema conocido de `scroll-snap-type:mandatory` en carruseles nativos (`overflow-x:auto`) dentro de una página que también scrollea verticalmente. Se bajó a `scroll-snap-type:x proximity`: el carrusel sigue encajando en cada foto al soltar el dedo, pero deja de "ganarle" al scroll vertical cuando el gesto no es claramente horizontal. Verificado que el carrusel sigue scrolleando/encajando correctamente (sin errores de consola); la disambiguación real de gestos táctiles no se puede probar 100% en este entorno (sin dispositivo físico) — pedirle al usuario que confirme en su celular después de publicar.
+
+
+## 17. Deep link de las tarjetas de la home al cotizador + franja de reseñas (17/09/2026 y 07/10/2026)
+
+**Estado:** todo en vivo. Lo de Wix se aplica por API sin publicar el sitio; lo de `index.html` ya fue publicado por el usuario.
+
+### Deep link `?cat=` / `?prod=` (en `index.html`)
+- Al final del handler `DOMContentLoaded`, `?cat=<categoría>` abre esa categoría y, si viene `&prod=<código>`, abre directo la ficha del producto (`selectProduct`). Ya no se saltea en móvil embebido.
+- Nombres exactos de categoría: `Losetas Cribadas`, `Losetas Green`, `Topes de Estacionamiento`.
+
+### Custom embed de Wix "Deep link imagenes hacia el cotizador" (id `768e11bf-c2e3-4210-8b99-7c001b92c67d`, rev 5)
+- Las 6 tarjetas-imagen de la home (links a `#cotizador`) se detectan por el `alt` del `<img>`: `tarjeta-losetas-pasto` y `tarjeta-losetas-cribadas` → Losetas Cribadas; `tarjeta-losetas-piedritas` y `tarjeta-losetas-green` → Losetas Green; `tarjeta-topes-autos-camionetas` y `tarjeta-topes-camiones-buses` → categoría Topes de Estacionamiento **sin producto fijo** (decisión del usuario: hay 4 topes y ninguno es "el de autos" o "el de camiones").
+- Al hacer clic se cambia el `src` del iframe del cotizador a `https://vpremoldeados-ai.github.io/cotizador-vph/?cat=...`.
+- **Gotcha:** Wix monta el iframe recién cuando el visitante scrollea cerca (lazy-mount). El primer clic llegaba antes de que el iframe existiera y no hacía nada. Solución: `MutationObserver` + reintentos hasta 20 s.
+- Si el rediseño de la home cambia las tarjetas, listar los `alt` en vivo (`a[href*="cotizador"] img`) antes de tocar el `MAP` del embed.
+
+### Franja de reseñas (embed "CRO - Social proof band v4 (inline)", id `db4f507a-cbf3-4988-80f4-045cd49b2335`, rev 11)
+- Muestra "★★★★★ 4,8 / 5 | 150 opiniones verificadas en Google — Junio 2026 | Ver en Google". Estaba deshabilitada; **ahora está activa**.
+- Se achicó (de ~50 px a ~30 px de alto, tipografías de 10–14 px) y se quitó la restricción que la mostraba solo en celular (≤768 px): ahora se ve también en escritorio, pegada debajo del header. Se esconde al scrollear más de 120 px.
+- Las cifras (4,8 / 150 / "Junio 2026") están escritas a mano en el embed: actualizarlas cuando cambien las reseñas reales de Google.
+
+### Cómo editar embeds de Wix por API
+- siteId `6f9e39de-6dde-49fe-9c97-d6709700e7ba`, endpoint `https://www.wixapis.com/embeds/v1/custom-embeds`. El PATCH exige `id` + `revision` actual (hacer GET antes) y el código va en `embedData.html`.
+- Para verificar en el navegador hay que hacer recarga dura (`location.reload(true)`); una pestaña abierta sigue mostrando la versión vieja. Probar siempre en la URL plana, sin query params.
