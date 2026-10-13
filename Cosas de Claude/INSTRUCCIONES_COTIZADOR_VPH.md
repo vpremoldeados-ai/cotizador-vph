@@ -99,7 +99,7 @@ const destinations = {
   retiro:   { cost: 0,      ... }, // Retirar en fábrica (Toledo)
   capital:  { cost: 28000,  ... }, // Córdoba Capital
   cercanas: { cost: 39000,  ... }, // Hasta 30 Km Av. Circunv. Cba Cap.
-  argentina:{ cost: 140000, ... }  // A todo Argentina (posible variación)
+  argentina:{ cost: 185000, ... }  // A todo Argentina (posible variación)
 };
 ```
 - El flete se multiplica por la cantidad de pallets (`Math.ceil(unidades / per_pallet)`).
