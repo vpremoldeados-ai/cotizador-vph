@@ -1913,6 +1913,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                             <option value="contado">Contado Transferencia</option>
                             <option value="cuotas-3">3 cuotas con tarjeta</option>
                             <option value="cuotas-6">6 cuotas con tarjeta</option>
+                        <option value="cuotas-9">9 cuotas con tarjeta</option>
                             <option value="cuotas-12">12 cuotas sin interés (precio de lista)</option>
                         </select>
                     </div>
@@ -1997,6 +1998,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                         <option value="contado">Contado Transferencia</option>
                         <option value="cuotas-3">3 cuotas con tarjeta</option>
                         <option value="cuotas-6">6 cuotas con tarjeta</option>
+                        <option value="cuotas-9">9 cuotas con tarjeta</option>
                         <option value="cuotas-12">12 cuotas sin interés (precio de lista)</option>
                     </select>
                 </div>
@@ -2415,20 +2417,22 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
         // del Tablero, verificada contra liquidaciones reales de VIUMI).
         // r = (arancel + costo financiero) de VIUMI + su IVA, sobre el monto bruto.
         //
-        // Tasas del perfil MÁS CARO ("tarjeta de otro banco") — regla de Marcelo cuando no se
-        // sabe con qué tarjeta van a pagar: así nunca se cotiza a pérdida; si el cliente paga
-        // con Macro (tasa menor), la diferencia queda a favor de VPH.
+        // 19/10 (decisión de Marcelo): UN solo esquema para CUALQUIER tarjeta, el mismo que el
+        // perfil "Cualquier tarjeta" del Tablero — 3 y 6 cuotas por el Programa Cuotas MiPyME y
+        // 9 y 12 con el costo financiero común de VIUMI. Así lo cotizado en la web coincide con
+        // los presupuestos del Tablero.
         // ⚠️ VIUMI publica tabla nueva TODOS LOS MESES. Cuando Marcelo actualice la matriz en el
         // Tablero (Base de Datos → 💳 Financiación), actualizar también estas tasas a mano.
-        // Fuente actual: tabla VIUMI con vigencia al 31/07/2026, perfil "otros bancos"
-        // (arancel 3,19 + costo financiero 11,15 / 18,65 / 22,03 según el plan).
+        // Fuente actual: tabla VIUMI de octubre 2026 — arancel 3,19 (acreditación a 10 días hábiles)
+        // + costo financiero MiPyME 6,91 (3c) / 13,02 (6c) y VIUMI 17,58 (9c) / 22,03 (12c).
         const FINANCIACION = {
             ivaComision: 21,      // % de IVA sobre la comisión de VIUMI
             cuotasLista: 12,      // el precio de lista es el del plan más largo
             planes: [             // tasa SIN IVA por plan (arancel + costo financiero)
-                { cuotas: 12, tasa: 25.22 },
-                { cuotas: 6,  tasa: 21.84 },
-                { cuotas: 3,  tasa: 14.34 }
+                { cuotas: 12, tasa: 25.22 },   // 3,19 + 22,03 (VIUMI)
+                { cuotas: 9,  tasa: 20.77 },   // 3,19 + 17,58 (VIUMI)
+                { cuotas: 6,  tasa: 16.21 },   // 3,19 + 13,02 (Cuotas MiPyME)
+                { cuotas: 3,  tasa: 10.10 }    // 3,19 + 6,91  (Cuotas MiPyME)
             ]
         };
         // Factor precio financiado / contado del plan (contado o plan desconocido → 1)
@@ -3569,6 +3573,7 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
         const CRM_PAGO_MAP = {
             'contado': 'Transferencia',
             'cuotas-12': 'Tarjeta 12 cuotas',
+            'cuotas-9': 'Tarjeta 9 cuotas',
             'cuotas-6': 'Tarjeta 6 cuotas',
             'cuotas-3': 'Tarjeta 3 cuotas',
             // valores viejos, por si queda un carrito guardado sin migrar
