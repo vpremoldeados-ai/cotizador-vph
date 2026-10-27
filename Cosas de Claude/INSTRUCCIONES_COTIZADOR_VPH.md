@@ -430,3 +430,9 @@ Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarje
 ### Cómo editar embeds de Wix por API
 - siteId `6f9e39de-6dde-49fe-9c97-d6709700e7ba`, endpoint `https://www.wixapis.com/embeds/v1/custom-embeds`. El PATCH exige `id` + `revision` actual (hacer GET antes) y el código va en `embedData.html`.
 - Para verificar en el navegador hay que hacer recarga dura (`location.reload(true)`); una pestaña abierta sigue mostrando la versión vieja. Probar siempre en la URL plana, sin query params.
+
+## 19. Cubos de apoyo CA-30 y CA-40 + BNV-40 con IVA (27/10/2026) — PENDIENTE PUBLICAR con GitHub Desktop
+- Pestaña «Bases para Módulos»: se sumaron `CA30` (Cubo de Apoyo CA-30, $24.200, 60 kg, 24 por pallet) y `CA40` (Cubo de Apoyo CA-40, $39.325, 144 kg, 10 por pallet). Precios CON IVA (base $20.000 y $32.500 + IVA).
+- BNV-40 pasó a precio CON IVA, como el resto de la web: con kit $63.525 (antes $52.500), sin kit $30.250 (antes $25.000). Spec del kit: «pintado» (ya no zincado). Peso base 52 kg.
+- Fotos nuevas en `Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-30` (1 render + 2 foto real retocada) y `CA-40` (1 render), mismo formato 1080×1080 que la BNV-40.
+- CRM: `CA30`→`CA30`, `CA40`→`CA40` (mismos códigos que en el Tablero).
