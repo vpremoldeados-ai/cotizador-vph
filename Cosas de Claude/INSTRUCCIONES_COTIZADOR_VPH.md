@@ -436,3 +436,21 @@ Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarje
 - BNV-40 pasó a precio CON IVA, como el resto de la web: con kit $63.525 (antes $52.500), sin kit $30.250 (antes $25.000). Spec del kit: «pintado» (ya no zincado). Peso base 52 kg.
 - Fotos nuevas en `Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-30` (1 render + 2 foto real retocada) y `CA-40` (1 render), mismo formato 1080×1080 que la BNV-40.
 - CRM: `CA30`→`CA30`, `CA40`→`CA40` (mismos códigos que en el Tablero).
+
+
+## 20. Fotos nuevas de obras (ALENO) en 6 productos (03/11/2026) — PENDIENTE PUBLICAR con GitHub Desktop
+- Origen: `D:\Google Drive VPH\CLAUDE AI\IMAGENES Y VIDEOS DE PRODUCTOS\CORRALONES\ALENO\Fotos de obras\<producto>\` (~130 fotos). Se eligieron las mejores y no repetidas: 23 fotos nuevas, numeradas a continuación de las existentes y sumadas al final de `images:` en `index.html`.
+- Cantidades nuevas: Cribada Rectangular (LC60) 8–12, Cribada Cuadrada (LC40) 7–10, Green Block (GB35) 8–10, Green Rombo (GR35) 7–8, Tope Cuadrado 100 (TEC100) 8–12, Tope Trapecio 50 (TET50) 7–10.
+- Formato: JPG 1024×1024 (recorte cuadrado con encuadre elegido a mano), corrección automática (balance de blancos suave, niveles, gamma, luz en sombras, contraste, saturación), nitidez leve y marca de agua «www.vpremoldeados.com» centrada (blanco con contorno oscuro, ~59 % del ancho), calidad JPEG 84.
+- Sin fotos nuevas: Green Círculo (solo 2 fuentes de 528 y 654 px, y una ya está en uso), Tope Circular 50 (la 01 ya está en uso; la 02 mide 392 px) y Tope Trapecio 100 (no hay carpeta fuente).
+- Se descartaron fuentes con patente legible, de baja resolución (<750 px de lado corto) o con colores poco naturales; las demás siguen en la carpeta ALENO por si se quieren sumar.
+- Ojo: las miniaturas de la ficha no cargan en diferido, así que más fotos = más peso al abrir un producto (≈300 KB cada una). Tope Cuadrado 100 quedó con 13 fotos.
+
+
+## 21. Se elimina el Cubo de Apoyo CA-40 (05/11/2026) — PENDIENTE PUBLICAR con GitHub Desktop
+- Pedido de Marcelo: sacar el producto `CA40` del cotizador. Se quitó de la pestaña «Bases para Módulos» (queda solo `CA30` además de las BNV-40), de `PRODUCT_LABELS` y de `CRM_CODE_MAP`.
+- Las fotos `Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-40/` quedaron en la carpeta sin usar (por si vuelve el producto); se pueden borrar.
+
+- También el 05/11/2026 (pedido de Marcelo): se eliminó la Base Nivel BNV-40 (`BNV40K` con kit y `BNV40` sin kit) del catálogo, de `PRODUCT_LABELS` y de `CRM_CODE_MAP`. «Bases para Módulos» quedó con un único producto: `CA30`. Las fotos de `Bases para Modulos/BNV-40/` quedaron sin usar en la carpeta.
+- Más tarde el mismo día (05/11/2026) Marcelo pidió **quitar la pestaña «Bases para Módulos» entera**: se eliminó la categoría del catálogo (con el `CA30`), de `PRODUCT_LABELS` y de `CRM_CODE_MAP`. El cotizador volvió a 4 categorías (Losetas Cribadas, Losetas Green, Topes de Estacionamiento, Cordones y Listones). Las fotos de `Bases para Modulos/` (BNV-40, CA-30, CA-40) quedaron sin usar en la carpeta y se pueden borrar. Si el producto vuelve, la historia de las secciones 18 y 19 explica cómo se había armado.
+- Nota de entorno: la carpeta del proyecto ahora está en `D:\Google Drive VPH\03 MARKETING\MEJORAS WIX\cotizador-vph` (antes `CLAUDE AI\MEJORAS WIX`).

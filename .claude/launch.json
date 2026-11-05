@@ -4,7 +4,7 @@
     {
       "name": "cotizador-local",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["C:/Users/ingma/AppData/Local/Temp/claude/D--Google-Drive-VPH-CLAUDE-AI-MEJORAS-WIX-cotizador-vph/87c3daf9-cafb-48ad-a4dc-77963c66ba79/scratchpad/server.js"],
+      "runtimeArgs": ["C:/Users/ingma/AppData/Local/Temp/claude/933a560375cf103a/6f5e2234-b76c-41d0-8989-28801d08d7c4/scratchpad/server.js"],
       "port": 8765
     }
   ]
