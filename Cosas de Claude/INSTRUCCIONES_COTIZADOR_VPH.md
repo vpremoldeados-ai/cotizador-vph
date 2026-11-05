@@ -471,3 +471,13 @@ Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarje
 - **Siguen eliminados** la Base Nivel BNV-40 (con y sin kit) y el Cubo de Apoyo CA-40.
 - Con 5 pestañas, en móvil la 5ª ocupa toda la fila (regla CSS `.cat-tab:last-child:nth-child(odd)`, que se conservó).
 - Probado en local (pestaña visible, ficha del CA-30 con foto y precio, sin errores de consola); falta publicar y verificar en vivo.
+
+
+## 24. La Base Nivel sale también de la web de Wix (05/11/2026)
+- Al sacar la BNV-40 del cotizador seguía apareciendo en la web de Wix: la ficha «Base Nivel» (familia «Módulos · 1 modelo») dentro de la imagen «Elegí tu modelo» (`catalogo-modelos-pc-v3` / `-movil-v3`) y el banner ancho `BNV-40-banner-web` / `-movil` (que llevaba a `?cat=Bases para Módulos&prod=BNV40K`).
+- **Solución sin tocar el Editor:** nuevo custom embed **«Sacar Base Nivel BNV-40 de la web»** (id `d268f384-2c02-4294-aa61-a9f330cd4d7f`, `BODY_START`). (1) Oculta el banner (componente `comp-mur0nz8m` en PC, `comp-mur2qo51` en celular) y achica la fila de la grilla de la página que lo contiene (la franja pasa de 841 a 436 px en PC) para que no quede un hueco. (2) Cambia el `src` y el `alt` de la imagen del catálogo por la versión anterior sin Base Nivel, que sigue en Medios: PC `b9d03b_49b150bf…~mv2.jpg` (1960×1036) y celular `b9d03b_6a4f4367…~mv2.jpg` (1020×4287).
+- Cambiar el `alt` a `catalogo-modelos-pc.jpg` / `-movil.jpg` es lo que hace que el embed «Deep link imagenes hacia el cotizador» (rev 11) use las zonas de toque de la versión SIN Base Nivel (las claves `-v3` no coinciden). **No renombrar ni tocar esas claves.**
+- **Verificado en vivo** (carga limpia): PC y celular sin banner ni hueco; el toque en cada ficha detecta el modelo correcto (11/11 en PC; 8/8 en las probadas en celular) y el espacio vacío no hace nada.
+- **Para deshacerlo:** poner `enabled:false` en ese embed y vuelve lo que tiene el Editor (catálogo v3 y banner). **Lo prolijo a futuro** es hacerlo en el Editor de Wix (reemplazar la imagen del catálogo por `catalogo-modelos-pc` / `-movil` y borrar el banner BNV-40) y entonces apagar el embed.
+- La imagen del catálogo tiene `loading="lazy"`: en pruebas automáticas hay que scrollear hasta ella para que cargue.
+- **Corrección a la sección 17:** la franja de reseñas **está APAGADA** (rev 12, 07/10/2026) a pedido de Marcelo; el «ahora está activa» de esa sección quedó desactualizado.
