@@ -2249,6 +2249,26 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                         specs: ["40×9×10 cm", "Por metro lineal", "2,5 u/ml"]
                     }
                 ]
+            },
+            // 05/11/2026 (pedido de Marcelo): vuelve la pestaña con SOLO el Cubo de Apoyo CA-30
+            // (se había quitado junto con la Base Nivel BNV-40 y el CA-40, que siguen eliminados).
+            // Precio minorista CON IVA, actualizado el 02/11/2026.
+            "Bases para Módulos": {
+                icon: "📐",
+                description: "Apoyos de hormigón para módulos y contenedores: cubo con chapa para soldar el esquinero.",
+                products: [
+                    {
+                        code: "CA30",
+                        name: "Cubo de Apoyo CA-30",
+                        price: 29000,
+                        weight: 60,
+                        per_pallet: 24,
+                        type: "units",
+                        image: "Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-30/1.jpg",
+                        images: ["Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-30/1.jpg", "Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-30/2.jpg"],
+                        specs: ["Cubo 300×300×300 mm", "Chapa 200×200×5 mm para soldar", "≈60 kg", "8 orificios de izaje"]
+                    }
+                ]
             }
         };
 
@@ -3526,12 +3546,14 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
             'TET100': 'Tope Trapecio 15x12x100',
             'TEC100': 'Tope Cuadrado 15x15x100',
             'L60': 'Listón',
-            'CC10': 'Cordón Confinamiento'
+            'CC10': 'Cordón Confinamiento',
+            'CA30': 'Cubo de Apoyo 30x30x30'
         };
         // Código del cotizador → código del catálogo del CRM (para matchear por código, más robusto que por nombre)
         const CRM_CODE_MAP = {
             'LC60':'ULC60','LC40':'ULC40','GB35':'UGB35','GR35':'UGR35','GC35':'UGC35',
-            'TET50':'TET50','TEC50':'TEC50','TET100':'TET100','TEC100':'TEC100','L60':'ULL50','CC10':'UCC10'
+            'TET50':'TET50','TEC50':'TEC50','TET100':'TET100','TEC100':'TEC100','L60':'ULL50','CC10':'UCC10',
+            'CA30':'CA30'
         };
         const CRM_PAGO_MAP = {
             'contado': 'Transferencia',
