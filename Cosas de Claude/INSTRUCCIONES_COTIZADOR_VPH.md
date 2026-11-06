@@ -491,3 +491,9 @@ Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarje
 - **Embed «Deep link imagenes hacia el cotizador» → rev 12:** suma las zonas `catalogo-modelos-pc-v4` / `-movil-v4` (idénticas a las v3; la ficha de Módulos devuelve `CA30`) y `CAT.CA30 = 'Bases para Módulos'`, así que tocar la ficha abre `?cat=Bases para Módulos&prod=CA30`. Las claves v3/v2 se dejaron por compatibilidad.
 - **Verificado en vivo** (carga limpia): PC y celular muestran la ficha del CA-30; toque simulado en cada ficha devuelve el modelo correcto (PC: CA30, GC35, TEC100, CC10 y el vacío no hace nada; celular: CA30, GC35, TEC100, CC10, LC60).
 - **Lo prolijo a futuro:** en el Editor de Wix reemplazar las imágenes del catálogo por las v4 y borrar el banner BNV-40; después apagar el embed `d268f384…`.
+
+## 26. Fotos nuevas del CA-30 (06/11/2026)
+- A pedido de Marcelo se reemplazaron las fotos del CA-30 (`Fotos en Cotizador/Fotos cada producto/Bases para Modulos/CA-30/`): `1.jpg` = cubo de hormigón sobre fondo blanco (1024×1024), `2.jpg` = container azul apoyado sobre cubos (1535×1024). Las anteriores se borraron. Mismos nombres, así que `index.html` no cambió.
+- Sin marca de agua (son renders). Si se quiere, agregarla.
+- Publicado y verificado en vivo: galería con 2 miniaturas, el clic cambia a la foto del container sin deformar.
+- Nota: el catálogo web v4 (sección 25) usa un recorte del `1.jpg` viejo ya incrustado en la imagen; no cambia solo.
