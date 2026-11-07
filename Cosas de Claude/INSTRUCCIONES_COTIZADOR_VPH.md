@@ -497,3 +497,9 @@ Verificado en local en PC y móvil: botones, pestañas, breadcrumb, CTA de tarje
 - Sin marca de agua (son renders). Si se quiere, agregarla.
 - Publicado y verificado en vivo: galería con 2 miniaturas, el clic cambia a la foto del container sin deformar.
 - Nota: el catálogo web v4 (sección 25) usa un recorte del `1.jpg` viejo ya incrustado en la imagen; no cambia solo.
+
+## 27. Fotos del pallet del CA-30 (07/11/2026)
+- Origen: `D:\Google Drive VPH\02 PRODUCTOS\BASE DE APOYO CA-30\Fotos\VASSALLO - Pallet_Cubo_CA-30_1.jpg` y `_2.jpg` (ya editadas; las otras de esa carpeta —IMG_5559/5560, PNG, Foto_Cubo— no se usaron).
+- Salida: `Bases para Modulos/CA-30/3.jpg` y `4.jpg`, recorte cuadrado centrado 1024×1024 (`fit: cover`; se pierde algo de los costados del pallet), marca de agua `www.vpremoldeados.com` (Verdana bold 38.8, blanco con sombra, centrada) igual que el resto. Script: `pallet.js` en el scratchpad (copia de la marca de `engine.js` de la sesión de fotos ALENO).
+- `index.html` (CA30): `images` = 1.jpg, 2.jpg, 3.jpg, 4.jpg (cubo, container, pallet 1, pallet 2).
+- Publicado y verificado en vivo (las 4 imágenes cargan; GitHub Pages tardó unos segundos en dar 200 tras el push).
