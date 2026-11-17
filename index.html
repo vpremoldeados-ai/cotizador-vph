@@ -1880,8 +1880,8 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                         <label class="form-label">Destino de entrega</label>
                         <select id="destination" class="form-control" onchange="syncCartDestPay(); updatePrice()">
                             <option value="retiro">Retirar en fábrica (Gratis)</option>
-                            <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
-                            <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($39.000 por pallet)</option>
+                            <option value="capital">Córdoba Capital ($35.000 por pallet)</option>
+                            <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($48.750 por pallet)</option>
                             <option value="argentina">A todo Argentina ($185.000 por pallet · posible variación)</option>
                         </select>
                         <div id="localidadBox" style="display:none; margin-top:6px;">
@@ -1983,8 +1983,8 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
                     <label class="form-label">Destino de entrega (para todos)</label>
                     <select id="globalDestination" class="form-control" onchange="updateGlobalCartOptions()">
                         <option value="retiro">Retirar en fábrica (Gratis)</option>
-                        <option value="capital">Córdoba Capital ($28.000 por pallet)</option>
-                        <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($39.000 por pallet)</option>
+                        <option value="capital">Córdoba Capital ($35.000 por pallet)</option>
+                        <option value="cercanas">Hasta 30 Km Av. Circunv. Cba Cap. ($48.750 por pallet)</option>
                         <option value="argentina">A todo Argentina ($185.000 por pallet · posible variación)</option>
                     </select>
                     <div id="globalLocalidadBox" style="display:none; margin-top:6px;">
@@ -2381,8 +2381,8 @@ body.fit .category-desc, body.fit .product-desc { font-size:12.5px; }
         // ========== ENVÍOS ==========
         const destinations = {
             retiro:    { cost: 0,      label: "Retirás en fábrica · Localidad de Toledo (16 Km de Córdoba Cap.)" },
-            capital:   { cost: 28000,  label: "Entrega en Córdoba Capital · 5-10 días hábiles" },
-            cercanas:  { cost: 39000,  label: "Entrega en 5-10 días hábiles" },
+            capital:   { cost: 35000,  label: "Entrega en Córdoba Capital · 5-10 días hábiles" },
+            cercanas:  { cost: 48750,  label: "Entrega en 5-10 días hábiles" },
             argentina: { cost: 185000, label: "Entrega 10-15 días hábiles (posible variación)" }
         };
         const destLabels = {
